@@ -1,12 +1,10 @@
 # UI/UX pass: problems found but not fixed
 
-Found while doing the UI/UX pass on branch `claude/wizardly-cannon-tqel7y` (based on `headroom/v0.50-stabilize`).
+Found while doing the UI/UX pass on branch `claude/ui-ux-pass`.
 That branch only changes UI/UX and copy. The items below were **not** changed there and are left for a follow-up.
-GitHub Issues are disabled on this repository, so the list lives here.
 
-Nothing on that branch has been compiled yet: it was written in a Linux container with no Swift toolchain.
-**First step for whoever picks this up: run `make check` and `make test` on a Mac against
-`claude/wizardly-cannon-tqel7y`, then launch the packaged app and look at Settings and the menu bar popup.**
+The branch was written in a Linux container with no Swift toolchain. Its macOS CI run is the first compile;
+after that, launch the packaged app and look at Settings and the menu bar popup.
 
 ## Needs a decision
 
@@ -59,14 +57,11 @@ Nothing on that branch has been compiled yet: it was written in a Linux containe
     - SwiftPM targets and products (`CodexBar`, `CodexBarCLI`, `CodexBarCore`, …) and the `codexbar` CLI name
     - `~/Library/Logs/CodexBar`, `Application Support/CodexBar`, the `CodexBar.StatusItem*` autosave names and the
       `com.steipete.codexbar` legacy defaults domain
-    - the default source-update checkout `~/Developer/CodexBar` and the clone URL `git@github.com:ddaxai/CodexBar.git`
 
-    If a full rename is wanted, plan a migration for each one. **The GitHub repository name (`ddaxai/CodexBar`) can
-    only be changed by the owner** under Settings → General → Repository name. GitHub redirects the old URL, but
-    update `HeadroomSourceUpdate.swift`, `PreferencesAboutPane.swift` and `About.swift` afterwards.
+    If a full rename is wanted, plan a migration for each one. The source updater and About links already point
+    at `https://github.com/ddaxai/Headroom` (`main`, checkout `~/Developer/Headroom`).
 
 ## Verification gap
 
-12. **No macOS build was run for the UI branch.** CI's macOS jobs run only on pull requests and on pushes to `main`.
-    This repo is private, so macOS runner minutes count against the account's Actions quota at a higher rate than
-    Linux.
+12. **CI coverage.** CI's macOS jobs run only on pull requests and on pushes to `main`; open a pull request to get
+    a macOS build of a branch.
