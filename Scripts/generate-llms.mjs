@@ -7,7 +7,10 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 const docsDir = path.join(repoRoot, "docs");
 const args = process.argv.slice(2);
 const mode = parseMode(args);
-const cname = fs.readFileSync(path.join(docsDir, "CNAME"), "utf8").trim();
+const cnamePath = path.join(docsDir, "CNAME");
+// Headroom does not publish the upstream CodexBar site, so the repo has no CNAME. Keep llms.txt
+// pointing at the upstream origin the docs were written for.
+const cname = fs.existsSync(cnamePath) ? fs.readFileSync(cnamePath, "utf8").trim() : "codexbar.app";
 const origin = "https://" + cname;
 const productName = "CodexBar";
 const source = "https://github.com/steipete/CodexBar";

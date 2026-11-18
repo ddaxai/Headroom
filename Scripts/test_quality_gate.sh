@@ -89,6 +89,8 @@ grep -Fq 'SwiftFormat strict new: 1' "${TEMP_DIR}/failing.output"
 grep -Fq 'SwiftLint strict new: 1' "${TEMP_DIR}/failing.output"
 grep -Fq 'RESULT: FAIL' "${TEMP_DIR}/failing.output"
 
+# These runs use the real checkout with fake tools, so the baseline revision does not matter.
+# CI checks out a single commit (no HEAD^), so compare against HEAD itself.
 # SwiftLint exits 2 when --strict finds violations. Existing violations are acceptable when the
 # baseline delta is zero, so the normal gate must not turn that conventional status into failure.
 write_executable_fixture fake-swiftformat '#!/bin/sh\nprintf "0/0 files require formatting.\\n"\nexit 0'
@@ -98,6 +100,7 @@ write_executable_fixture fake-swiftlint '#!/bin/sh\nprintf "Done linting! Found 
 CODEXBAR_SWIFTFORMAT_BIN="${TEMP_DIR}/fake-swiftformat" \
 CODEXBAR_SWIFTLINT_BIN="${TEMP_DIR}/clean-swiftlint" \
 python3 "${ROOT_DIR}/Scripts/quality_gate.py" \
+  --parent-ref HEAD \
   --skip-tests > "${TEMP_DIR}/lint-clean-status.output" 2>&1
 grep -Fq 'SwiftLint status: clean (exit 0)' "${TEMP_DIR}/lint-clean-status.output"
 grep -Fq 'RESULT: PASS' "${TEMP_DIR}/lint-clean-status.output"
@@ -106,6 +109,7 @@ set +e
 CODEXBAR_SWIFTFORMAT_BIN="${TEMP_DIR}/fake-swiftformat" \
 CODEXBAR_SWIFTLINT_BIN="${TEMP_DIR}/fake-swiftlint" \
 python3 "${ROOT_DIR}/Scripts/quality_gate.py" \
+  --parent-ref HEAD \
   --skip-tests > "${TEMP_DIR}/lint-status.output" 2>&1
 lint_status=$?
 set -e
@@ -120,6 +124,7 @@ set +e
 CODEXBAR_SWIFTFORMAT_BIN="${TEMP_DIR}/fake-swiftformat" \
 CODEXBAR_SWIFTLINT_BIN="${TEMP_DIR}/error-swiftlint" \
 python3 "${ROOT_DIR}/Scripts/quality_gate.py" \
+  --parent-ref HEAD \
   --skip-tests > "${TEMP_DIR}/lint-error-violation.output" 2>&1
 lint_error_violation_status=$?
 set -e
@@ -133,6 +138,7 @@ set +e
 CODEXBAR_SWIFTFORMAT_BIN="${TEMP_DIR}/fake-swiftformat" \
 CODEXBAR_SWIFTLINT_BIN="${TEMP_DIR}/broken-swiftlint" \
 python3 "${ROOT_DIR}/Scripts/quality_gate.py" \
+  --parent-ref HEAD \
   --skip-tests > "${TEMP_DIR}/lint-failure.output" 2>&1
 lint_failure_status=$?
 set -e
