@@ -76,7 +76,9 @@ extension StatusMenuTests {
             "Quit",
         ]))
         #expect(moreItems.count == 7)
-        #expect(moreItems.allSatisfy(\.isEnabled))
+        // Keep the key path outside #expect: the macro rewrites a key-path argument into a throwing closure.
+        let allMoreItemsEnabled = moreItems.allSatisfy(\.isEnabled)
+        #expect(allMoreItemsEnabled)
         #expect(moreItems.allSatisfy { $0.action != nil })
     }
 
