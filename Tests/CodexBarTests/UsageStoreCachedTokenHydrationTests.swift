@@ -230,8 +230,11 @@ struct UsageStoreCachedTokenHydrationTests {
     func `startup hydration uses the neutral cache for ambient Codex history`() async {
         let settings = Self.makeCodexOnlySettings(historyDays: 1)
         let store = UsageStore(
-            fetcher: UsageFetcher(), browserDetection: BrowserDetection(cacheTTL: 0),
-            settings: settings, startupBehavior: .testing, environmentBase: [:])
+            fetcher: UsageFetcher(),
+            browserDetection: BrowserDetection(cacheTTL: 0),
+            settings: settings,
+            startupBehavior: .testing,
+            environmentBase: [:])
         var capturedIdentity: UsageIdentity?
         store._test_cachedCodexTokenSnapshotLoaderOverride = { _, _, identity, _ in
             capturedIdentity = identity
@@ -249,8 +252,11 @@ struct UsageStoreCachedTokenHydrationTests {
         let settings = Self.makeCodexOnlySettings(historyDays: 1)
         settings.codexLocalSessionCostLedgerEnabled = true
         let store = UsageStore(
-            fetcher: UsageFetcher(), browserDetection: BrowserDetection(cacheTTL: 0),
-            settings: settings, startupBehavior: .testing, environmentBase: [:])
+            fetcher: UsageFetcher(),
+            browserDetection: BrowserDetection(cacheTTL: 0),
+            settings: settings,
+            startupBehavior: .testing,
+            environmentBase: [:])
         var didLoad = false
         var capturedIdentity: UsageIdentity?
         store._test_cachedCodexTokenSnapshotLoaderOverride = { _, _, identity, _ in

@@ -1,3 +1,5 @@
+// swiftlint:disable file_length
+
 import AppKit
 import CodexBarCore
 import Foundation
@@ -78,6 +80,7 @@ struct RelaySettingsActions {
     }
     #endif
 
+    // swiftlint:disable:next function_body_length
     static func live() -> Self {
         let profileStore = FileRelayProfileStore()
         let credentialStore = FileRelayCredentialStore()

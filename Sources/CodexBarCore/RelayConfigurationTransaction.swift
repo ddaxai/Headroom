@@ -231,6 +231,7 @@ public struct RelayConfigurationTransaction: Sendable {
 
     /// Restores a previous switch backup. The backup is constrained to this path set, and the
     /// current state is backed up before restoration so the operation is itself reversible.
+    // swiftlint:disable:next cyclomatic_complexity
     public func restore(
         backupDirectory: URL,
         paths: RelayConfigurationPaths,

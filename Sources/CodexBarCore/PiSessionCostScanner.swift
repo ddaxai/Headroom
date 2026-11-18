@@ -16,6 +16,7 @@ private final class PiSessionISO8601FormatterBox: @unchecked Sendable {
     }()
 }
 
+// swiftlint:disable:next type_body_length
 enum PiSessionCostScanner {
     struct Options {
         var piSessionsRoot: URL?
@@ -538,6 +539,7 @@ enum PiSessionCostScanner {
             entryUsages: parsed.entryUsages))
     }
 
+    // swiftlint:disable:next function_body_length
     private static func parsePiSessionFile(
         fileURL: URL,
         range: CostUsageScanner.CostUsageDayRange,
@@ -555,6 +557,7 @@ enum PiSessionCostScanner {
         var profileUnkeyedContributions: [String: [String: [String: [String: PiPackedUsage]]]] = [:]
         var entryUsages: [String: PiSessionEntryUsage] = [:]
 
+        // swiftlint:disable:next function_parameter_count
         func add(
             provider: UsageProvider,
             dayKey: String,

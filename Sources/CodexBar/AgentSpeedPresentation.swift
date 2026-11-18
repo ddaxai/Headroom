@@ -153,8 +153,7 @@ extension StatusItemController {
             settings: self.settings,
             store: self.store,
             now: now).codexRequests
-        let managedHomes: [LocalAgentSpeedScanConfiguration.CodexManagedHome] = codexRequests.compactMap {
-            req -> LocalAgentSpeedScanConfiguration.CodexManagedHome? in
+        let managedHomes: [LocalAgentSpeedScanConfiguration.CodexManagedHome] = codexRequests.compactMap { req in
             guard !req.usageIdentity.isSystemUnassigned else { return nil }
             return LocalAgentSpeedScanConfiguration.CodexManagedHome(
                 accountKey: req.usageIdentity.accountKey,

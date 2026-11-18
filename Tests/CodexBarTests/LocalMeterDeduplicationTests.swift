@@ -154,7 +154,7 @@ struct LocalMeterDeduplicationTests {
 
         let record = try #require(await accumulator.records.first)
         let encoded = try JSONEncoder().encode(record)
-        let json = String(decoding: encoded, as: UTF8.self)
+        let json = try #require(String(bytes: encoded, encoding: .utf8))
         #expect(!json.contains(plaintextKey))
         #expect(json.contains(fingerprint.value))
         #expect(fingerprint.value.count == 64)

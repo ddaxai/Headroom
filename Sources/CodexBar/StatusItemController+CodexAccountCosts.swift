@@ -288,6 +288,7 @@ extension StatusItemController {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     func scheduleCodexMenuCostRefreshIfNeeded(renderedProviders: [UsageProvider]) {
         self.schedulePiAgentUsageRefreshIfNeeded()
         let projection = self.settings.codexVisibleAccountProjectionForMenuDisplay

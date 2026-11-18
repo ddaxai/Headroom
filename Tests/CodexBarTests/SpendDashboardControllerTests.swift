@@ -1,3 +1,4 @@
+// swiftlint:disable file_length
 
 import Foundation
 import Testing
@@ -6,6 +7,7 @@ import Testing
 
 @MainActor
 @Suite(.serialized)
+// swiftlint:disable:next type_body_length
 struct SpendDashboardControllerTests {
     @Test
     func `full corpus refresh publishes an unfiltered cache for the menu`() async throws {
@@ -427,20 +429,39 @@ struct SpendDashboardControllerTests {
     @Test
     func `duplicate auth fingerprints and workspace IDs are diagnosed without treating nil as a match`() {
         let first = CodexSpendScanRequest(
-            id: "first", displayName: "First", source: .profileHome(path: "/first"),
-            homePath: "/first", authFingerprint: "same-auth", authFileWasReadable: true,
-            cacheIdentity: "first", workspaceAccountID: "workspace")
+            id: "first",
+            displayName: "First",
+            source: .profileHome(path: "/first"),
+            homePath: "/first",
+            authFingerprint: "same-auth",
+            authFileWasReadable: true,
+            cacheIdentity: "first",
+            workspaceAccountID: "workspace")
         let second = CodexSpendScanRequest(
-            id: "second", displayName: "Second", source: .profileHome(path: "/second"),
-            homePath: "/second", authFingerprint: "same-auth", authFileWasReadable: true,
-            cacheIdentity: "second", workspaceAccountID: "other")
+            id: "second",
+            displayName: "Second",
+            source: .profileHome(path: "/second"),
+            homePath: "/second",
+            authFingerprint: "same-auth",
+            authFileWasReadable: true,
+            cacheIdentity: "second",
+            workspaceAccountID: "other")
         let third = CodexSpendScanRequest(
-            id: "third", displayName: "Third", source: .profileHome(path: "/third"),
-            homePath: "/third", authFingerprint: nil, authFileWasReadable: false,
-            cacheIdentity: "third", workspaceAccountID: "workspace")
+            id: "third",
+            displayName: "Third",
+            source: .profileHome(path: "/third"),
+            homePath: "/third",
+            authFingerprint: nil,
+            authFileWasReadable: false,
+            cacheIdentity: "third",
+            workspaceAccountID: "workspace")
         let fourth = CodexSpendScanRequest(
-            id: "fourth", displayName: "Fourth", source: .profileHome(path: "/fourth"),
-            homePath: "/fourth", authFingerprint: nil, authFileWasReadable: false,
+            id: "fourth",
+            displayName: "Fourth",
+            source: .profileHome(path: "/fourth"),
+            homePath: "/fourth",
+            authFingerprint: nil,
+            authFileWasReadable: false,
             cacheIdentity: "fourth")
 
         let marked = SpendDashboardSource.markDuplicateAccounts([first, second, third, fourth])

@@ -170,7 +170,8 @@ struct M3PresentationDomainBoundaryTests {
     }
 
     private static func typeDeclaration(in line: String) -> (name: String, isPresentation: Bool)? {
-        let pattern = #"^\s*(?:(?:private|fileprivate|internal|public)\s+)?(?:final\s+)?(?:struct|class|enum|extension)\s+([A-Za-z_][A-Za-z0-9_]*)"#
+        let pattern = #"^\s*(?:(?:private|fileprivate|internal|public)\s+)?(?:final\s+)?"#
+            + #"(?:struct|class|enum|extension)\s+([A-Za-z_][A-Za-z0-9_]*)"#
         guard let regex = try? NSRegularExpression(pattern: pattern),
               let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
               let nameRange = Range(match.range(at: 1), in: line)

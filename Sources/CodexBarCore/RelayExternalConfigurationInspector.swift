@@ -607,7 +607,7 @@ extension RelayExternalConfigurationInspector {
                 .openAIResponses
             }
             let modelsMap = entry["models"] as? [String: Any] ?? [:]
-            let firstCatalogModel = modelsMap.keys.sorted().first
+            let firstCatalogModel = modelsMap.keys.min()
             let model = (isActive ? activeParts?.modelID : nil) ?? firstCatalogModel
             let displayName = Self.nonEmpty(entry["name"] as? String)
                 ?? Self.humanizeProviderName(providerID: providerID, baseURL: baseURL)
@@ -900,6 +900,7 @@ extension RelayExternalConfigurationInspector {
         return (try? JSONSerialization.jsonObject(with: sanitized)) as? [String: Any]
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     static func stripJSONCCommentsAndTrailingCommas(_ data: Data) -> Data? {
         guard let source = String(data: data, encoding: .utf8) else { return nil }
         var withoutComments = ""

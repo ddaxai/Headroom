@@ -14,7 +14,7 @@ struct EighthRoundR1SpendTests {
             == "second")
         #expect(resolvedManualAttributionTargetKey(current: "stale", candidates: ["first", "second"])
             == "first")
-        #expect(resolvedManualAttributionTargetKey(current: "stale", candidates: []) == "")
+        #expect(resolvedManualAttributionTargetKey(current: "stale", candidates: []).isEmpty)
         let defaultTarget = resolvedManualAttributionTargetKey(current: "", candidates: ["first", "second"])
         #expect(isValidManualAttributionTargetKey(defaultTarget, candidates: ["first", "second"]))
         #expect(isValidManualAttributionTargetKey("second", candidates: ["first", "second"]))

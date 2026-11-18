@@ -5,6 +5,7 @@ import Testing
 
 @MainActor
 @Suite(.serialized)
+// swiftlint:disable:next type_body_length
 struct StatusMenuSwitcherClickTests {
     private func makeStatusBarForTesting() -> NSStatusBar {
         // Use the real system status bar in tests. Creating standalone NSStatusBar instances

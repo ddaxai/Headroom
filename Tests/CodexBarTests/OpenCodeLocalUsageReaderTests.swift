@@ -231,6 +231,7 @@ struct OpenCodeLocalUsageReaderTests {
         return id
     }
 
+    // swiftlint:disable:next function_parameter_count
     private static func insertStepFinishPart(
         databaseURL: URL,
         messageID: String,
