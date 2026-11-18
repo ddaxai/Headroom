@@ -1,0 +1,9 @@
+Y1 TDD red evidence (before cache-aware multiplier implementation)
+Command: ./Scripts/test.sh --filter RelayUsageTriadPresentationTests
+Matched test cases: 15 (filter: RelayUsageTriadPresentationTests)
+Discovered 1 test selections; running 1 selections in 1 groups
+Result: exit 1
+Failure:
+Test "cache reported tokens do not masquerade as an effective multiplier" recorded an issue:
+Expectation failed: (presentation.effectiveMultiplier -> 1.5) == nil
+Test run with 15 tests in 1 suite failed with 1 issue.

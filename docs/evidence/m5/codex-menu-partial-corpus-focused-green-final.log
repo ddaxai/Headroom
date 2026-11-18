@@ -1,0 +1,35 @@
+Matched test cases: 1 (filter: CostUsageFetcherPartialCorpusTests)
+Discovered 1 test selections; running 1 selections in 1 groups
+::group::Swift test group 1/1 (1 selections)
++ swift test --skip-build --no-parallel --filter (CostUsageFetcherPartialCorpusTests)
+[0/1] Planning build
+Test Suite 'Selected tests' started at 2026-09-02 14:46:45.645.
+Test Suite 'CodexBarPackageTests.xctest' started at 2026-09-02 14:46:45.649.
+Test Suite 'CodexBarPackageTests.xctest' passed at 2026-09-02 14:46:45.649.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-09-02 14:46:45.649.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.004) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1902
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite CostUsageFetcherPartialCorpusTests started.
+􀟈  Test "current partial corpus still exposes scanned rows for the menu" started.
+􁁛  Test "current partial corpus still exposes scanned rows for the menu" passed after 0.063 seconds.
+􁁛  Suite CostUsageFetcherPartialCorpusTests passed after 0.064 seconds.
+􁁛  Test run with 1 test in 1 suite passed after 0.064 seconds.
+::endgroup::
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 844
+- Selected selections: 1
+- Selected groups: 1
+- First-pass successful groups: 1
+- First-pass failed groups: 0
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 143.7
+- Execution seconds: 7.0
+- Total seconds: 150.7

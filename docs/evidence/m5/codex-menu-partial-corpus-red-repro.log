@@ -1,0 +1,36 @@
+Matched test cases: 1 (filter: current partial corpus still exposes scanned rows for the menu)
+Discovered 1 test selections; running 1 selections in 1 groups
+::group::Swift test group 1/1 (1 selections)
++ swift test --skip-build --no-parallel --filter (current partial corpus still exposes scanned rows for the menu)
+[0/1] Planning build
+Test Suite 'Selected tests' started at 2026-09-02 14:25:51.937.
+Test Suite 'CodexBarPackageTests.xctest' started at 2026-09-02 14:25:51.940.
+Test Suite 'CodexBarPackageTests.xctest' passed at 2026-09-02 14:25:51.940.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-09-02 14:25:51.940.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.004) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1902
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite CostUsageFetcherTests started.
+􀟈  Test "current partial corpus still exposes scanned rows for the menu" started.
+􀢄  Test "current partial corpus still exposes scanned rows for the menu" recorded an issue at CostUsageFetcherTests.swift:357:29: Expectation failed: CodexUsageLedgerSnapshotPartition.load(now: (now → 2026-04-30 04:00:00 +0000), sharedCodexHomePath: (env.codexHomeRoot.path → "/var/folders/z_/hvg4rpmx77s5_r3y7yvbg0t00000gn/T/codexbar-cost-usage-8D25AEF8-329F-42DD-A08D-A22B479FE234/codex-home"), timeline: (CodexSessionOwnershipTimeline() → CodexSessionOwnershipTimeline(schemaVersion: 3, events: [], manualAttributions: [], codexRouteEvents: [])), historyDays: 30, cacheRoot: (env.cacheRoot → file:///var/folders/z_/hvg4rpmx77s5_r3y7yvbg0t00000gn/T/codexbar-cost-usage-8D25AEF8-329F-42DD-A08D-A22B479FE234/cache/), requireCurrentCorpus: true) → nil
+􀢄  Test "current partial corpus still exposes scanned rows for the menu" failed after 0.074 seconds with 1 issue.
+􀢄  Suite CostUsageFetcherTests failed after 0.074 seconds with 1 issue.
+􀢄  Test run with 1 test in 1 suite failed after 0.075 seconds with 1 issue.
+::endgroup::
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 843
+- Selected selections: 1
+- Selected groups: 1
+- First-pass successful groups: 0
+- First-pass failed groups: 1
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 144.9
+- Execution seconds: 6.4
+- Total seconds: 151.3

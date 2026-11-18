@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-01",
+  "scope": "Offline full-request projection; desktop switch flow unchanged",
+  "source": {
+    "snapshot": "Validation before the implementation commit; current status is in the handoff",
+    "branch": "theodore/relay-usage-ui",
+    "head": "a12cb67",
+    "changes": "uncommitted"
+  },
+  "runtime": {
+    "baseline": {
+      "invalid_id_prefix": true,
+      "status": "failed"
+    },
+    "codex_version": "codex-cli 0.159.2",
+    "desktop_hook_tested": false,
+    "image_counts": {
+      "captured": 2,
+      "continued": 2,
+      "projected": 2
+    },
+    "image_projection_preserved": true,
+    "original_request_unchanged": true,
+    "projected_continuation": {
+      "invalid_id_prefix": false,
+      "status": "completed"
+    },
+    "projection": {
+      "report": {
+        "boundary": "crossBackend",
+        "clearedItemIDs": 6,
+        "inputItemCount": 7,
+        "issues": [],
+        "omittedReasoningItems": 1
+      },
+      "requestFileWritten": true,
+      "status": "ready"
+    },
+    "runtime_history_image_preserved": true,
+    "synthetic_requests": 2,
+    "tool_pair_preserved": true,
+    "transport": "http"
+  },
+  "focused": {
+    "status": "passed",
+    "tests": 61,
+    "suites": 6,
+    "includesNewCompatibilityTests": 14
+  },
+  "lint": {
+    "format_baseline": 290,
+    "format_current": 290,
+    "format_new": 0,
+    "format_new_keys": [],
+    "format_resolved": 0,
+    "format_resolved_keys": [],
+    "lint_baseline": 150,
+    "lint_current": 150,
+    "lint_new": 0,
+    "lint_new_keys": [],
+    "lint_resolved": 0,
+    "lint_resolved_keys": [],
+    "skipped": false
+  },
+  "fullTest": {
+    "status": "failed",
+    "selectedGroups": 71,
+    "firstPassSuccessfulGroups": 33,
+    "firstPassFailedGroups": 1,
+    "retries": 1,
+    "timeouts": 0,
+    "failureSuite": "HeadroomDesignGallerySnapshotTests",
+    "snapshotIssuesPerAttempt": 18,
+    "remainingGroupsNotRun": 37
+  },
+  "makeCheck": {
+    "status": "blocked",
+    "reason": "Tracked Icon.icns is 3353410 bytes; limit 2097152; identical size at HEAD"
+  },
+  "otherChecks": {
+    "documentationLinks": "passed",
+    "llmsIndex": "passed",
+    "pythonSyntax": "passed",
+    "siteLocale": "failed: existing README expectation of 66 providers"
+  },
+  "deployed": false,
+  "realAccountsTested": false,
+  "websocketRuntimeTested": false,
+  "realHistoryModified": false,
+  "loadedThreadIntegrationAudit": {
+    "codex_version": "0.159.2",
+    "synthetic_only": true,
+    "real_accounts_accessed": false,
+    "baseline_turn_status": "failed",
+    "normal_resume_same_thread": true,
+    "cloud_only_history_parameter_tested": true,
+    "history_resume_error": {
+      "code": -32600,
+      "reason": "cannot resume an already loaded thread with replacement history"
+    },
+    "evidence_saved_at_utc": "2026-10-01T12:11:46.045774+00:00"
+  }
+}

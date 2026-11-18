@@ -1,0 +1,14 @@
+Focused command:
+  ./Scripts/test.sh --filter 'StatusMenuOverviewScrollTests|HeadroomPopupPanelTests'
+
+Result (2026-09-02, arm64e-apple-macos14.0):
+  Matched test cases: 45
+  Discovered selections: 1
+  Selected groups: 1
+  Test run with 45 tests in 2 suites passed
+  First-pass failed groups: 0
+  Retries: 0
+  Timeouts: 0
+
+Regression covered:
+  visible popup leaves coarse wheel events for the popup scroll route

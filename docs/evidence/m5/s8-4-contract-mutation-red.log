@@ -1,0 +1,35 @@
+M5 S8.4 Anthropic ledger and triad contract mutation evidence
+Date: 2026-08-30
+
+Command:
+./Scripts/test.sh --filter 'LocalMeterAnthropicMessagesSessionTests|RelayUsageTriadPresentationTests'
+
+Matched test cases: 31
+
+Context:
+The production ledger, cache-lane separation, and triad behavior already existed after S8.1/S8.2,
+so the four S8.4 contract tests were green when first added. The original implementation red runs
+remain in s8-1-tdd-red.log and s8-2-tdd-red.log. This controlled behavior mutation proves the new
+cross-layer assertions are not vacuous; no mutated production code is committed.
+
+Controlled mutations:
+- UsageLedgerPartition.componentTotal temporarily omitted every relay bucket.
+- Anthropic cache creation/read tokens were temporarily folded into reported input tokens.
+- A missing Provider Reported value temporarily borrowed Local Base Tokens.
+
+Representative failing assertions:
+- "Anthropic records use the M4 relay key and conserve all three windows"
+  failed for 24h, 7d, and 30d: partition.isConserved was false and componentTotal != total.
+- "Anthropic cache lanes stay reported and never enter local ledger"
+  failed: cachedInputTokens was 0 instead of 7 and cacheCreationInputTokens was 0 instead of 12.
+- "Anthropic Messages reuses triad without borrowing missing reported usage"
+  failed: Provider Reported valueText was "0.00M" instead of nil.
+
+Suite result:
+- M5 S8 Anthropic Messages metering session failed with 14 issues.
+- RelayUsageTriadPresentationTests failed with 3 issues.
+- Test run with 31 tests in 2 suites failed with 17 issues.
+- Exit code: 1
+
+Restoration:
+All three production mutations were reversed with apply_patch before the green verification run.

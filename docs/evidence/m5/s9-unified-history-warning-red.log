@@ -1,0 +1,18 @@
+Command: Scripts/test.sh --filter RelayUnifiedHistoryWarningTests
+HEAD before implementation: 000c32e5374dd211134360611dcce02919ff7cac
+Matched test cases: 2
+Discovered selections: 843
+Selected selections: 1
+Selected groups: 1
+First-pass successful groups: 0
+First-pass failed groups: 1
+Retries: 0
+Timed out groups: 0
+Exit code: 1
+
+Failures:
+- settings show the localized warning beside unified history
+  PreferencesRelayPane.swift did not reference L("relay_unified_history_disabled_warning").
+- warning explains apparent history loss without claiming disk loss
+  relay_unified_history_disabled_warning was absent from both en and zh-Hans catalogs.
+

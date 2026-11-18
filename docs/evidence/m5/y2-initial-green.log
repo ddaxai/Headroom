@@ -1,0 +1,45 @@
+Matched test cases: 5 (filter: RelayUsageTriadRecordingScopeTests|HeadroomDesignGallerySnapshotTests)
+Discovered 1 test selections; running 1 selections in 1 groups
+::group::Swift test group 1/1 (1 selections)
++ swift test --skip-build --no-parallel --filter (RelayUsageTriadRecordingScopeTests|HeadroomDesignGallerySnapshotTests)
+[0/1] Planning build
+Test Suite 'Selected tests' started at 2026-08-30 18:48:31.882.
+Test Suite 'CodexBarPackageTests.xctest' started at 2026-08-30 18:48:31.885.
+Test Suite 'CodexBarPackageTests.xctest' passed at 2026-08-30 18:48:31.885.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-08-30 18:48:31.885.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.003) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1902
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite "M1 pre-panel card snapshots" started.
+􀟈  Test "gallery cards preserve the pre-panel appearance" started.
+􁁛  Test "gallery cards preserve the pre-panel appearance" passed after 0.421 seconds.
+􀟈  Test "reset credit fixtures cover available and unavailable states" started.
+􁁛  Test "reset credit fixtures cover available and unavailable states" passed after 0.028 seconds.
+􀟈  Test "pi agent card has a dedicated visual baseline" started.
+􁁛  Test "pi agent card has a dedicated visual baseline" passed after 0.018 seconds.
+􁁛  Suite "M1 pre-panel card snapshots" passed after 0.468 seconds.
+􀟈  Suite "Relay triad snapshot recording scope" started.
+􀟈  Test "triad recording switch is absent from every legacy snapshot suite" started.
+􁁛  Test "triad recording switch is absent from every legacy snapshot suite" passed after 0.011 seconds.
+􀟈  Test "triad recording switch cannot rewrite the seventeen frozen gallery references" started.
+􁁛  Test "triad recording switch cannot rewrite the seventeen frozen gallery references" passed after 0.175 seconds.
+􁁛  Suite "Relay triad snapshot recording scope" passed after 0.186 seconds.
+􁁛  Test run with 5 tests in 2 suites passed after 0.655 seconds.
+::endgroup::
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 841
+- Selected selections: 1
+- Selected groups: 1
+- First-pass successful groups: 1
+- First-pass failed groups: 0
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 72.5
+- Execution seconds: 5.4
+- Total seconds: 77.9

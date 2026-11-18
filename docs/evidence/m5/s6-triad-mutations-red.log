@@ -1,0 +1,21 @@
+Persistent excerpt of the S6 relay triad mutation checks.
+The mutations were applied only for the test run and then reversed with an exact patch.
+
+MUTATION: collapse a missing narrow lane to zero height
+COMMAND: Scripts/test.sh --filter RelayUsageTriadPresentationTests
+EXIT: 1
+
+Test "missing lane keeps the same narrow row height" recorded an issue:
+Expectation failed: (completeHeights -> [30.0, 30.0, 30.0]) ==
+                    (missingHeights -> [0.0, 30.0, 30.0])
+Expectation failed: (Set(missingHeights).count -> 2) == 1
+The same assertion failed for each of the three missing-lane positions.
+Test "missing lane keeps the same narrow row height" failed with 6 issues.
+
+MUTATION: remove raw usage values from the height fingerprint
+COMMAND: Scripts/test.sh --filter RelayUsageTriadPresentationTests
+EXIT: 1
+
+Test "height fingerprint changes when usage data changes" recorded an issue:
+Expectation failed: lowerEnglish != higherEnglish
+Test "height fingerprint changes when usage data changes" failed with 1 issue.

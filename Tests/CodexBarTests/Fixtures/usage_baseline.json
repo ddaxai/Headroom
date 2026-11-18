@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "officialAccounts": [
+    {
+      "id": "official_a",
+      "isActive": true,
+      "resetCredits": {
+        "count": 2,
+        "expiresAt": "2026-10-04T00:00:00Z"
+      },
+      "windows": [
+        { "period": "24h", "localTokens": 1200, "reportedTokens": null },
+        { "period": "7d", "localTokens": 7900, "reportedTokens": null },
+        { "period": "30d", "localTokens": 31000, "reportedTokens": null }
+      ]
+    },
+    {
+      "id": "official_b",
+      "isActive": false,
+      "resetCredits": null,
+      "windows": [
+        { "period": "24h", "localTokens": 750, "reportedTokens": null },
+        { "period": "7d", "localTokens": 4400, "reportedTokens": null },
+        { "period": "30d", "localTokens": 18500, "reportedTokens": null }
+      ]
+    }
+  ],
+  "relays": [
+    {
+      "id": "relay_x",
+      "multiplier": 1.5,
+      "reportsUsage": true,
+      "windows": [
+        { "period": "24h", "localTokens": 500, "reportedTokens": 750 },
+        { "period": "7d", "localTokens": 3300, "reportedTokens": 4950 },
+        { "period": "30d", "localTokens": 12000, "reportedTokens": 18000 }
+      ]
+    },
+    {
+      "id": "relay_y",
+      "multiplier": null,
+      "reportsUsage": false,
+      "windows": [
+        { "period": "24h", "localTokens": null, "reportedTokens": null },
+        { "period": "7d", "localTokens": null, "reportedTokens": null },
+        { "period": "30d", "localTokens": null, "reportedTokens": null }
+      ]
+    }
+  ],
+  "unassigned": {
+    "id": "unassigned",
+    "windows": [
+      { "period": "24h", "localTokens": 300, "reportedTokens": null },
+      { "period": "7d", "localTokens": 1100, "reportedTokens": null },
+      { "period": "30d", "localTokens": 6500, "reportedTokens": null }
+    ]
+  },
+  "totals": [
+    { "period": "24h", "localTokens": 2750 },
+    { "period": "7d", "localTokens": 16700 },
+    { "period": "30d", "localTokens": 68000 }
+  ]
+}

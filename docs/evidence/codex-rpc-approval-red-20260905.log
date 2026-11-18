@@ -1,0 +1,17 @@
+Matched test cases: 0 (filter: CodexUsageFetcherFallbackTests/(public CLI fetcher reads quota with current approval policy parser|injected CLI fetcher reads quota with current approval policy parser))
+No test cases matched --filter: CodexUsageFetcherFallbackTests/(public CLI fetcher reads quota with current approval policy parser|injected CLI fetcher reads quota with current approval policy parser)
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 844
+- Selected selections: 0
+- Selected groups: 0
+- First-pass successful groups: 0
+- First-pass failed groups: 0
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 68.9
+- Execution seconds: 0.0
+- Total seconds: 68.9

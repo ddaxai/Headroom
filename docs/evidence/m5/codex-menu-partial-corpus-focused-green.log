@@ -1,0 +1,16 @@
+Command: ./Scripts/test.sh --filter 'CostUsageFetcherTests'
+Result: PASS (exit 0)
+Matched test cases: 21
+Discovered selections: 843
+Selected selections: 1
+Selected groups: 1
+First-pass successful groups: 1
+First-pass failed groups: 0
+Full-group retries: 0
+Recovered groups: 0
+Timed out groups: 0
+Isolated selection retries: 0
+
+The regression `current partial corpus still exposes scanned rows for the menu` passed. The
+fixture has a current corpus revision with incomplete coverage; the partition exposes its 42
+scanned tokens and retains `coverageIsComplete == false`.

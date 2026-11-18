@@ -1,0 +1,44 @@
+Matched test cases: 2 (filter: CodexUnifiedHistoryReverseMigrationTests)
+Discovered 1 test selections; running 1 selections in 1 groups
+::group::Swift test group 1/1 (1 selections)
++ swift test --skip-build --no-parallel --filter (CodexUnifiedHistoryReverseMigrationTests)
+[0/1] Planning build
+Test Suite 'Selected tests' started at 2026-08-30 21:24:44.334.
+Test Suite 'CodexBarPackageTests.xctest' started at 2026-08-30 21:24:44.337.
+Test Suite 'CodexBarPackageTests.xctest' passed at 2026-08-30 21:24:44.337.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-08-30 21:24:44.337.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.003) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1902
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite CodexUnifiedHistoryReverseMigrationTests started.
+􀟈  Test reverseDryRunPlansProvenanceAndLeavesSourceFilesUntouched() started.
+􀢄  Test reverseDryRunPlansProvenanceAndLeavesSourceFilesUntouched() recorded an issue at CodexUnifiedHistoryReverseMigrationTests.swift:33:9: Expectation failed: (outcome.rewrittenJSONLFiles → 0) == 2
+􀢄  Test reverseDryRunPlansProvenanceAndLeavesSourceFilesUntouched() recorded an issue at CodexUnifiedHistoryReverseMigrationTests.swift:34:9: Expectation failed: (outcome.rewrittenStateRows → 0) == 2
+􀢄  Test reverseDryRunPlansProvenanceAndLeavesSourceFilesUntouched() recorded an issue at CodexUnifiedHistoryReverseMigrationTests.swift:35:9: Expectation failed: (outcome.unresolvedStateRows → 0) == 1
+􀢄  Test reverseDryRunPlansProvenanceAndLeavesSourceFilesUntouched() recorded an issue at CodexUnifiedHistoryReverseMigrationTests.swift:36:9: Expectation failed: (outcome.changedJSONLFiles.count → 0) == 2
+􀢄  Test reverseDryRunPlansProvenanceAndLeavesSourceFilesUntouched() recorded an issue at CodexUnifiedHistoryReverseMigrationTests.swift:37:9: Expectation failed: (outcome.changedStateDatabases → []) == ([fixture.databaseURL] → [file:///var/folders/z_/hvg4rpmx77s5_r3y7yvbg0t00000gn/T/CodexUnifiedHistoryReverseMigrationTests-BD4BFFE7-B145-48C0-82EE-BD69CCC606F0/.codex/sqlite/state_5.sqlite])
+􀅺  removed [file:///var/folders/z_/hvg4rpmx77s5_r3y7yvbg0t00000gn/T/CodexUnifiedHistoryReverseMigrationTests-BD4BFFE7-B145-48C0-82EE-BD69CCC606F0/.codex/sqlite/state_5.sqlite]
+􀢄  Test reverseDryRunPlansProvenanceAndLeavesSourceFilesUntouched() failed after 0.013 seconds with 5 issues.
+􀟈  Test reverseDryRunDoesNotGuessMissingOrigin() started.
+􀢄  Test reverseDryRunDoesNotGuessMissingOrigin() recorded an issue at CodexUnifiedHistoryReverseMigrationTests.swift:56:9: Expectation failed: (outcome.unresolvedStateRows → 0) == 1
+􀢄  Test reverseDryRunDoesNotGuessMissingOrigin() failed after 0.002 seconds with 1 issue.
+􀢄  Suite CodexUnifiedHistoryReverseMigrationTests failed after 0.016 seconds with 6 issues.
+􀢄  Test run with 2 tests in 1 suite failed after 0.016 seconds with 6 issues.
+::endgroup::
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 842
+- Selected selections: 1
+- Selected groups: 1
+- First-pass successful groups: 0
+- First-pass failed groups: 1
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 306.9
+- Execution seconds: 4.9
+- Total seconds: 311.8

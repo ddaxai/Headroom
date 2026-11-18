@@ -1,0 +1,43 @@
+{
+  "lint": {
+    "format_baseline": 291,
+    "format_current": 291,
+    "format_new": 0,
+    "format_new_keys": [],
+    "format_resolved": 0,
+    "format_resolved_keys": [],
+    "lint_baseline": 148,
+    "lint_current": 148,
+    "lint_new": 0,
+    "lint_new_keys": [],
+    "lint_resolved": 0,
+    "lint_resolved_keys": [],
+    "skipped": false
+  },
+  "pass": true,
+  "platform": {
+    "architecture": "arm64",
+    "os": "macOS",
+    "os_version": "26.6",
+    "swift_version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+  },
+  "test": {
+    "completed_groups": 71,
+    "failures": {},
+    "first_pass_failed_groups": 0,
+    "first_pass_successful_groups": 71,
+    "full_group_retries": 0,
+    "isolated_selection_retries": 0,
+    "recovered_groups": 0,
+    "selected_groups": 71,
+    "test_failures": 0,
+    "timed_out_groups": 0,
+    "total_groups": 71
+  },
+  "test_baseline": {
+    "new": 0,
+    "new_names": [],
+    "resolved": 0,
+    "resolved_names": []
+  }
+}

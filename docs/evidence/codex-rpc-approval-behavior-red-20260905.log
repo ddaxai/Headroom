@@ -1,0 +1,71 @@
+Matched test cases: 15 (filter: CodexUsageFetcherFallbackTests)
+Discovered 1 test selections; running 1 selections in 1 groups
+::group::Swift test group 1/1 (1 selections)
++ swift test --skip-build --no-parallel --filter (CodexUsageFetcherFallbackTests)
+[0/1] Planning build
+Test Suite 'Selected tests' started at 2026-09-05 14:04:54.064.
+Test Suite 'CodexBarPackageTests.xctest' started at 2026-09-05 14:04:54.067.
+Test Suite 'CodexBarPackageTests.xctest' passed at 2026-09-05 14:04:54.067.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-09-05 14:04:54.067.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.003) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1902
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite CodexUsageFetcherFallbackTests started.
+􀟈  Test "public CLI fetcher reads quota with current approval policy parser" started.
+[codex stderr] invalid value 'untrusted' for '--ask-for-approval'
+􀢄  Test "public CLI fetcher reads quota with current approval policy parser" recorded an issue at CodexUsageFetcherFallbackTests.swift:7:6: Caught error: .malformed("codex app-server closed stdout")
+􀢄  Test "public CLI fetcher reads quota with current approval policy parser" failed after 1.571 seconds with 1 issue.
+􀟈  Test "injected CLI fetcher reads quota with current approval policy parser" started.
+[codex stderr] invalid value 'untrusted' for '--ask-for-approval'
+􀢄  Test "injected CLI fetcher reads quota with current approval policy parser" recorded an issue at CodexUsageFetcherFallbackTests.swift:17:6: Caught error: .malformed("codex app-server closed stdout")
+􀢄  Test "injected CLI fetcher reads quota with current approval policy parser" failed after 0.221 seconds with 1 issue.
+􀟈  Test "missing CLI binary reports install guidance instead of not running" started.
+2026-09-05T14:04:56+0800 warning com.steipete.codexbar.codex-rpc: binary=codex [CodexBarCore] Codex RPC binary not found
+􁁛  Test "missing CLI binary reports install guidance instead of not running" passed after 0.003 seconds.
+􀟈  Test "CLI usage recovers from RPC decode mismatch body payload" started.
+􁁛  Test "CLI usage recovers from RPC decode mismatch body payload" passed after 0.008 seconds.
+􀟈  Test "CLI credits recover from RPC decode mismatch body payload" started.
+􁁛  Test "CLI credits recover from RPC decode mismatch body payload" passed after 0.001 seconds.
+􀟈  Test "CLI credits recover from RPC error body when usage windows are unusable" started.
+􁁛  Test "CLI credits recover from RPC error body when usage windows are unusable" passed after 0.532 seconds.
+􀟈  Test "CLI usage does not partially recover malformed RPC body without session lane" started.
+􁁛  Test "CLI usage does not partially recover malformed RPC body without session lane" passed after 0.001 seconds.
+􀟈  Test "CLI usage recovers from RPC body without TTY fallback" started.
+􁁛  Test "CLI usage recovers from RPC body without TTY fallback" passed after 0.463 seconds.
+􀟈  Test "CLI credits recover from RPC body without TTY fallback" started.
+􁁛  Test "CLI credits recover from RPC body without TTY fallback" passed after 0.216 seconds.
+􀟈  Test "CLI credits load from RPC response without usage windows" started.
+􁁛  Test "CLI credits load from RPC response without usage windows" passed after 0.580 seconds.
+􀟈  Test "CLI usage loads plan only RPC response as unavailable limits" started.
+􁁛  Test "CLI usage loads plan only RPC response as unavailable limits" passed after 0.483 seconds.
+􀟈  Test "CLI plan and credits response without usage windows keeps unavailable limits" started.
+􁁛  Test "CLI plan and credits response without usage windows keeps unavailable limits" passed after 0.488 seconds.
+􀟈  Test "CLI usage fails when RPC body recovery misses session lane" started.
+􁁛  Test "CLI usage fails when RPC body recovery misses session lane" passed after 0.515 seconds.
+􀟈  Test "hung CLI RPC rate limits request times out within budget" started.
+2026-09-05T14:05:00+0800 warning com.steipete.codexbar.codex-rpc: [CodexBarCore] Codex RPC timed out on `account/rateLimits/read`; terminating process
+􁁛  Test "hung CLI RPC rate limits request times out within budget" passed after 0.662 seconds.
+􀟈  Test "repeated hung CLI RPC requests stay bounded" started.
+2026-09-05T14:05:00+0800 warning com.steipete.codexbar.codex-rpc: [CodexBarCore] Codex RPC timed out on `account/rateLimits/read`; terminating process
+2026-09-05T14:05:01+0800 warning com.steipete.codexbar.codex-rpc: [CodexBarCore] Codex RPC timed out on `account/rateLimits/read`; terminating process
+􁁛  Test "repeated hung CLI RPC requests stay bounded" passed after 0.662 seconds.
+􀢄  Suite CodexUsageFetcherFallbackTests failed after 6.410 seconds with 2 issues.
+􀢄  Test run with 15 tests in 1 suite failed after 6.411 seconds with 2 issues.
+::endgroup::
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 844
+- Selected selections: 1
+- Selected groups: 1
+- First-pass successful groups: 0
+- First-pass failed groups: 1
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 11.5
+- Execution seconds: 11.1
+- Total seconds: 22.5

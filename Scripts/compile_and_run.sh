@@ -1,0 +1,369 @@
+#!/usr/bin/env bash
+# Reset Headroom: stop the exact app process, build, package, relaunch, verify.
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+APP_BUNDLE="${ROOT_DIR}/.build/headroom-artifacts/Headroom.app"
+APP_PROCESS_PATH="${APP_BUNDLE}/Contents/MacOS/CodexBar"
+INSTALLED_PROCESS_PATH="/Applications/Headroom.app/Contents/MacOS/CodexBar"
+LEGACY_INSTALLED_PROCESS_PATH="/Applications/CodexBar.app/Contents/MacOS/CodexBar"
+LEGACY_ROOT_PROCESS_PATHS=(
+  "${ROOT_DIR}/Headroom.app/Contents/MacOS/CodexBar"
+  "${ROOT_DIR}/CodexBar.app/Contents/MacOS/CodexBar"
+)
+DEBUG_PROCESS_PATTERN="${ROOT_DIR}/.build/debug/CodexBar"
+RELEASE_PROCESS_PATTERN="${ROOT_DIR}/.build/release/CodexBar"
+LOCK_KEY="$(printf '%s' "${ROOT_DIR}" | shasum -a 256 | cut -c1-8)"
+LOCK_DIR="${TMPDIR:-/tmp}/codexbar-compile-and-run-${LOCK_KEY}"
+LOCK_PID_FILE="${LOCK_DIR}/pid"
+WAIT_FOR_LOCK=0
+RUN_TESTS=0
+DEBUG_LLDB=0
+RELEASE_ARCHES=""
+SIGNING_MODE="${CODEXBAR_SIGNING:-}"
+CLEAR_ADHOC_KEYCHAIN=0
+
+log()  { printf '%s\n' "$*"; }
+fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
+
+delete_keychain_service_items() {
+  local service="$1"
+  security delete-generic-password -s "${service}" >/dev/null 2>&1 || true
+  while security delete-generic-password -s "${service}" >/dev/null 2>&1; do
+    :
+  done
+}
+
+# Ensure Swift >= 5.5 (required for --arch flag in swift build)
+ensure_swift_version() {
+  local swift_output
+  local swift_ver
+  swift_output=$(swift --version 2>&1 || true)
+  if [[ "$swift_output" =~ (Apple[[:space:]]+)?Swift[[:space:]]+version[[:space:]]+([0-9]+)\.([0-9]+)(\.[0-9]+)? ]]; then
+    swift_ver="${BASH_REMATCH[2]}.${BASH_REMATCH[3]}${BASH_REMATCH[4]}"
+  else
+    fail "Swift >= 5.5 required (found ${swift_output:-none}). Install Xcode or update swiftly."
+  fi
+  local major minor
+  major=$(echo "$swift_ver" | cut -d. -f1)
+  minor=$(echo "$swift_ver" | cut -d. -f2)
+  if [[ "${major:-0}" -ge 6 ]] || { [[ "${major:-0}" -eq 5 ]] && [[ "${minor:-0}" -ge 5 ]]; }; then
+    return 0
+  fi
+  # Try Xcode toolchain
+  local xcrun_swift
+  xcrun_swift=$(xcrun --find swift 2>/dev/null || true)
+  if [[ -n "$xcrun_swift" && -x "$xcrun_swift" ]]; then
+    log "WARN: PATH swift is v${swift_ver}; switching to Xcode toolchain at $(dirname "$xcrun_swift")"
+    export PATH="$(dirname "$xcrun_swift"):$PATH"
+    return 0
+  fi
+  fail "Swift >= 5.5 required (found ${swift_ver:-none}). Install Xcode or update swiftly."
+}
+
+has_signing_identity() {
+  local identity="${1:-}"
+  if [[ -z "${identity}" ]]; then
+    return 1
+  fi
+  security find-identity -p codesigning -v 2>/dev/null | grep -F "${identity}" >/dev/null 2>&1
+}
+
+detect_codesigning_identity() {
+  local preferred_prefixes=(
+    "Developer ID Application:"
+    "Apple Development:"
+    "Apple Distribution:"
+  )
+  local prefix
+  local identities
+  identities="$(security find-identity -p codesigning -v 2>/dev/null || true)"
+  for prefix in "${preferred_prefixes[@]}"; do
+    awk -v prefix="${prefix}" '
+      index($0, "\"" prefix) {
+        sub(/^[^\"]*\"/, "")
+        sub(/\".*$/, "")
+        print
+        exit
+      }
+    ' <<<"${identities}"
+  done | sed -n '1p'
+}
+
+export_team_id_from_identity() {
+  local identity="${1:-}"
+  if [[ -n "${APP_TEAM_ID:-}" || -z "${identity}" ]]; then
+    return
+  fi
+  local subject
+  subject="$(security find-certificate -c "${identity}" -p 2>/dev/null \
+    | openssl x509 -noout -subject -nameopt RFC2253 2>/dev/null || true)"
+  if [[ "${subject}" =~ (^|,)OU=([A-Z0-9]{10})(,|$) ]]; then
+    APP_TEAM_ID="${BASH_REMATCH[2]}"
+    export APP_TEAM_ID
+    return
+  fi
+  if [[ "${identity}" =~ \(([A-Z0-9]{10})\)$ ]]; then
+    APP_TEAM_ID="${BASH_REMATCH[1]}"
+    export APP_TEAM_ID
+  fi
+}
+
+resolve_signing_mode() {
+  if [[ -n "${SIGNING_MODE}" ]]; then
+    export_team_id_from_identity "${APP_IDENTITY:-}"
+    return
+  fi
+
+  if [[ -n "${APP_IDENTITY:-}" ]]; then
+    if has_signing_identity "${APP_IDENTITY}"; then
+      export_team_id_from_identity "${APP_IDENTITY}"
+      SIGNING_MODE="identity"
+      return
+    fi
+    log "WARN: APP_IDENTITY not found in Keychain; falling back to adhoc signing."
+    SIGNING_MODE="adhoc"
+    return
+  fi
+
+  local candidate=""
+  for candidate in \
+    "Developer ID Application: Peter Steinberger (Y5PE65HELJ)" \
+    "CodexBar Development"
+  do
+    if has_signing_identity "${candidate}"; then
+      APP_IDENTITY="${candidate}"
+      export APP_IDENTITY
+      export_team_id_from_identity "${APP_IDENTITY}"
+      SIGNING_MODE="identity"
+      return
+    fi
+  done
+
+  candidate="$(detect_codesigning_identity)"
+  if [[ -n "${candidate}" ]]; then
+    APP_IDENTITY="${candidate}"
+    export APP_IDENTITY
+    export_team_id_from_identity "${APP_IDENTITY}"
+    SIGNING_MODE="identity"
+    return
+  fi
+
+  SIGNING_MODE="adhoc"
+}
+
+run_step() {
+  local label="$1"; shift
+  log "==> ${label}"
+  if ! "$@"; then
+    fail "${label} failed"
+  fi
+}
+
+cleanup() {
+  if [[ -d "${LOCK_DIR}" ]]; then
+    rm -rf "${LOCK_DIR}"
+  fi
+}
+
+acquire_lock() {
+  while true; do
+    if mkdir "${LOCK_DIR}" 2>/dev/null; then
+      echo "$$" > "${LOCK_PID_FILE}"
+      return 0
+    fi
+
+    local existing_pid=""
+    if [[ -f "${LOCK_PID_FILE}" ]]; then
+      existing_pid="$(cat "${LOCK_PID_FILE}" 2>/dev/null || true)"
+    fi
+
+    if [[ -n "${existing_pid}" ]] && kill -0 "${existing_pid}" 2>/dev/null; then
+      if [[ "${WAIT_FOR_LOCK}" == "1" ]]; then
+        log "==> Another agent is compiling (pid ${existing_pid}); waiting..."
+        while kill -0 "${existing_pid}" 2>/dev/null; do
+          sleep 1
+        done
+        continue
+      fi
+      log "==> Another agent is compiling (pid ${existing_pid}); re-run with --wait."
+      exit 0
+    fi
+
+    rm -rf "${LOCK_DIR}"
+  done
+}
+
+trap cleanup EXIT INT TERM
+
+kill_claude_probes() {
+  # CodexBar spawns `claude /usage` + `/status` in a PTY; if we kill the app mid-probe we can orphan them.
+  local pid
+  while read -r pid; do
+    [[ -z "$pid" || "$pid" == "$$" ]] && continue
+    kill "$pid" 2>/dev/null || true
+  done < <(ps -axo pid=,command= | awk 'index($0, "claude /status --allowed-tools") || index($0, "claude /usage --allowed-tools") {print $1}')
+  sleep 0.2
+  while read -r pid; do
+    [[ -z "$pid" || "$pid" == "$$" ]] && continue
+    kill -9 "$pid" 2>/dev/null || true
+  done < <(ps -axo pid=,command= | awk 'index($0, "claude /status --allowed-tools") || index($0, "claude /usage --allowed-tools") {print $1}')
+}
+
+kill_all_codexbar() {
+  process_ids_for_path() {
+    local path="$1"
+    ps -axo pid=,command= | awk -v target="$path" '$2 == target {print $1}'
+  }
+
+  terminate_path() {
+    local path="$1"
+    local pid
+    while read -r pid; do
+      [[ -z "$pid" || "$pid" == "$$" ]] && continue
+      kill "$pid" 2>/dev/null || true
+    done < <(process_ids_for_path "$path")
+  }
+
+  is_running() {
+    local path
+    for path in "${APP_PROCESS_PATH}" "${INSTALLED_PROCESS_PATH}" \
+      "${LEGACY_INSTALLED_PROCESS_PATH}" "${DEBUG_PROCESS_PATTERN}" "${RELEASE_PROCESS_PATTERN}" \
+      "${LEGACY_ROOT_PROCESS_PATHS[@]}"; do
+      if [[ -n "$(process_ids_for_path "${path}")" ]]; then
+        return 0
+      fi
+    done
+    return 1
+  }
+
+  # Phase 1: request termination (give the app time to exit cleanly).
+  for _ in {1..25}; do
+    terminate_path "${APP_PROCESS_PATH}"
+    terminate_path "${INSTALLED_PROCESS_PATH}"
+    terminate_path "${LEGACY_INSTALLED_PROCESS_PATH}"
+    for path in "${LEGACY_ROOT_PROCESS_PATHS[@]}"; do
+      terminate_path "${path}"
+    done
+    terminate_path "${DEBUG_PROCESS_PATTERN}"
+    terminate_path "${RELEASE_PROCESS_PATTERN}"
+    if ! is_running; then
+      return 0
+    fi
+    sleep 0.2
+  done
+
+  # Phase 2: force kill only those exact paths (never a name-wide process match).
+  local path pid
+  for path in "${APP_PROCESS_PATH}" "${INSTALLED_PROCESS_PATH}" "${LEGACY_INSTALLED_PROCESS_PATH}" \
+    "${LEGACY_ROOT_PROCESS_PATHS[@]}" "${DEBUG_PROCESS_PATTERN}" "${RELEASE_PROCESS_PATTERN}"; do
+    while read -r pid; do
+      [[ -z "$pid" || "$pid" == "$$" ]] && continue
+      kill -9 "$pid" 2>/dev/null || true
+    done < <(process_ids_for_path "$path")
+  done
+
+  for _ in {1..25}; do
+    if ! is_running; then
+      return 0
+    fi
+    sleep 0.2
+  done
+
+  fail "Failed to kill all CodexBar instances."
+}
+
+# 1) Ensure a single runner instance.
+for arg in "$@"; do
+  case "${arg}" in
+    --wait|-w) WAIT_FOR_LOCK=1 ;;
+    --test|-t) RUN_TESTS=1 ;;
+    --debug-lldb) DEBUG_LLDB=1 ;;
+    --clear-adhoc-keychain) CLEAR_ADHOC_KEYCHAIN=1 ;;
+    --release-universal) RELEASE_ARCHES="arm64 x86_64" ;;
+    --release-arches=*) RELEASE_ARCHES="${arg#*=}" ;;
+    --help|-h)
+      log "Usage: $(basename "$0") [--wait] [--test] [--debug-lldb] [--clear-adhoc-keychain] [--release-universal] [--release-arches=\"arm64 x86_64\"]"
+      exit 0
+      ;;
+    *)
+      ;;
+  esac
+done
+
+ensure_swift_version
+resolve_signing_mode
+if [[ "${CLEAR_ADHOC_KEYCHAIN}" == "1" && "${SIGNING_MODE}" != "adhoc" ]]; then
+  fail "--clear-adhoc-keychain is only supported when using adhoc signing."
+fi
+if [[ "${SIGNING_MODE}" == "adhoc" ]]; then
+  log "==> Signing: adhoc (set APP_IDENTITY or install a dev cert to avoid keychain prompts)"
+else
+  log "==> Signing: ${APP_IDENTITY:-Developer ID Application}"
+fi
+
+acquire_lock
+
+# 2) Kill all running CodexBar instances (debug, release, bundled).
+log "==> Killing existing CodexBar instances"
+kill_all_codexbar
+kill_claude_probes
+
+# 2.5) Optionally delete keychain entries to avoid permission prompts with adhoc signing
+# (adhoc signature changes on every build, making old keychain entries inaccessible)
+if [[ "${SIGNING_MODE:-adhoc}" == "adhoc" && "${CLEAR_ADHOC_KEYCHAIN}" == "1" ]]; then
+  log "==> Clearing Headroom keychain entries (adhoc signing)"
+  # Clear both Headroom's services and the legacy stores when developers explicitly want a clean
+  # reset of CodexBar-owned keychain state for ad-hoc builds. Relay API keys are file-backed and
+  # are intentionally not touched by this switch.
+  delete_keychain_service_items "com.ddaxia.headroom"
+  delete_keychain_service_items "com.ddaxia.headroom.cache"
+  delete_keychain_service_items "com.steipete.CodexBar"
+  delete_keychain_service_items "com.steipete.codexbar.cache"
+elif [[ "${SIGNING_MODE:-adhoc}" == "adhoc" ]]; then
+  log "==> Preserving Headroom keychain entries (pass --clear-adhoc-keychain to reset adhoc keychain state)"
+fi
+
+# 3) Package (release build happens inside package_relay_app.sh).
+if [[ "${RUN_TESTS}" == "1" ]]; then
+  run_step "sharded swift tests" "${ROOT_DIR}/Scripts/test.sh"
+fi
+if [[ "${DEBUG_LLDB}" == "1" && -n "${RELEASE_ARCHES}" ]]; then
+  fail "--release-arches is only supported for release packaging"
+fi
+HOST_ARCH="$(uname -m)"
+ARCHES_VALUE="${HOST_ARCH}"
+if [[ -n "${RELEASE_ARCHES}" ]]; then
+  ARCHES_VALUE="${RELEASE_ARCHES}"
+fi
+PACKAGE_ENV=(
+  ARCHES="${ARCHES_VALUE}"
+)
+if [[ "${DEBUG_LLDB}" == "1" ]]; then
+    run_step "package app" env CODEXBAR_ALLOW_LLDB=1 "${PACKAGE_ENV[@]}" "${ROOT_DIR}/Scripts/package_relay_app.sh" debug
+else
+  if [[ -n "${SIGNING_MODE}" ]]; then
+    run_step "package app" env CODEXBAR_SIGNING="${SIGNING_MODE}" "${PACKAGE_ENV[@]}" "${ROOT_DIR}/Scripts/package_relay_app.sh"
+  else
+    run_step "package app" env "${PACKAGE_ENV[@]}" "${ROOT_DIR}/Scripts/package_relay_app.sh"
+  fi
+fi
+
+# 4) Launch the packaged app.
+log "==> launch app"
+if ! open "${APP_BUNDLE}"; then
+  log "WARN: launch app returned non-zero; falling back to direct binary launch."
+  "${APP_BUNDLE}/Contents/MacOS/CodexBar" >/dev/null 2>&1 &
+  disown
+fi
+
+# 5) Verify the app stays up for at least a moment (launch can be >1s on some systems).
+for _ in {1..10}; do
+  if [[ -n "$(ps -axo pid=,command= | awk -v target="${APP_PROCESS_PATH}" '$2 == target {print $1; exit}')" ]]; then
+    log "OK: Headroom is running."
+    exit 0
+  fi
+  sleep 0.4
+done
+fail "App exited immediately. Check crash logs in Console.app (User Reports)."

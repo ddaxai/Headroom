@@ -1,0 +1,37 @@
+Matched test cases: 1 (filter: RelayUsageTriadRecordingScopeTests/.+cannot rewrite the seventeen frozen gallery references)
+Discovered 1 test selections; running 1 selections in 1 groups
+::group::Swift test group 1/1 (1 selections)
++ swift test --skip-build --no-parallel --filter (RelayUsageTriadRecordingScopeTests/.+cannot rewrite the seventeen frozen gallery references)
+[0/1] Planning build
+Test Suite 'Selected tests' started at 2026-08-30 18:50:35.397.
+Test Suite 'CodexBarPackageTests.xctest' started at 2026-08-30 18:50:35.400.
+Test Suite 'CodexBarPackageTests.xctest' passed at 2026-08-30 18:50:35.400.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-08-30 18:50:35.400.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.004) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1902
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite "Relay triad snapshot recording scope" started.
+􀟈  Test "triad recording switch cannot rewrite the seventeen frozen gallery references" started.
+􀢄  Test "triad recording switch cannot rewrite the seventeen frozen gallery references" recorded an issue at RelayUsageTriadRecordingScopeTests.swift:48:13: Expectation failed: (recordMode → Record(storage: SnapshotTesting.SnapshotTestingConfiguration.Record.(unknown context at $12474799c).Storage.all)) == (.never → Record(storage: SnapshotTesting.SnapshotTestingConfiguration.Record.(unknown context at $12474799c).Storage.never))
+􀢄  Test "triad recording switch cannot rewrite the seventeen frozen gallery references" failed after 0.015 seconds with 1 issue.
+􀢄  Suite "Relay triad snapshot recording scope" failed after 0.016 seconds with 1 issue.
+􀢄  Test run with 1 test in 1 suite failed after 0.016 seconds with 1 issue.
+::endgroup::
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 841
+- Selected selections: 1
+- Selected groups: 1
+- First-pass successful groups: 0
+- First-pass failed groups: 1
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 72.0
+- Execution seconds: 4.4
+- Total seconds: 76.4
+exit=1

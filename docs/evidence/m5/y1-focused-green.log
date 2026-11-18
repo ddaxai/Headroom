@@ -1,0 +1,91 @@
+Matched test cases: 27 (filter: RelayUsageTriadPresentationTests|RelayUsageQueryTests|LocalizationParityTests)
+Discovered 1 test selections; running 1 selections in 1 groups
+::group::Swift test group 1/1 (1 selections)
++ swift test --skip-build --no-parallel --filter (RelayUsageTriadPresentationTests|RelayUsageQueryTests|LocalizationParityTests)
+[0/1] Planning build
+Test Suite 'Selected tests' started at 2026-08-30 18:17:25.559.
+Test Suite 'CodexBarPackageTests.xctest' started at 2026-08-30 18:17:25.563.
+Test Suite 'CodexBarPackageTests.xctest' passed at 2026-08-30 18:17:25.563.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-08-30 18:17:25.563.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.004) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1902
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite LocalizationParityTests started.
+􀟈  Test "English and Simplified Chinese key sets match exactly" started.
+􁁛  Test "English and Simplified Chinese key sets match exactly" passed after 0.022 seconds.
+􀟈  Test "supported catalogs contain no blank values or translation placeholders" started.
+􁁛  Test "supported catalogs contain no blank values or translation placeholders" passed after 0.019 seconds.
+􀟈  Test "format placeholder argument positions and types match" started.
+􁁛  Test "format placeholder argument positions and types match" passed after 0.052 seconds.
+􀟈  Test "parity diagnostics expose both key set differences" started.
+􁁛  Test "parity diagnostics expose both key set differences" passed after 0.001 seconds.
+􀟈  Test "placeholder signatures allow safe positional reordering" started.
+􁁛  Test "placeholder signatures allow safe positional reordering" passed after 0.001 seconds.
+􁁛  Suite LocalizationParityTests passed after 0.096 seconds.
+􀟈  Suite RelayUsageQueryTests started.
+􀟈  Test "usage summary cache round trips with owner only permissions" started.
+􁁛  Test "usage summary cache round trips with owner only permissions" passed after 0.006 seconds.
+􀟈  Test "usage summary cache exposes ttl and preserves last good on failure" started.
+􁁛  Test "usage summary cache exposes ttl and preserves last good on failure" passed after 0.001 seconds.
+􀟈  Test "generic balance parses nested common fields" started.
+􁁛  Test "generic balance parses nested common fields" passed after 0.001 seconds.
+􀟈  Test "generic balance request uses relay bearer key" started.
+􁁛  Test "generic balance request uses relay bearer key" passed after 0.002 seconds.
+􀟈  Test "custom balance maps configured paths with x api key and divisor" started.
+􁁛  Test "custom balance maps configured paths with x api key and divisor" passed after 0.001 seconds.
+􀟈  Test "sub2api query reuses existing usage endpoint" started.
+􁁛  Test "sub2api query reuses existing usage endpoint" passed after 0.001 seconds.
+􀟈  Test "sub2api today totals remain honestly labelled as calendar day data" started.
+􁁛  Test "sub2api today totals remain honestly labelled as calendar day data" passed after 0.001 seconds.
+􁁛  Suite RelayUsageQueryTests passed after 0.013 seconds.
+􀟈  Suite RelayUsageTriadPresentationTests started.
+􀟈  Test "triad keeps local reported and balance as independent sources" started.
+􁁛  Test "triad keeps local reported and balance as independent sources" passed after 0.010 seconds.
+􀟈  Test "cache reported tokens do not masquerade as an effective multiplier" started.
+􁁛  Test "cache reported tokens do not masquerade as an effective multiplier" passed after 0.001 seconds.
+􀟈  Test "missing source stays missing instead of borrowing another number or zero" started.
+􁁛  Test "missing source stays missing instead of borrowing another number or zero" passed after 0.001 seconds.
+􀟈  Test "unsupported protocol suppresses local value but preserves reported and balance" started.
+􁁛  Test "unsupported protocol suppresses local value but preserves reported and balance" passed after 0.001 seconds.
+􀟈  Test "Chat Completions reuses the three independent triad lanes" started.
+􁁛  Test "Chat Completions reuses the three independent triad lanes" passed after 0.001 seconds.
+􀟈  Test "Chat Completions missing reported usage stays unavailable instead of zero" started.
+􁁛  Test "Chat Completions missing reported usage stays unavailable instead of zero" passed after 0.001 seconds.
+􀟈  Test "Anthropic Messages reuses triad without borrowing missing reported usage" started.
+􁁛  Test "Anthropic Messages reuses triad without borrowing missing reported usage" passed after 0.001 seconds.
+􀟈  Test "explicit reported zero is retained while absent reported usage stays unavailable" started.
+􁁛  Test "explicit reported zero is retained while absent reported usage stays unavailable" passed after 0.001 seconds.
+􀟈  Test "balance lane preserves non currency units" started.
+􁁛  Test "balance lane preserves non currency units" passed after 0.001 seconds.
+􀟈  Test "height fingerprint changes when localization changes" started.
+􁁛  Test "height fingerprint changes when localization changes" passed after 0.001 seconds.
+􀟈  Test "triad geometry uses columns when wide and rows when narrow" started.
+􁁛  Test "triad geometry uses columns when wide and rows when narrow" passed after 0.001 seconds.
+􀟈  Test "wide to narrow transition keeps three lanes while changing orientation" started.
+􁁛  Test "wide to narrow transition keeps three lanes while changing orientation" passed after 0.001 seconds.
+􀟈  Test "missing lane keeps the same narrow row height" started.
+􁁛  Test "missing lane keeps the same narrow row height" passed after 0.001 seconds.
+􀟈  Test "multiplier appearance changes measured height and fingerprint" started.
+􁁛  Test "multiplier appearance changes measured height and fingerprint" passed after 0.001 seconds.
+􀟈  Test "height fingerprint changes when usage data changes" started.
+􁁛  Test "height fingerprint changes when usage data changes" passed after 0.001 seconds.
+􁁛  Suite RelayUsageTriadPresentationTests passed after 0.014 seconds.
+􁁛  Test run with 27 tests in 3 suites passed after 0.124 seconds.
+::endgroup::
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 841
+- Selected selections: 1
+- Selected groups: 1
+- First-pass successful groups: 1
+- First-pass failed groups: 0
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 120.5
+- Execution seconds: 6.5
+- Total seconds: 127.1

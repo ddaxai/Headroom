@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-05",
+  "project": "Headroom",
+  "branch": "theodore/relay-usage-ui",
+  "head": "f76121429568f0163b9e107e6bc2a1ff63a5fdc2",
+  "uncommitted": true,
+  "upstream_candidate": "a555a82bad569e801e1628a43ceb507b0764b337",
+  "implementation": "request-ledger semantics adapted to Headroom JSON cache; no upstream SQLite",
+  "parser_hash": "79601af352bc42a0",
+  "coverage": [
+    "typed token_usage_record strict numeric validation",
+    "thread and execution-session ownership",
+    "copied parent/subagent prefix rejection",
+    "response deduplication",
+    "same-file and cross-file legacy mirror reconciliation",
+    "bounded JSON cache migration preserving saved prices and unpriced evidence",
+    "duplicate pages retain mirror evidence across reopen and owner-file removal"
+  ],
+  "verification": {
+    "focused": {
+      "tests": 29,
+      "suites": 2,
+      "passed": true
+    },
+    "expanded": {
+      "tests": 409,
+      "suites": 31,
+      "passed": true,
+      "additional_executor_tests": 2,
+      "additional_executor_suites": 1
+    },
+    "quality_gate": {
+      "lint": {
+        "format_baseline": 290,
+        "format_current": 288,
+        "format_new": 0,
+        "format_new_keys": [],
+        "format_resolved": 2,
+        "format_resolved_keys": [
+          [
+            "Sources/CodexBarCore/PiSessionCostScanner.swift",
+            "903",
+            "1",
+            "error: (indent) Indent code in accordance with the scope level."
+          ],
+          [
+            "Tests/CodexBarTests/HeadroomPopupPanelTests.swift",
+            "42",
+            "1",
+            "error: (redundantThrows) Remove redundant throws keyword from function declarations that don't throw any errors."
+          ]
+        ],
+        "lint_baseline": 150,
+        "lint_current": 143,
+        "lint_new": 0,
+        "lint_new_keys": [],
+        "lint_resolved": 7,
+        "lint_resolved_keys": [
+          [
+            "Sources/CodexBarCore/Vendored/CostUsage/CostUsageCache.swift",
+            "implicit_optional_initialization"
+          ],
+          [
+            "Sources/CodexBarCore/Vendored/CostUsage/CostUsageScanner.swift",
+            "implicit_optional_initialization"
+          ],
+          [
+            "Tests/CodexBarTests/HeadroomPopupPanelTests.swift",
+            "type_body_length"
+          ]
+        ],
+        "skipped": false
+      },
+      "pass": true,
+      "platform": {
+        "architecture": "arm64",
+        "os": "macOS",
+        "os_version": "27.0",
+        "swift_version": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)"
+      },
+      "test": {
+        "completed_groups": 0,
+        "failures": {},
+        "first_pass_failed_groups": 0,
+        "full_group_retries": 0,
+        "isolated_selection_retries": 0,
+        "recovered_groups": 0,
+        "selected_groups": 0,
+        "skipped": true,
+        "test_failures": 0,
+        "timed_out_groups": 0,
+        "total_groups": 0
+      },
+      "test_baseline": {
+        "new": 0,
+        "new_names": [],
+        "resolved": 0,
+        "resolved_names": []
+      }
+    },
+    "make_check": {
+      "passed": false,
+      "blocker": "pre-existing Icon.icns size limit",
+      "actual_bytes": 3353410,
+      "limit_bytes": 2097152
+    },
+    "make_test": {
+      "passed": false,
+      "selected": 850,
+      "groups": 71,
+      "successful_groups": 34,
+      "failed_group": 35,
+      "retry_failed": true,
+      "snapshot_issues": 18,
+      "unrun_groups": 36,
+      "suite": "M1 pre-panel card snapshots"
+    },
+    "diff_check": true,
+    "parser_hash_check": true
+  },
+  "logs_directory": "/private/tmp/headroom-ledger-20261005",
+  "boundaries": {
+    "installed": false,
+    "restarted": false,
+    "pushed": false,
+    "committed": false,
+    "live_provider_probes": false,
+    "ui_acceptance": false,
+    "notion_modified": false
+  },
+  "preserved_stash": "0cb9a22083bd3f8d417e2367ae7313ff0c8c66ab"
+}

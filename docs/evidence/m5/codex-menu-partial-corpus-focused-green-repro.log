@@ -1,0 +1,35 @@
+Matched test cases: 1 (filter: current partial corpus still exposes scanned rows for the menu)
+Discovered 1 test selections; running 1 selections in 1 groups
+::group::Swift test group 1/1 (1 selections)
++ swift test --skip-build --no-parallel --filter (current partial corpus still exposes scanned rows for the menu)
+[0/1] Planning build
+Test Suite 'Selected tests' started at 2026-09-02 14:29:03.308.
+Test Suite 'CodexBarPackageTests.xctest' started at 2026-09-02 14:29:03.310.
+Test Suite 'CodexBarPackageTests.xctest' passed at 2026-09-02 14:29:03.310.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-09-02 14:29:03.310.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.003) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1902
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite CostUsageFetcherTests started.
+􀟈  Test "current partial corpus still exposes scanned rows for the menu" started.
+􁁛  Test "current partial corpus still exposes scanned rows for the menu" passed after 0.074 seconds.
+􁁛  Suite CostUsageFetcherTests passed after 0.075 seconds.
+􁁛  Test run with 1 test in 1 suite passed after 0.075 seconds.
+::endgroup::
+Swift test timing summary:
+- Shard: none
+- Group size: 12
+- Discovered selections: 843
+- Selected selections: 1
+- Selected groups: 1
+- First-pass successful groups: 1
+- First-pass failed groups: 0
+- Full-group retries: 0
+- Recovered groups: 0
+- Timed out groups: 0
+- Isolated selection retries: 0
+- Discovery seconds: 143.2
+- Execution seconds: 7.8
+- Total seconds: 150.9

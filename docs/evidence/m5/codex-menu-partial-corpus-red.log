@@ -1,0 +1,11 @@
+Command: ./Scripts/test.sh --filter 'CostUsageFetcherTests'
+Result: FAIL (exit 1; matched test cases: 21)
+
+The new behavior test failed before the implementation change:
+
+Test "current partial corpus still exposes scanned rows for the menu" recorded an issue at
+CostUsageFetcherTests.swift:357:29:
+Expectation failed: CodexUsageLedgerSnapshotPartition.load(... requireCurrentCorpus: true) -> nil
+
+The other 20 CostUsageFetcherTests passed. The failure reproduced the bug: a cache with the
+current corpus revision but codexCorpusCoverageIsComplete == false was rejected entirely.

@@ -1,0 +1,14 @@
+Persistent excerpt of the S7 M4-ledger conservation mutation check.
+
+MUTATION: include relay records in partition.total but omit them from relayByIdentityID
+COMMAND: Scripts/test.sh --filter LocalMeterChatCompletionsSessionTests
+MATCHED TEST CASES: 15
+EXIT: 1
+
+Test "Chat records use the M4 relay key and conserve all three windows" recorded issues:
+24h: partition.isConserved -> false; component requestCount 0 != total requestCount 1
+7d:  partition.isConserved -> false; component requestCount 0 != total requestCount 2
+30d: partition.isConserved -> false; component requestCount 0 != total requestCount 3
+Test "Chat records use the M4 relay key and conserve all three windows" failed with 6 issues.
+
+The mutation was then reversed; git diff was empty before evidence files were added.

@@ -1,0 +1,44 @@
+{
+  "lint": {
+    "format_baseline": 292,
+    "format_current": 291,
+    "format_new": 0,
+    "format_new_keys": [],
+    "format_resolved": 1,
+    "format_resolved_keys": [
+      [
+        "Tests/CodexBarTests/HeadroomDesignGallerySnapshotTests.swift",
+        "97",
+        "1",
+        "error: (numberFormatting) Use consistent grouping for numeric literals. Groups will be separated by _ delimiters to improve readability. For each numeric type you can specify a group size (the number of digits in each group) and a threshold (the minimum number of digits in a number before grouping is applied)."
+      ]
+    ],
+    "lint_baseline": 148,
+    "lint_current": 148,
+    "lint_new": 0,
+    "lint_new_keys": [],
+    "lint_resolved": 0,
+    "lint_resolved_keys": [],
+    "skipped": false
+  },
+  "pass": true,
+  "test": {
+    "completed_groups": 71,
+    "failures": {},
+    "first_pass_failed_groups": 0,
+    "first_pass_successful_groups": 71,
+    "full_group_retries": 0,
+    "isolated_selection_retries": 0,
+    "recovered_groups": 0,
+    "selected_groups": 71,
+    "test_failures": 0,
+    "timed_out_groups": 0,
+    "total_groups": 71
+  },
+  "test_baseline": {
+    "new": 0,
+    "new_names": [],
+    "resolved": 0,
+    "resolved_names": []
+  }
+}

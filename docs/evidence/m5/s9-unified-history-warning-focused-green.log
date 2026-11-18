@@ -1,0 +1,17 @@
+Command: Scripts/test.sh --filter 'RelayUnifiedHistoryWarningTests|LocalizationParityTests'
+HEAD under test: working tree based on 000c32e5374dd211134360611dcce02919ff7cac
+Matched test cases: 7
+Discovered selections: 843
+Selected selections: 1
+Selected groups: 1
+First-pass successful groups: 1
+First-pass failed groups: 0
+Retries: 0
+Timed out groups: 0
+Exit code: 0
+
+Suites:
+- LocalizationParityTests: 5 passed
+- RelayUnifiedHistoryWarningTests: 2 passed
+
+Result: 7 tests in 2 suites passed.

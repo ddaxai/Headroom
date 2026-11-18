@@ -1,0 +1,37 @@
+Persistent excerpts of S7 Chat Completions red tests.
+
+S7.1 parser before implementation
+COMMAND: Scripts/test.sh --filter OpenAIChatCompletionsParserTests
+EXIT: 1
+error: cannot find 'OpenAIChatCompletionsJSONParser' in scope
+error: cannot find 'OpenAIChatCompletionsSSEParser' in scope
+
+S7.2 metering session before implementation
+COMMAND: Scripts/test.sh --filter LocalMeterChatCompletionsSessionTests
+EXIT: 1
+error: cannot find 'LocalMeterChatCompletionsSession' in scope
+
+S7.3 fail-open behavior before implementation
+COMMAND: Scripts/test.sh --filter LocalMeterChatCompletionsSessionTests
+EXIT: 1
+Test "non streaming helper server error retries Chat request directly" recorded issues:
+Expectation failed: (result.route -> .meter) == .direct
+Expectation failed: (result.response.statusCode -> 503) == 200
+
+S7.4 triad state before implementation
+COMMAND: Scripts/test.sh --filter 'RelayUsageTriadPresentationTests|EighthRoundR2R3MenuTests'
+EXIT: 1
+Test "unsupported protocol suppresses local value but preserves reported and balance" recorded issues:
+Expectation failed: (presentation.localMeterStatus -> .supported) == .unsupported
+Expectation failed: (presentation.localBaseTokens -> 500) == nil
+Expectation failed: (presentation.metrics[0].valueText -> "0.00M") == nil
+
+S7 tail: n>1 and tool_calls output before the token-material fix
+COMMAND: Scripts/test.sh --filter OpenAIChatCompletionsParserTests
+MATCHED TEST CASES: 9
+EXIT: 1
+Test "multiple choices and tool calls preserve output token material" recorded issues:
+Expectation failed: (Set(deltas.map(\.choiceIndex)) -> [0]) == [0, 1]
+Expectation failed: (result.outputText -> "Visible answer.").contains("lookup_weather")
+Expectation failed: (result.outputText -> "Visible answer.").contains("{\"city\":\"Paris\"}")
+Test "multiple choices and tool calls preserve output token material" failed with 3 issues.

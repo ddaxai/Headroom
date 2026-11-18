@@ -1,0 +1,30 @@
+M5 S8.3 Anthropic Messages fail-open transport behavior mutation
+Date: 2026-08-29
+
+Command:
+./Scripts/test.sh --filter LocalMeterAnthropicMessagesSessionTests
+
+Controlled mutation:
+The two protocol-neutral direct-fallback calls in LocalMeterFailOpenTransport were temporarily
+pointed back at meterBaseURL. The production implementation was restored immediately after this
+run with apply_patch. This mutation makes the new Anthropic tests prove the direct route rather
+than merely exercising already-existing generic transport code.
+
+Matched test cases: 14 (filter: LocalMeterAnthropicMessagesSessionTests)
+
+Failing behavior assertions:
+- meter not started streams Anthropic Messages directly
+  Caught NSURLErrorDomain -1004: Could not connect to the server.
+- occupied meter port streams Anthropic Messages directly
+  Expectation failed: try await session.finish() != nil
+- helper crash after health probe streams Anthropic Messages directly
+  Caught NSURLErrorDomain -1004: Could not connect to the server.
+- half stream disconnect discards Anthropic prefix before direct replay
+  Caught NSURLErrorDomain -1005: The network connection was lost.
+- non streaming helper failure retries Anthropic request directly
+  Caught error: invalidJSON
+
+Suite result:
+M5 S8 Anthropic Messages metering session failed with 5 issues.
+Test run with 14 tests in 1 suite failed with 5 issues.
+Exit code: 1

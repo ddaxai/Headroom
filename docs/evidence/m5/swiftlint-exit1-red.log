@@ -1,0 +1,12 @@
+Persistent excerpt of the quality-gate SwiftLint exit-1 fixture.
+
+FIXTURE: a fake SwiftLint process reports one error-level violation and exits 1
+COMMAND: Scripts/test_quality_gate.sh
+
+The fixture asserts all of the following:
+- the quality gate exits nonzero;
+- output contains "SwiftLint status: error-level violations (exit 1)";
+- output does not contain "tool error".
+
+The complete fixture script finished with:
+quality gate tests passed.

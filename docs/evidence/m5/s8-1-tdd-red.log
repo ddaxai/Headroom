@@ -1,0 +1,22 @@
+Persistent excerpts of S8.1 Anthropic Messages red tests.
+
+Protocol support before implementation
+COMMAND: ./Scripts/test.sh --filter 'OpenAIResponsesSSEParserTests|OpenAIChatCompletionsParserTests'
+EXIT: 1
+Matched test cases: 9
+Test "Anthropic Messages becomes supported without changing other protocol states" recorded an issue:
+Expectation failed: LocalMeterProtocolSupport.status(for: .anthropicMessages) was .unsupported instead of .supported.
+
+Anthropic Messages parser behavior before implementation
+COMMAND: ./Scripts/test.sh --filter AnthropicMessagesParserTests
+EXIT: 1
+Matched test cases: 7
+7 tests failed with 34 issues.
+Representative issues:
+- message_delta cumulative usage left outputTokens nil instead of 19.
+- message_start usage left inputTokens nil instead of 31.
+- a disconnect after message_start did not preserve known input/cache usage with unknown output.
+- message_stop left the stream status aborted instead of completed.
+
+The later raw-string fixture compilation error was an authoring mistake and is intentionally excluded;
+it did not exercise the target behavior.

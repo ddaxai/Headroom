@@ -1,0 +1,10 @@
+Persistent excerpt of the S8.2 Anthropic Messages metering-session red test.
+
+COMMAND: ./Scripts/test.sh --filter LocalMeterAnthropicMessagesSessionTests
+EXIT: 1
+The corrected test source compiled far enough to expose the missing behavior seams:
+- cannot find 'LocalMeterAnthropicMessagesSession' in scope
+- value of type 'LocalMeterReportedUsage' has no member 'cacheCreationInputTokens'
+
+The preceding run had an invalid multiline raw-string fixture and is intentionally excluded;
+it did not exercise the target implementation boundary.
