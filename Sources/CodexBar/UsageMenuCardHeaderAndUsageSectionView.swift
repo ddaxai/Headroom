@@ -5,7 +5,7 @@ struct UsageMenuCardHeaderAndUsageSectionView: View {
     let layoutModel: UsageMenuCardView.Model
     let bottomPadding: CGFloat
     let width: CGFloat
-    var onRefresh: (@MainActor () async -> Void)? = nil
+    var onRefresh: (@MainActor () async -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

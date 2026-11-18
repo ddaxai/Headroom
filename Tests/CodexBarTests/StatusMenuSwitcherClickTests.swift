@@ -150,7 +150,7 @@ struct StatusMenuSwitcherClickTests {
     }
 
     @Test
-    func `pi agent is an independent top level switcher segment`() throws {
+    func `pi agent is an independent top level switcher segment`() {
         var selections: [ProviderSwitcherSelection] = []
         let switcher = ProviderSwitcherView(
             providers: [.codex, .opencode, .antigravity],

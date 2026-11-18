@@ -42,6 +42,7 @@ struct RelaySettingsActions {
             wasDryRun: false,
             backupDirectory: nil)
     }
+
     var invalidateKeychainReadCache: () -> Void = {
         KeychainSecurity.invalidateCopyMatchingCacheForProfileChange()
     }

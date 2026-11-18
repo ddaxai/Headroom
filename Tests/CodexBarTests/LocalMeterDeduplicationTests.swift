@@ -40,9 +40,13 @@ struct LocalMeterDeduplicationTests {
         let context = self.context(requestID: "request-reconnect")
 
         await accumulator.record(.begin(context: context, attemptID: "attempt-1", inputTokens: 80))
-        for (unitID, tokens) in [("event-1", 10), ("event-2", 12), ("event-1", 10), ("event-2", 12),
-                                 ("event-3", 8)]
-        {
+        for (unitID, tokens) in [
+            ("event-1", 10),
+            ("event-2", 12),
+            ("event-1", 10),
+            ("event-2", 12),
+            ("event-3", 8),
+        ] {
             await accumulator.record(.output(
                 requestID: context.requestID,
                 attemptID: "attempt-1",

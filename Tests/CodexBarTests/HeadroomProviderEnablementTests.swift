@@ -6,7 +6,7 @@ import Testing
 @MainActor
 struct HeadroomProviderEnablementTests {
     @Test
-    func `launch provider order filters shelf providers and remains sortable`() throws {
+    func `launch provider order filters shelf providers and remains sortable`() {
         let settings = testSettingsStore(suiteName: "HeadroomProviderEnablementTests-order")
         settings.setProviderOrder([.factory, .claude, .codex, .antigravity, .opencode, .sub2api])
 
@@ -31,9 +31,9 @@ struct HeadroomProviderEnablementTests {
             guard let providerMetadata = metadata[provider] else { continue }
             settings.setProviderEnabled(provider: provider, metadata: providerMetadata, enabled: false)
         }
-        settings.setProviderEnabled(
+        try settings.setProviderEnabled(
             provider: .factory,
-            metadata: try #require(metadata[.factory]),
+            metadata: #require(metadata[.factory]),
             enabled: true)
 
         let root = FileManager.default.temporaryDirectory

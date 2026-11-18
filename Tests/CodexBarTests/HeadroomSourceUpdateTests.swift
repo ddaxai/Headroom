@@ -78,9 +78,9 @@ struct HeadroomSourceUpdateTests {
         #expect(HeadroomSourceUpdateController.arguments(
             for: .update,
             options: .init(ignoreUntracked: true, allowLocalReset: true)) == [
-                "--ignore-untracked",
-                "--allow-local-reset",
-            ])
+            "--ignore-untracked",
+            "--allow-local-reset",
+        ])
     }
 
     @Test

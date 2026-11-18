@@ -76,7 +76,7 @@ extension StatusMenuTests {
             "Quit",
         ]))
         #expect(moreItems.count == 7)
-        #expect(moreItems.allSatisfy { $0.isEnabled })
+        #expect(moreItems.allSatisfy(\.isEnabled))
         #expect(moreItems.allSatisfy { $0.action != nil })
     }
 
@@ -206,7 +206,7 @@ extension StatusMenuTests {
     }
 
     @Test
-    func `refresh from child more preserves provider and overview scopes`() async throws {
+    func `refresh from child more preserves provider and overview scopes`() async {
         self.disableMenuCardsForTesting()
 
         let providerSettings = self.makeFooterSettings(providers: [.codex, .claude])
@@ -274,7 +274,7 @@ extension StatusMenuTests {
     }
 
     @Test
-    func `refresh from child more arms viewport restore for the root menu`() async throws {
+    func `refresh from child more arms viewport restore for the root menu`() async {
         self.disableMenuCardsForTesting()
         let settings = self.makeFooterSettings()
         let controller = self.makeFooterController(settings: settings)

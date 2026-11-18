@@ -205,7 +205,7 @@ struct RelayUsageTriadPresentation: Equatable, Sendable {
                 valueText: values.localBaseTokens.map(UsageFormatter.tokenCountString),
                 detail: values.localBaseTokens == nil ? .noData : .localEstimate,
                 detailText: nil,
-                tooltipText: Self.localMetricTooltip(values: values))
+                tooltipText: self.localMetricTooltip(values: values))
         case .providerReportedTokens:
             return Metric(
                 id: id,

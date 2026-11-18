@@ -2,7 +2,7 @@
   <img src="docs/headroom-icon.png" width="128" height="128" alt="Headroom">
 </p>
 
-<h1 align="center">Headroom</h1>
+# Headroom
 
 Headroom 是一个原生 macOS 菜单栏工具，面向 Codex 官方账号与自定义中转站：显示额度、过去 24 小时 token/价格，并在官方账号与已保存 API 之间快速切换。
 

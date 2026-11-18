@@ -182,33 +182,33 @@ struct CodexAccountSummaryCardModelTests {
             refreshInFlight: true,
             coverageIsComplete: nil,
             sharedCorpusHasUsage: false) == .init(
-                state: .loading,
-                line: L("codex_local_usage_scanning"),
-                unassignedExplanation: nil))
+            state: .loading,
+            line: L("codex_local_usage_scanning"),
+            unassignedExplanation: nil))
         #expect(CodexLocalUsagePresentation.resolve(
             summaryLine: nil,
             refreshInFlight: false,
             coverageIsComplete: true,
             sharedCorpusHasUsage: false) == .init(
-                state: .empty,
-                line: L("codex_local_usage_empty"),
-                unassignedExplanation: nil))
+            state: .empty,
+            line: L("codex_local_usage_empty"),
+            unassignedExplanation: nil))
         #expect(CodexLocalUsagePresentation.resolve(
             summaryLine: nil,
             refreshInFlight: false,
             coverageIsComplete: true,
             sharedCorpusHasUsage: true) == .init(
-                state: .unavailable,
-                line: L("codex_usage_details_unavailable_official"),
-                unassignedExplanation: nil))
+            state: .unavailable,
+            line: L("codex_usage_details_unavailable_official"),
+            unassignedExplanation: nil))
         #expect(CodexLocalUsagePresentation.resolve(
             summaryLine: "24h: 1.2M tokens",
             refreshInFlight: false,
             coverageIsComplete: true,
             sharedCorpusHasUsage: true) == .init(
-                state: .available,
-                line: "24h: 1.2M tokens",
-                unassignedExplanation: nil))
+            state: .available,
+            line: "24h: 1.2M tokens",
+            unassignedExplanation: nil))
     }
 
     @Test

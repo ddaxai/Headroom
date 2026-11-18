@@ -90,12 +90,13 @@ struct LocalizationLanguageCatalogTests {
 
     @Test
     func `the two supported catalogs currently have matching keys`() throws {
-        #expect(Set(try Self.catalog("en").keys) == Set(try Self.catalog("zh-Hans").keys))
+        #expect(try Set(Self.catalog("en").keys) == Set(Self.catalog("zh-Hans").keys))
     }
 
     @Test
     func `English catalog has no blank values`() throws {
-        let blankKeys = try Self.catalog("en").filter { $0.value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        let blankKeys = try Self.catalog("en")
+            .filter { $0.value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         #expect(blankKeys.isEmpty)
     }
 

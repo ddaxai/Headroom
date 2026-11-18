@@ -215,7 +215,8 @@ extension UsageStore {
     @discardableResult
     func hydrateCachedTokenSnapshots(now: Date = Date()) -> Task<Void, Never>? {
         guard self.settings.isCostUsageEffectivelyEnabled(for: .codex) else { return nil }
-        guard self.settings.headroomEnabledProvidersOrdered(metadataByProvider: self.providerMetadata).contains(.codex) else {
+        guard self.settings.headroomEnabledProvidersOrdered(metadataByProvider: self.providerMetadata).contains(.codex)
+        else {
             return nil
         }
 

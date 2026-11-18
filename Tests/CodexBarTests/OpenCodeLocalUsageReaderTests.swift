@@ -102,7 +102,7 @@ struct OpenCodeLocalUsageReaderTests {
             providerID: nil)
         try Self.insertStepFinishPart(
             databaseURL: dbURL,
-            messageID: try Self.insertMessageWithoutUsage(
+            messageID: Self.insertMessageWithoutUsage(
                 databaseURL: dbURL,
                 created: "2026-08-20T14:30:00Z",
                 modelProviderID: "openrouter"),

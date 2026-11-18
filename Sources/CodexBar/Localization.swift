@@ -227,9 +227,9 @@ func codexBarLocalizedResourceLocale() -> Locale {
 private func codexBarLocale(forLanguage language: String) -> Locale {
     switch language {
     case "zh-Hans":
-        return Locale(identifier: "zh-Hans")
+        Locale(identifier: "zh-Hans")
     default:
-        return Locale(identifier: "en")
+        Locale(identifier: "en")
     }
 }
 

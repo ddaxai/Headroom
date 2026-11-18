@@ -17,7 +17,12 @@ struct CodexPartitionedSubagentAccountingTests {
             filename: "parent.jsonl",
             contents: env.jsonl([
                 ["type": "session_meta", "timestamp": env.isoString(for: day), "payload": ["id": "parent-session"]],
-                Self.tokenCount(env: env, timestamp: day.addingTimeInterval(10), model: model, total: (2000, 1800, 20), last: (2000, 1800, 20)),
+                Self.tokenCount(
+                    env: env,
+                    timestamp: day.addingTimeInterval(10),
+                    model: model,
+                    total: (2000, 1800, 20),
+                    last: (2000, 1800, 20)),
             ]))
         _ = try env.writeCodexSessionFile(
             day: day,
@@ -32,8 +37,18 @@ struct CodexPartitionedSubagentAccountingTests {
                         "source": ["subagent": ["thread_spawn": ["parent_thread_id": "parent-session"]]],
                     ],
                 ],
-                Self.tokenCount(env: env, timestamp: day.addingTimeInterval(21), model: model, total: (1000, 900, 10), last: (1000, 900, 10)),
-                Self.tokenCount(env: env, timestamp: day.addingTimeInterval(22), model: model, total: (2100, 1890, 21), last: (100, 90, 1)),
+                Self.tokenCount(
+                    env: env,
+                    timestamp: day.addingTimeInterval(21),
+                    model: model,
+                    total: (1000, 900, 10),
+                    last: (1000, 900, 10)),
+                Self.tokenCount(
+                    env: env,
+                    timestamp: day.addingTimeInterval(22),
+                    model: model,
+                    total: (2100, 1890, 21),
+                    last: (100, 90, 1)),
             ]))
 
         var options = CostUsageScanner.Options(
@@ -77,16 +92,26 @@ struct CodexPartitionedSubagentAccountingTests {
                         "source": ["subagent": ["thread_spawn": ["parent_thread_id": "parent-session"]]],
                     ],
                 ],
-                Self.tokenCount(env: env, timestamp: first, model: model, total: (1000, 900, 10), last: (1000, 900, 10)),
-                Self.tokenCount(env: env, timestamp: second, model: model, total: (1200, 1080, 12), last: (200, 180, 2)),
+                Self.tokenCount(
+                    env: env,
+                    timestamp: first,
+                    model: model,
+                    total: (1000, 900, 10),
+                    last: (1000, 900, 10)),
+                Self.tokenCount(
+                    env: env,
+                    timestamp: second,
+                    model: model,
+                    total: (1200, 1080, 12),
+                    last: (200, 180, 2)),
                 Self.tokenCount(env: env, timestamp: third, model: model, total: (1400, 1260, 14), last: (200, 180, 2)),
             ]))
 
         var timeline = CodexSessionOwnershipTimeline()
         _ = timeline.recordOfficialCodexRoute(
             atUnixMilliseconds: Int64(day.timeIntervalSince1970 * 1000))
-        _ = timeline.recordCodexRelayActivation(
-            profileID: try #require(UUID(uuidString: "11111111-1111-4111-8111-111111111111")),
+        _ = try timeline.recordCodexRelayActivation(
+            profileID: #require(UUID(uuidString: "11111111-1111-4111-8111-111111111111")),
             atUnixMilliseconds: Int64(second.addingTimeInterval(-1).timeIntervalSince1970 * 1000))
         _ = timeline.recordActivation(
             accountKey: "codex:managed:official",

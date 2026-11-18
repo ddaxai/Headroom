@@ -16,7 +16,9 @@ public struct PiAgentUsageCardSnapshot: Sendable, Equatable {
         public let totalTokens: Int
         public let totalCostUSD: Double
 
-        public var id: WindowKind { self.kind }
+        public var id: WindowKind {
+            self.kind
+        }
 
         public init(kind: WindowKind, totalTokens: Int, totalCostUSD: Double) {
             self.kind = kind
@@ -35,14 +37,22 @@ public struct PiAgentUsageCardSnapshot: Sendable, Equatable {
         public let summary: CostUsageDailyReport.Summary?
         public let rolling24Hours: CostUsageRolling24HourSummary?
 
-        public var id: String { self.providerKey }
-        public var isUnassigned: Bool { self.providerKey == PiSessionCostScanner.unassignedProfileKey }
+        public var id: String {
+            self.providerKey
+        }
+
+        public var isUnassigned: Bool {
+            self.providerKey == PiSessionCostScanner.unassignedProfileKey
+        }
 
         fileprivate init(providerKey: String, reports: [WindowKind: CostUsageDailyReport]) {
             self.providerKey = providerKey
             self.windows = WindowKind.allCases.compactMap { kind in
                 guard let report = reports[kind] else { return nil }
-                return Window(kind: kind, totalTokens: Self.totalTokens(in: report), totalCostUSD: Self.totalCostUSD(in: report))
+                return Window(
+                    kind: kind,
+                    totalTokens: Self.totalTokens(in: report),
+                    totalCostUSD: Self.totalCostUSD(in: report))
             }
             let totalReport = reports[.last30Days] ?? reports[.last7Days] ?? reports[.rolling24Hours]
                 ?? CostUsageDailyReport(data: [], summary: nil)
@@ -78,7 +88,8 @@ public struct PiAgentUsageCardSnapshot: Sendable, Equatable {
         }
 
         private static func models(in report: CostUsageDailyReport) -> [String] {
-            Array(Set(report.data.flatMap { ($0.modelsUsed ?? []) + ($0.modelBreakdowns ?? []).map(\.modelName) })).sorted()
+            Array(Set(report.data.flatMap { ($0.modelsUsed ?? []) + ($0.modelBreakdowns ?? []).map(\.modelName) }))
+                .sorted()
         }
     }
 
@@ -88,7 +99,9 @@ public struct PiAgentUsageCardSnapshot: Sendable, Equatable {
     public let models: [String]
     public let sections: [ProfileSection]
 
-    public var hasUsage: Bool { self.totalTokens > 0 || self.totalCostUSD > 0 }
+    public var hasUsage: Bool {
+        self.totalTokens > 0 || self.totalCostUSD > 0
+    }
 
     /// Convenience initializer used when a single report is already scoped to one card window.
     public init(codexReport: CostUsageDailyReport, claudeReport: CostUsageDailyReport) {
@@ -132,9 +145,9 @@ public struct PiAgentUsageCardSnapshot: Sendable, Equatable {
         }
         let reportsByKind: [WindowKind: CostUsageDailyReport] = Dictionary(
             uniqueKeysWithValues: WindowKind.allCases.compactMap { kind -> (WindowKind, CostUsageDailyReport)? in
-            guard allKinds.contains(kind) else { return nil }
-            return (kind, Self.aggregateReport(codexReports[kind], claudeReports[kind]))
-        })
+                guard allKinds.contains(kind) else { return nil }
+                return (kind, Self.aggregateReport(codexReports[kind], claudeReports[kind]))
+            })
         let modelsReport = Self.aggregateReports(Array(reportsByKind.values))
         let totalReport = reportsByKind[.last30Days]
             ?? reportsByKind[.last7Days]
@@ -159,7 +172,7 @@ public struct PiAgentUsageCardSnapshot: Sendable, Equatable {
         _ codex: CostUsageDailyReport?,
         _ claude: CostUsageDailyReport?) -> CostUsageDailyReport
     {
-        Self.aggregateReports([codex, claude].compactMap(\.self))
+        self.aggregateReports([codex, claude].compactMap(\.self))
     }
 
     private static func aggregateReports(_ reports: [CostUsageDailyReport]) -> CostUsageDailyReport {
@@ -169,8 +182,8 @@ public struct PiAgentUsageCardSnapshot: Sendable, Equatable {
     private static func window(kind: WindowKind, report: CostUsageDailyReport) -> Window {
         Window(
             kind: kind,
-            totalTokens: Self.totalTokens(in: report),
-            totalCostUSD: Self.totalCostUSD(in: report))
+            totalTokens: self.totalTokens(in: report),
+            totalCostUSD: self.totalCostUSD(in: report))
     }
 
     private static func totalTokens(in report: CostUsageDailyReport) -> Int {
