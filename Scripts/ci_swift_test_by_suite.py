@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field as dataclass_field
 
 
 @dataclass(frozen=True)
@@ -38,6 +38,9 @@ class RunStats:
     timed_out_groups: int = 0
     recovered_groups: int = 0
     isolated_selection_retries: int = 0
+    # One entry per group that failed its first pass, naming the selections it ran. The live log
+    # can be too long to read back, so the summary repeats where to look.
+    failed_groups: list[str] = dataclass_field(default_factory=list)
 
     def summary_rows(self) -> list[tuple[str, str]]:
         shard = "none"
@@ -165,12 +168,21 @@ def append_github_summary(stats: RunStats) -> None:
             safe_value = value.replace("|", "\\|")
             summary.write(f"| {field} | `{safe_value}` |\n")
         summary.write("\n")
+        if stats.failed_groups:
+            summary.write("#### First-pass failed groups\n\n")
+            for line in stats.failed_groups:
+                summary.write(f"- {line}\n")
+            summary.write("\n")
 
 
 def print_timing_summary(stats: RunStats) -> None:
     print("Swift test timing summary:", flush=True)
     for field, value in stats.summary_rows():
         print(f"- {field}: {value}", flush=True)
+    if stats.failed_groups:
+        print("First-pass failed groups:", flush=True)
+        for line in stats.failed_groups:
+            print(f"  - {line}", flush=True)
 
 
 def chunks(items: list[TestSelection], size: int) -> Iterable[list[TestSelection]]:
@@ -360,6 +372,8 @@ def main() -> int:
                 continue
 
             stats.first_pass_failed_groups += 1
+            stats.failed_groups.append(
+                f"group {group_index}/{len(suite_groups)}: " + "; ".join(suite.name for suite in group))
             group_timed_out = group_result == 124
             if group_timed_out:
                 stats.timed_out_groups += 1
