@@ -5,6 +5,7 @@ import Testing
 
 @Suite(.serialized)
 @MainActor
+// swiftlint:disable:next type_body_length
 struct ManagedCodexAccountServiceTests {
     @Test
     func `duplicate removal requires a readable live duplicate auth witness`() async throws {
