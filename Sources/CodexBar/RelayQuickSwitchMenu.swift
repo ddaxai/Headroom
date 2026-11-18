@@ -407,7 +407,7 @@ final class RelayQuickSwitchCoordinator {
                     } else if storedCredential?.isEmpty == false {
                         nil
                     } else {
-                        "请在设置中重新保存一次 API Key；新版本不再访问钥匙串。"
+                        L("relay_menu_resave_api_key")
                     }
                     return RelayQuickSwitchOption(
                         id: profile.id,
@@ -444,7 +444,7 @@ final class RelayQuickSwitchCoordinator {
                 selectionByTarget: [:],
                 activeProfileIDsByTarget: [:],
                 externalActiveByTarget: [:],
-                currentLabel: "配置读取失败",
+                currentLabel: L("relay_menu_load_failed"),
                 hasActiveRelay: false,
                 canRestoreOfficial: false,
                 loadError: Self.errorMessage(error))
@@ -475,7 +475,7 @@ final class RelayQuickSwitchCoordinator {
         externalByTarget: [RelayTargetApp: RelayExternalActiveChoice],
         managedTargets: [RelayTargetApp]) -> String
     {
-        guard !activeByTarget.isEmpty || !externalByTarget.isEmpty else { return "官方账号" }
+        guard !activeByTarget.isEmpty || !externalByTarget.isEmpty else { return L("relay_menu_label_official") }
         if activeByTarget.isEmpty,
            externalByTarget.count == 1,
            let only = externalByTarget.values.first
@@ -501,7 +501,7 @@ final class RelayQuickSwitchCoordinator {
         }
         let parts = managedTargets.compactMap { target -> String? in
             if let id = activeByTarget[target] {
-                let source = profiles.first(where: { $0.id == id })?.name ?? "中转站"
+                let source = profiles.first(where: { $0.id == id })?.name ?? L("relay_menu_label_relay")
                 return "\(Self.targetLabel(target)) \(source)"
             }
             if let ext = externalByTarget[target] {
@@ -509,7 +509,9 @@ final class RelayQuickSwitchCoordinator {
             }
             return nil
         }
-        return parts.isEmpty ? "混合配置" : "混合 · " + parts.joined(separator: " · ")
+        return parts.isEmpty
+            ? L("relay_menu_label_mixed")
+            : L("relay_menu_label_mixed_prefix") + " · " + parts.joined(separator: " · ")
     }
 
     func refreshUsage(profileID: UUID, force: Bool = true) async -> RelayUsageRefreshOutcome {
@@ -521,20 +523,20 @@ final class RelayQuickSwitchCoordinator {
             }
             let profiles = try self.routesDomain.profiles()
             guard let profile = profiles.first(where: { $0.id == profileID }) else {
-                return RelayUsageRefreshOutcome(succeeded: false, message: "找不到这个中转站配置。")
+                return RelayUsageRefreshOutcome(succeeded: false, message: L("relay_menu_profile_missing"))
             }
             guard profile.usageQueryMode != .disabled else {
-                return RelayUsageRefreshOutcome(succeeded: false, message: "这个中转站未启用额度查询。")
+                return RelayUsageRefreshOutcome(succeeded: false, message: L("relay_menu_usage_disabled"))
             }
             guard let credential = try self.actions.loadCredential(profile.credentialReference)?
                 .trimmingCharacters(in: .whitespacesAndNewlines),
                 !credential.isEmpty
             else {
-                return RelayUsageRefreshOutcome(succeeded: false, message: "查询额度需要已保存的 API Key。")
+                return RelayUsageRefreshOutcome(succeeded: false, message: L("relay_ui_usage_error_no_key"))
             }
             let summary = try await self.actions.fetchUsageSummary(profile, credential)
             try self.actions.storeUsageSummary(summary, profile.id)
-            return RelayUsageRefreshOutcome(succeeded: true, message: "已刷新 \(profile.name)。")
+            return RelayUsageRefreshOutcome(succeeded: true, message: L("relay_menu_usage_refreshed", profile.name))
         } catch {
             self.actions.recordUsageFailure(profileID, Self.errorMessage(error), Date())
             return RelayUsageRefreshOutcome(succeeded: false, message: Self.errorMessage(error))
@@ -564,7 +566,7 @@ final class RelayQuickSwitchCoordinator {
                 return RelayQuickSwitchOutcome(
                     succeeded: false,
                     selection: selection,
-                    message: "首次切换 Codex 前需要迁移统一会话历史并重启 Codex。",
+                    message: L("relay_menu_requires_migration"),
                     requiresConfirmation: true)
             }
             var migrationWarning: String?
@@ -607,17 +609,17 @@ final class RelayQuickSwitchCoordinator {
             return RelayQuickSwitchOutcome(
                 succeeded: false,
                 selection: .mixed,
-                message: "混合配置不能作为切换目标。")
+                message: L("relay_menu_mixed_not_target"))
         }
     }
 
     static func readinessBlocker(for profile: RelayProfile, target: RelayTargetApp) -> String? {
         guard target != .claudeDesktop else { return nil }
         guard let configuration = profile.targets.first(where: { $0.app == target }) else {
-            return "这个应用未在配置中启用。"
+            return L("relay_menu_target_not_enabled")
         }
         guard configuration.isEnabled else {
-            return L("这个配置未允许用于 %@。", Self.targetLabel(target))
+            return L("relay_menu_target_not_allowed", Self.targetLabel(target))
         }
         guard profile.credentialConfigured else { return L("relay_usage_card_missing_credential") }
         if let incompatibility = RelaySettingsModel.incompatibilityReason(
@@ -628,7 +630,7 @@ final class RelayQuickSwitchCoordinator {
         }
         let model = configuration.model ?? profile.defaultModel
         guard model?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false else {
-            return "请先填写 \(Self.targetLabel(target)) 的模型 ID。"
+            return L("relay_menu_model_id_required", Self.targetLabel(target))
         }
         return nil
     }
@@ -640,7 +642,7 @@ final class RelayQuickSwitchCoordinator {
                 return RelayQuickSwitchOutcome(
                     succeeded: false,
                     selection: .official(target),
-                    message: "找不到这个中转站配置。")
+                    message: L("relay_menu_profile_missing"))
             }
             if let blocker = Self.readinessBlocker(for: profile, target: target) {
                 let model = (profile.configuration(for: target)?.model ?? profile.defaultModel)?
@@ -657,7 +659,7 @@ final class RelayQuickSwitchCoordinator {
                 return RelayQuickSwitchOutcome(
                     succeeded: false,
                     selection: .profile(target, id),
-                    message: "请在设置中重新保存一次 API Key；新版本已改用本地文件，不再访问钥匙串。")
+                    message: L("relay_menu_resave_api_key"))
             }
 
             var activation = self.actions.loadActivationState()
@@ -692,7 +694,7 @@ final class RelayQuickSwitchCoordinator {
                 return RelayQuickSwitchOutcome(
                     succeeded: false,
                     selection: .profile(target, id),
-                    message: "未能建立原配置备份。")
+                    message: L("relay_ui_error_baseline_backup"))
             }
             var activeProfiles = currentState.activeProfileIDsByTarget
             activeProfiles[target] = profile.id
@@ -708,7 +710,7 @@ final class RelayQuickSwitchCoordinator {
             return RelayQuickSwitchOutcome(
                 succeeded: true,
                 selection: .profile(target, id),
-                message: "已将 \(Self.targetLabel(target)) 切换到“\(profile.name)”。")
+                message: L("relay_menu_switched", Self.targetLabel(target), profile.name))
         } catch {
             return RelayQuickSwitchOutcome(
                 succeeded: false,
@@ -732,7 +734,7 @@ final class RelayQuickSwitchCoordinator {
                 return RelayQuickSwitchOutcome(
                     succeeded: true,
                     selection: .official(target),
-                    message: "\(Self.targetLabel(target)) 当前已经是官方配置。")
+                    message: L("relay_menu_already_official", Self.targetLabel(target)))
             }
             do {
                 _ = try self.actions.clearExternalRouteForTarget(target)
@@ -805,7 +807,7 @@ final class RelayQuickSwitchCoordinator {
         if let localized = error as? any LocalizedError, let description = localized.errorDescription {
             return description
         }
-        return "切换失败（\(String(describing: type(of: error)))）。"
+        return L("relay_menu_switch_failed", String(describing: type(of: error)))
     }
 }
 

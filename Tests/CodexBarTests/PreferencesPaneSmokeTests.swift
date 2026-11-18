@@ -471,7 +471,7 @@ struct PreferencesPaneSmokeTests {
         CodexBarLocalizationOverride.$appLanguage.withValue("en") {
             #expect(L("language_title") == "Language")
             #expect(L("start_at_login_title") == "Start at login")
-            #expect(L("quit_app") == "Quit CodexBar")
+            #expect(L("quit_app") == "Quit Headroom")
         }
     }
 
@@ -516,7 +516,7 @@ struct PreferencesPaneSmokeTests {
         CodexBarLocalizationOverride.$appLanguage.withValue("de") {
             #expect(L("tab_general") == "General")
             #expect(L("language_title") == "Language")
-            #expect(L("quit_app") == "Quit CodexBar")
+            #expect(L("quit_app") == "Quit Headroom")
             #expect(L("display_mode_reset_time") == "Reset time")
             #expect(L("display_mode_reset_time_desc").contains("↻ 3:56 PM"))
             #expect(L("vertex_ai_login_instructions").contains("\n\n1. Open Terminal"))
@@ -536,7 +536,7 @@ struct PreferencesPaneSmokeTests {
             #expect(L("language_italian") == "Italiano")
             #expect(L("tab_menu_bar") == "Menu Bar")
             #expect(L("tab_advanced") == "Advanced")
-            #expect(L("quit_app") == "Quit CodexBar")
+            #expect(L("quit_app") == "Quit Headroom")
         }
     }
 

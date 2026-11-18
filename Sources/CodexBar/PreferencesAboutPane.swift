@@ -42,15 +42,10 @@ struct AboutPane: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("", selection: self.$section) {
+            SettingsSubsectionPicker(L("tab_about"), selection: self.$section) {
                 Text(L("tab_about")).tag(Section.about)
                 Text(L("section_updates")).tag(Section.updates)
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(width: 240)
-            .padding(.top, 20)
-            .padding(.bottom, 8)
 
             switch self.section {
             case .about:
@@ -90,23 +85,8 @@ struct AboutPane: View {
                     .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
             }
-
-            SwiftUI.Section {
-                Button {
-                    self.updater.checkForUpdates(nil)
-                } label: {
-                    Label(L("check_for_updates"), systemImage: "arrow.clockwise")
-                }
-                .disabled(!self.updater.isAvailable)
-
-                Button {
-                    self.section = .updates
-                } label: {
-                    Label(L("source_update_section"), systemImage: "arrow.down.app")
-                }
-            } header: {
-                Text(L("section_updates"))
-            }
+            // Update actions live only in the Updates tab above; repeating them here gave the
+            // same commands two homes on one screen.
         }
         .formStyle(.grouped)
         .toggleStyle(.switch)
@@ -121,13 +101,13 @@ struct AboutPane: View {
                         .resizable()
                         .frame(width: 92, height: 92)
                         .cornerRadius(16)
-                        .scaleEffect(self.iconHover ? 1.05 : 1.0)
-                        .shadow(color: self.iconHover ? .accentColor.opacity(0.25) : .clear, radius: 6)
+                        .opacity(self.iconHover ? 0.85 : 1.0)
                 }
                 .buttonStyle(.plain)
                 .focusEffectDisabled()
+                .help(L("link_github"))
                 .onHover { hovering in
-                    withAnimation(.spring(response: 0.32, dampingFraction: 0.78)) {
+                    withAnimation(.easeOut(duration: 0.15)) {
                         self.iconHover = hovering
                     }
                 }

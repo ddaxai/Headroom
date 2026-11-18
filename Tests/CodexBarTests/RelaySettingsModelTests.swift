@@ -104,10 +104,10 @@ struct RelayDefaultModelSettingsTests {
         let editor = try #require(
             source.split(separator: "private struct RelayProfileEditor: View", maxSplits: 1).last.map(String.init))
         let usageCard = try #require(editor.range(of: "RelayUsageSummaryCard(")?.lowerBound)
-        let configuration = try #require(editor.range(of: #"Text("中转站配置")"#)?.lowerBound)
-        let usage = try #require(editor.range(of: #"Text("中转站额度")"#)?.lowerBound)
-        let targets = try #require(editor.range(of: #"Text("可用于")"#)?.lowerBound)
-        let history = try #require(editor.range(of: #"Text("Codex 历史")"#)?.lowerBound)
+        let configuration = try #require(editor.range(of: #"Text(L("relay_ui_section_configuration"))"#)?.lowerBound)
+        let usage = try #require(editor.range(of: #"Text(L("relay_ui_section_usage"))"#)?.lowerBound)
+        let targets = try #require(editor.range(of: #"Text(L("relay_ui_section_targets"))"#)?.lowerBound)
+        let history = try #require(editor.range(of: #"Text(L("relay_ui_section_codex_history"))"#)?.lowerBound)
         #expect(editor.contains("self.visibleTargetBinding(target)"))
         #expect(editor.contains("self.model.isTargetVisible($0)"))
         #expect(editor.contains(#"L("relay_visible_targets_toggle")"#))
@@ -130,8 +130,9 @@ struct RelayDefaultModelSettingsTests {
             encoding: .utf8)
         let editor = try #require(
             source.split(separator: "private struct RelayProfileEditor: View", maxSplits: 1).last.map(String.init))
-        let usageSectionStart = try #require(editor.range(of: #"Picker("额度接口""#)?.lowerBound)
-        let usageSectionEnd = try #require(editor.range(of: #"Text("中转站额度")"#)?.upperBound)
+        let usageSectionStart = try #require(
+            editor.range(of: #"Picker(L("relay_ui_field_usage_endpoint")"#)?.lowerBound)
+        let usageSectionEnd = try #require(editor.range(of: #"Text(L("relay_ui_section_usage"))"#)?.upperBound)
         let usageConfiguration = String(editor[usageSectionStart..<usageSectionEnd])
 
         #expect(source.contains("private struct RelayUsageSummaryCard: View"))

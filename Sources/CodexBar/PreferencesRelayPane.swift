@@ -481,13 +481,13 @@ enum RelaySettingsStatus: Equatable {
         case let .applied(name, clientCount):
             L("relay_settings_applied_message", name, clientCount)
         case .restoredPreviousConfiguration:
-            "已恢复首次启用中转站前的原配置。"
+            L("relay_ui_status_restored")
         case let .restoredWithWarning(warning):
-            "已恢复原配置，但备份清理失败：\(warning)"
+            L("relay_ui_status_restored_warning", warning)
         case let .unifiedHistoryEnabled(jsonlFiles, stateRows):
-            "已启用统一 Codex 会话历史，并迁移 \(jsonlFiles) 个会话文件、\(stateRows) 条索引。请重启 Codex。"
+            L("relay_ui_status_unified_history_enabled", jsonlFiles, stateRows)
         case let .deletedProfile(name):
-            "已删除“\(name)”及其本地 API Key。"
+            L("relay_ui_status_deleted", name)
         case let .failed(message):
             message
         }
@@ -556,10 +556,10 @@ final class RelaySettingsModel {
 
     var saveBlocker: String? {
         if self.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return "请填写配置名称。"
+            return L("relay_ui_blocker_name")
         }
         if Self.validatedBaseURL(self.baseURLText) == nil {
-            return "Base URL 必须使用 HTTPS；HTTP 只允许 localhost、127.0.0.1 或 ::1。"
+            return L("relay_ui_blocker_base_url")
         }
         return nil
     }
@@ -568,12 +568,12 @@ final class RelaySettingsModel {
         var blockers: [String] = []
         if let saveBlocker { blockers.append(saveBlocker) }
         if self.enabledTargets.isEmpty {
-            blockers.append(L("至少选择一个客户端。"))
+            blockers.append(L("relay_ui_blocker_no_client"))
         }
         if !self.credentialConfigured,
            self.apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         {
-            blockers.append(L("切换前需要保存 API Key 到本地凭据文件。"))
+            blockers.append(L("relay_ui_blocker_api_key"))
         }
         for target in RelayTargetApp.allCases where self.enabledTargets.contains(target) {
             guard target != .claudeDesktop else { continue }
@@ -581,7 +581,7 @@ final class RelaySettingsModel {
                 blockers.append(reason)
             }
             if self.modelID(for: target).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                blockers.append(L("%@ 切换前需要填写模型 ID。", Self.displayName(for: target)))
+                blockers.append(L("relay_ui_blocker_model_id", Self.displayName(for: target)))
             }
         }
         return blockers
@@ -749,7 +749,7 @@ final class RelaySettingsModel {
 
             let result = try self.routesDomain.apply(profile)
             guard let currentState = activationState else {
-                throw RelaySettingsInputError.invalidDraft("未能建立原配置备份。")
+                throw RelaySettingsInputError.invalidDraft(L("relay_ui_error_baseline_backup"))
             }
             let targets = self.enabledTargets.filter { $0 != .claudeDesktop }
             var activeProfiles = currentState.activeProfileIDsByTarget
@@ -781,7 +781,7 @@ final class RelaySettingsModel {
     /// clients. A scoped restore leaves other active profiles and their mappings untouched.
     func restoreTargets(_ targets: Set<RelayTargetApp>?) {
         guard let activationState = self.activationState else {
-            self.status = .failed("没有可用于恢复原配置的基线备份。")
+            self.status = .failed(L("relay_ui_error_no_baseline"))
             return
         }
         do {
@@ -859,7 +859,7 @@ final class RelaySettingsModel {
         guard let selectedProfileID,
               let selectedIndex = self.profiles.firstIndex(where: { $0.id == selectedProfileID })
         else {
-            self.status = .failed("请先选择要删除的中转站。")
+            self.status = .failed(L("relay_ui_error_select_to_delete"))
             return
         }
         let profile = self.profiles[selectedIndex]
@@ -907,11 +907,11 @@ final class RelaySettingsModel {
     func refreshUsage(force: Bool = true) async {
         guard !self.isRefreshingUsage else { return }
         guard self.usageQueryMode != .disabled else {
-            self.usageError = "请先选择中转站支持的额度接口。"
+            self.usageError = L("relay_ui_usage_error_no_mode")
             return
         }
         guard let profile = self.makeProfile() else {
-            self.usageError = self.saveBlocker ?? "当前配置不能查询额度。"
+            self.usageError = self.saveBlocker ?? L("relay_ui_usage_error_invalid")
             return
         }
         if !force, let cached = self.actions.loadFreshUsageSummary(profile.id, Date()) {
@@ -921,7 +921,7 @@ final class RelaySettingsModel {
         }
         let credential = self.apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !credential.isEmpty else {
-            self.usageError = "查询额度需要已保存的 API Key。"
+            self.usageError = L("relay_ui_usage_error_no_key")
             return
         }
 
@@ -1023,13 +1023,13 @@ final class RelaySettingsModel {
     static func incompatibilityReason(target: RelayTargetApp, format: RelayAPIFormat) -> String? {
         switch target {
         case .codex where format != .openAIResponses:
-            "Codex 直连只支持 OpenAI Responses 协议。"
+            L("relay_ui_incompatible_codex")
         case .claudeCode where format != .anthropicMessages:
-            "Claude Code 直连只支持 Anthropic Messages 协议。"
+            L("relay_ui_incompatible_claude_code")
         case .claudeDesktop:
             nil
         case .grokBuild where format != .openAIResponses:
-            "Grok Build 直连只支持 OpenAI Responses 协议。"
+            L("relay_ui_incompatible_grok")
         case .openCode, .codex, .claudeCode, .grokBuild, .piAgent:
             nil
         }
@@ -1037,7 +1037,7 @@ final class RelaySettingsModel {
 
     private func persistDraft() throws -> RelayProfile {
         guard let profile = self.makeProfile() else {
-            throw RelaySettingsInputError.invalidDraft(self.saveBlocker ?? "草稿无效。")
+            throw RelaySettingsInputError.invalidDraft(self.saveBlocker ?? L("relay_ui_error_invalid_draft"))
         }
         let credential = self.apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines)
         let previousCredential: String? = if credential.isEmpty {
@@ -1116,12 +1116,12 @@ final class RelaySettingsModel {
 
     private static func safeErrorMessage(_ error: any Error) -> String {
         if let inputError = error as? RelaySettingsInputError {
-            return inputError.errorDescription ?? "草稿无效。"
+            return inputError.errorDescription ?? L("relay_ui_error_invalid_draft")
         }
         if let localized = error as? any LocalizedError, let description = localized.errorDescription {
             return description
         }
-        return "操作失败（\(String(describing: type(of: error)))）。"
+        return L("relay_ui_error_operation_failed", String(describing: type(of: error)))
     }
 }
 
@@ -1262,7 +1262,7 @@ private struct RelayProfileList: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(profile.name)
                                 .lineLimit(1)
-                            Text("\(profile.targets.count(where: \.isEnabled)) 个应用")
+                            Text(L("relay_ui_list_app_count", profile.targets.count(where: \.isEnabled)))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -1273,7 +1273,7 @@ private struct RelayProfileList: View {
                                 .labelStyle(.titleAndIcon)
                                 .font(.caption)
                                 .foregroundStyle(ConsoleDesign.accentForeground)
-                                .accessibilityLabel(L("已接管 %d 个客户端", activeTargetCount))
+                                .accessibilityLabel(L("relay_ui_list_active_accessibility", activeTargetCount))
                         }
                     }
                     .tag(profile.id)
@@ -1282,9 +1282,9 @@ private struct RelayProfileList: View {
             .overlay {
                 if self.model.profiles.isEmpty {
                     ContentUnavailableView(
-                        "尚无中转站",
+                        L("relay_ui_list_empty_title"),
                         systemImage: "arrow.triangle.branch",
-                        description: Text(L("新建后点保存即可。")))
+                        description: Text(L("relay_ui_list_empty_description")))
                 }
             }
 
@@ -1299,7 +1299,7 @@ private struct RelayProfileList: View {
                 Button {
                     self.model.startNewProfile()
                 } label: {
-                    Label("新建", systemImage: "plus")
+                    Label(L("relay_ui_list_new"), systemImage: "plus")
                 }
                 .buttonStyle(.borderless)
                 Button {
@@ -1314,32 +1314,32 @@ private struct RelayProfileList: View {
                 Button(role: .destructive) {
                     self.confirmsDeletion = true
                 } label: {
-                    Label("删除", systemImage: "trash")
+                    Label(L("relay_ui_list_delete"), systemImage: "trash")
                         .labelStyle(.iconOnly)
                 }
                 .buttonStyle(.borderless)
                 .disabled(!self.model.isExistingProfile)
-                .help("删除当前中转站")
+                .help(L("relay_ui_list_delete_help"))
             }
             .padding(10)
         }
         .confirmationDialog(
-            "删除“\(self.model.name)”？",
+            L("relay_ui_delete_title", self.model.name),
             isPresented: self.$confirmsDeletion,
             titleVisibility: .visible)
         {
-            Button("删除中转站", role: .destructive) {
+            Button(L("relay_ui_delete_confirm"), role: .destructive) {
                 self.model.deleteSelectedProfile()
             }
-            Button("取消", role: .cancel) {}
+            Button(L("Cancel"), role: .cancel) {}
         } message: {
             let targets = self.model.activeTargets(for: self.model.profileID)
             if !targets.isEmpty {
-                Text(
-                    "该中转站正在管理：\(targets.map(Self.targetLabel).joined(separator: "、"))。" +
-                        "删除前只恢复这些客户端，不影响其他中转站，然后移除配置和本地 API Key。")
+                Text(L(
+                    "relay_ui_delete_message_active",
+                    targets.map(Self.targetLabel).joined(separator: L("relay_ui_list_separator"))))
             } else {
-                Text("将移除这个配置和对应的本地 API Key。")
+                Text(L("relay_ui_delete_message"))
             }
         }
     }
@@ -1383,194 +1383,201 @@ private struct RelayProfileEditor: View {
             Divider()
 
             ScrollViewReader { proxy in
-                VStack(spacing: 0) {
-                    RelayUsageSummaryCard(model: self.model) {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            proxy.scrollTo(Self.usageQueryPickerID, anchor: .center)
+                Form {
+                    // The usage card scrolls with the form. Pinned above it, every height change
+                    // (not queried, refreshing, summary, local usage) pushed the fields below it.
+                    Section {
+                        RelayUsageSummaryCard(model: self.model) {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                proxy.scrollTo(Self.usageQueryPickerID, anchor: .center)
+                            }
+                            self.focusedControl = .usageQueryMode
                         }
-                        self.focusedControl = .usageQueryMode
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.top, 8)
 
-                    Form {
-                        Section {
-                            TextField("名称", text: self.$model.name, prompt: Text("例如：工作中转站"))
+                    Section {
+                        TextField(
+                            L("relay_ui_field_name"),
+                            text: self.$model.name,
+                            prompt: Text(L("relay_ui_field_name_prompt")))
+                        TextField(
+                            "Base URL",
+                            text: self.$model.baseURLText,
+                            prompt: Text("https://relay.example/v1"))
+                        Picker(L("relay_ui_field_protocol"), selection: self.$model.apiFormat) {
+                            ForEach(RelayAPIFormat.allCases, id: \.self) { format in
+                                Text(Self.formatLabel(format)).tag(format)
+                            }
+                        }
+                        HStack(spacing: 8) {
                             TextField(
-                                "Base URL",
-                                text: self.$model.baseURLText,
-                                prompt: Text("https://relay.example/v1"))
-                            Picker("协议", selection: self.$model.apiFormat) {
-                                ForEach(RelayAPIFormat.allCases, id: \.self) { format in
-                                    Text(Self.formatLabel(format)).tag(format)
-                                }
-                            }
-                            HStack(spacing: 8) {
-                                TextField("默认模型 ID", text: self.$model.modelID, prompt: Text("可按应用单独覆盖"))
-                                Button {
-                                    self.model.fillCurrentModelIDIntoEnabledClients()
-                                } label: {
-                                    Label(L("relay_fill_models_action"), systemImage: "rectangle.3.group.fill")
-                                }
-                                .disabled(self.model.modelID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                                .help(L("relay_fill_models_help"))
-                            }
-                            HStack(spacing: 6) {
-                                Group {
-                                    if self.revealsAPIKey {
-                                        TextField("API Key", text: self.$model.apiKeyInput)
-                                    } else {
-                                        SecureField("API Key", text: self.$model.apiKeyInput)
-                                    }
-                                }
-                                .fontDesign(.monospaced)
-                                Button {
-                                    self.revealsAPIKey.toggle()
-                                } label: {
-                                    Image(systemName: self.revealsAPIKey ? "eye.slash" : "eye")
-                                        .frame(width: 22, height: 22)
-                                }
-                                .buttonStyle(.borderless)
-                                .help(self.revealsAPIKey ? "隐藏 API Key" : "显示 API Key")
-                            }
-                        } header: {
-                            Text("中转站配置")
-                        } footer: {
-                            SettingsSectionFooter("选择已有配置时会加载保存的 API Key；默认隐藏，可用眼睛按钮显示。点击保存只更新本地配置，不写入客户端文件。")
-                        }
-
-                        Section {
-                            Picker("额度接口", selection: self.$model.usageQueryMode) {
-                                ForEach(RelayUsageQueryMode.allCases, id: \.self) { mode in
-                                    Text(Self.usageQueryLabel(mode)).tag(mode)
-                                }
-                            }
-                            .id(Self.usageQueryPickerID)
-                            .focused(self.$focusedControl, equals: .usageQueryMode)
-                            if self.model.usageQueryMode == .customBalance {
-                                TextField(
-                                    L("relay_custom_balance_endpoint"),
-                                    text: self.$model.customBalance.endpointPath)
-                                    .fontDesign(.monospaced)
-                                Picker(
-                                    L("relay_custom_balance_authentication"),
-                                    selection: self.$model.customBalance.authentication)
-                                {
-                                    Text(L("relay_custom_balance_bearer"))
-                                        .tag(RelayCustomBalanceConfiguration.Authentication.bearer)
-                                    Text(L("relay_custom_balance_x_api_key"))
-                                        .tag(RelayCustomBalanceConfiguration.Authentication.xAPIKey)
-                                }
-                                TextField(
-                                    L("relay_custom_balance_remaining_path"),
-                                    text: self.$model.customBalance.remainingJSONPath)
-                                    .fontDesign(.monospaced)
-                                TextField(
-                                    L("relay_custom_balance_used_path"),
-                                    text: self.$model.customBalance.usedJSONPath)
-                                    .fontDesign(.monospaced)
-                                TextField(
-                                    L("relay_custom_balance_total_path"),
-                                    text: self.$model.customBalance.totalJSONPath)
-                                    .fontDesign(.monospaced)
-                                HStack {
-                                    TextField(
-                                        L("relay_custom_balance_currency"),
-                                        text: self.$model.customBalance.currencyCode)
-                                    TextField(
-                                        L("relay_custom_balance_divisor"),
-                                        value: self.$model.customBalance.divisor,
-                                        format: .number)
-                                }
-                                Text(L("relay_custom_balance_disclaimer"))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        } header: {
-                            Text("中转站额度")
-                        } footer: {
-                            SettingsSectionFooter(L("relay_custom_balance_footer"))
-                        }
-
-                        Section {
-                            DisclosureGroup {
-                                ForEach(RelayTargetApp.allCases, id: \.self) { target in
-                                    Toggle(isOn: self.visibleTargetBinding(target)) {
-                                        Label(
-                                            Self.targetLabel(target),
-                                            systemImage: Self.targetSymbol(target))
-                                    }
-                                }
+                                L("relay_ui_field_default_model"),
+                                text: self.$model.modelID,
+                                prompt: Text(L("relay_ui_field_default_model_prompt")))
+                            Button {
+                                self.model.fillCurrentModelIDIntoEnabledClients()
                             } label: {
-                                Label(L("relay_visible_targets_toggle"), systemImage: "eye")
+                                Label(L("relay_fill_models_action"), systemImage: "rectangle.3.group.fill")
                             }
-                            if self.model.visibleTargets.isEmpty {
-                                Text(L("relay_visible_targets_empty"))
-                                    .font(.caption)
-                                    .foregroundStyle(ConsoleDesign.secondaryText)
-                            }
-                            ForEach(
-                                RelayTargetApp.allCases.filter { self.model.isTargetVisible($0) },
-                                id: \.self)
-                            { target in
-                                self.targetRow(target)
-                            }
-                        } header: {
-                            Text("可用于")
-                        } footer: {
-                            SettingsSectionFooter(L("relay_visible_targets_footer"))
+                            .disabled(self.model.modelID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            .help(L("relay_fill_models_help"))
                         }
+                        HStack(spacing: 6) {
+                            Group {
+                                if self.revealsAPIKey {
+                                    TextField("API Key", text: self.$model.apiKeyInput)
+                                } else {
+                                    SecureField("API Key", text: self.$model.apiKeyInput)
+                                }
+                            }
+                            .fontDesign(.monospaced)
+                            Button {
+                                self.revealsAPIKey.toggle()
+                            } label: {
+                                Image(systemName: self.revealsAPIKey ? "eye.slash" : "eye")
+                                    .frame(width: 22, height: 22)
+                            }
+                            .buttonStyle(.borderless)
+                            .help(self.revealsAPIKey ? L("relay_ui_api_key_hide") : L("relay_ui_api_key_show"))
+                            .accessibilityLabel(
+                                self.revealsAPIKey ? L("relay_ui_api_key_hide") : L("relay_ui_api_key_show"))
+                        }
+                    } header: {
+                        Text(L("relay_ui_section_configuration"))
+                    } footer: {
+                        SettingsSectionFooter(L("relay_ui_section_configuration_footer"))
+                    }
 
-                        Section {
-                            DisclosureGroup(isExpanded: self.$isCodexHistoryExpanded) {
-                                Toggle(isOn: self.$model.unifiedHistoryOptIn) {
-                                    Text("中转切换时启用")
+                    Section {
+                        Picker(L("relay_ui_field_usage_endpoint"), selection: self.$model.usageQueryMode) {
+                            ForEach(RelayUsageQueryMode.allCases, id: \.self) { mode in
+                                Text(Self.usageQueryLabel(mode)).tag(mode)
+                            }
+                        }
+                        .id(Self.usageQueryPickerID)
+                        .focused(self.$focusedControl, equals: .usageQueryMode)
+                        if self.model.usageQueryMode == .customBalance {
+                            TextField(
+                                L("relay_custom_balance_endpoint"),
+                                text: self.$model.customBalance.endpointPath)
+                                .fontDesign(.monospaced)
+                            Picker(
+                                L("relay_custom_balance_authentication"),
+                                selection: self.$model.customBalance.authentication)
+                            {
+                                Text(L("relay_custom_balance_bearer"))
+                                    .tag(RelayCustomBalanceConfiguration.Authentication.bearer)
+                                Text(L("relay_custom_balance_x_api_key"))
+                                    .tag(RelayCustomBalanceConfiguration.Authentication.xAPIKey)
+                            }
+                            TextField(
+                                L("relay_custom_balance_remaining_path"),
+                                text: self.$model.customBalance.remainingJSONPath)
+                                .fontDesign(.monospaced)
+                            TextField(
+                                L("relay_custom_balance_used_path"),
+                                text: self.$model.customBalance.usedJSONPath)
+                                .fontDesign(.monospaced)
+                            TextField(
+                                L("relay_custom_balance_total_path"),
+                                text: self.$model.customBalance.totalJSONPath)
+                                .fontDesign(.monospaced)
+                            HStack {
+                                TextField(
+                                    L("relay_custom_balance_currency"),
+                                    text: self.$model.customBalance.currencyCode)
+                                TextField(
+                                    L("relay_custom_balance_divisor"),
+                                    value: self.$model.customBalance.divisor,
+                                    format: .number)
+                            }
+                            Text(L("relay_custom_balance_disclaimer"))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    } header: {
+                        Text(L("relay_ui_section_usage"))
+                    } footer: {
+                        SettingsSectionFooter(L("relay_custom_balance_footer"))
+                    }
+
+                    Section {
+                        DisclosureGroup {
+                            ForEach(RelayTargetApp.allCases, id: \.self) { target in
+                                Toggle(isOn: self.visibleTargetBinding(target)) {
+                                    Label(
+                                        Self.targetLabel(target),
+                                        systemImage: Self.targetSymbol(target))
                                 }
-                                .disabled(self.model.unifiedHistoryEnabled)
-                                Text(L("relay_unified_history_disabled_warning"))
-                                    .font(.caption)
-                                    .foregroundStyle(ConsoleDesign.secondaryText)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                HStack(spacing: 8) {
-                                    Image(systemName: self.model
-                                        .unifiedHistoryEnabled ? "checkmark.circle.fill" : "info.circle")
-                                    Text(
-                                        self.model.unifiedHistoryEnabled
-                                            ? "已完成迁移；不会自动回滚。"
-                                            : "仅在菜单中切换 Codex 到中转站时执行，设置页保存不会改写配置。")
-                                }
+                            }
+                        } label: {
+                            Label(L("relay_visible_targets_toggle"), systemImage: "eye")
+                        }
+                        if self.model.visibleTargets.isEmpty {
+                            Text(L("relay_visible_targets_empty"))
                                 .font(.caption)
                                 .foregroundStyle(ConsoleDesign.secondaryText)
-                            } label: {
-                                Label(
-                                    "统一 Codex 会话历史",
-                                    systemImage: "clock.arrow.trianglehead.counterclockwise.rotate.90")
-                            }
-                        } header: {
-                            Text("Codex 历史")
-                        } footer: {
-                            SettingsSectionFooter(
-                                "首次切换前会显示确认并备份；OpenCode、Claude Code、Grok Build 不会触发统一历史迁移。")
                         }
+                        ForEach(
+                            RelayTargetApp.allCases.filter { self.model.isTargetVisible($0) },
+                            id: \.self)
+                        { target in
+                            self.targetRow(target)
+                        }
+                    } header: {
+                        Text(L("relay_ui_section_targets"))
+                    } footer: {
+                        SettingsSectionFooter(L("relay_visible_targets_footer"))
+                    }
 
-                        if self.model.enabledTargets.contains(.grokBuild)
-                            || self.model.enabledTargets.contains(.openCode)
-                        {
-                            Section {
-                                Label(
-                                    L("在菜单栏切换时，API Key 会从本地凭据文件复制到所选客户端的配置文件。"),
-                                    systemImage: "key.horizontal.fill")
-                                    .foregroundStyle(ConsoleDesign.secondaryText)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            } header: {
-                                Text("密钥写入提示")
+                    Section {
+                        DisclosureGroup(isExpanded: self.$isCodexHistoryExpanded) {
+                            Toggle(isOn: self.$model.unifiedHistoryOptIn) {
+                                Text(L("relay_ui_unified_history_toggle"))
                             }
+                            .disabled(self.model.unifiedHistoryEnabled)
+                            Text(L("relay_unified_history_disabled_warning"))
+                                .font(.caption)
+                                .foregroundStyle(ConsoleDesign.secondaryText)
+                                .fixedSize(horizontal: false, vertical: true)
+                            HStack(spacing: 8) {
+                                Image(systemName: self.model
+                                    .unifiedHistoryEnabled ? "checkmark.circle.fill" : "info.circle")
+                                Text(
+                                    self.model.unifiedHistoryEnabled
+                                        ? L("relay_ui_unified_history_done")
+                                        : L("relay_ui_unified_history_pending"))
+                            }
+                            .font(.caption)
+                            .foregroundStyle(ConsoleDesign.secondaryText)
+                        } label: {
+                            Label(
+                                L("relay_ui_unified_history_title"),
+                                systemImage: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+                        }
+                    } header: {
+                        Text(L("relay_ui_section_codex_history"))
+                    } footer: {
+                        SettingsSectionFooter(L("relay_ui_section_codex_history_footer"))
+                    }
+
+                    if self.model.enabledTargets.contains(.grokBuild)
+                        || self.model.enabledTargets.contains(.openCode)
+                    {
+                        Section {
+                            Label(
+                                L("relay_ui_key_copy_note"),
+                                systemImage: "key.horizontal.fill")
+                                .foregroundStyle(ConsoleDesign.secondaryText)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } header: {
+                            Text(L("relay_ui_section_key_copy"))
                         }
                     }
-                    .formStyle(.grouped)
-                    .toggleStyle(.switch)
-                    .scrollContentBackground(.hidden)
                 }
+                .formStyle(.grouped)
+                .toggleStyle(.switch)
+                .scrollContentBackground(.hidden)
             }
 
             RelaySettingsValidationStrip(model: self.model)
@@ -1580,9 +1587,9 @@ private struct RelayProfileEditor: View {
             Divider()
 
             HStack {
-                Button("全部恢复官方配置", role: .destructive) { self.confirmsFullRestore = true }
+                Button(L("relay_ui_restore_all"), role: .destructive) { self.confirmsFullRestore = true }
                     .disabled(!self.model.canRestorePreviousConfiguration)
-                    .help("恢复全部自动管理客户端的官方配置；菜单中的官方按钮只恢复单个客户端。")
+                    .help(L("relay_ui_restore_all_help"))
                 Spacer()
                 Button(L("relay_settings_save_action")) { self.model.save() }
                     .disabled(!self.model.canSave)
@@ -1599,20 +1606,22 @@ private struct RelayProfileEditor: View {
             await self.model.refreshLocalCodexUsage(costUsageEnabled: self.costUsageEnabled)
         }
         .confirmationDialog(
-                "恢复全部官方配置？",
+                L("relay_ui_restore_all_title"),
                 isPresented: self.$confirmsFullRestore,
                 titleVisibility: .visible)
         {
-            Button("恢复并清除中转站状态", role: .destructive) {
+            Button(L("relay_ui_restore_all_confirm"), role: .destructive) {
                 self.model.restorePreviousConfiguration()
             }
-            Button("取消", role: .cancel) {}
+            Button(L("Cancel"), role: .cancel) {}
             } message: {
                 let targets = self.model.activeTargets()
                 Text(
                     targets.isEmpty
-                        ? "当前没有客户端处于中转站状态。"
-                        : "将恢复：\(targets.map(Self.targetLabel).joined(separator: "、"))。其他未被接管的客户端不会变化。")
+                        ? L("relay_ui_restore_all_none")
+                        : L(
+                            "relay_ui_restore_all_message",
+                            targets.map(Self.targetLabel).joined(separator: L("relay_ui_list_separator"))))
             }
     }
 
@@ -1632,11 +1641,11 @@ private struct RelayProfileEditor: View {
                     } else if let blocker = self.model.saveBlocker {
                         Text(blocker).lineLimit(1)
                     } else {
-                        Text(L("保存仅持久化配置；从菜单栏按客户端单独切换。"))
+                        Text(L("relay_ui_validation_idle"))
                             .foregroundStyle(ConsoleDesign.secondaryText)
                     }
                     if !self.model.switchBlockers.isEmpty {
-                        Text("切换要求：\(self.model.switchBlockers.joined(separator: " · "))")
+                        Text(L("relay_ui_validation_requirements", self.model.switchBlockers.joined(separator: " · ")))
                             .font(.caption2)
                             .foregroundStyle(ConsoleDesign.secondaryText)
                             .lineLimit(1)
@@ -1670,12 +1679,12 @@ private struct RelayProfileEditor: View {
                 HStack(spacing: 8) {
                     Label(Self.targetLabel(target), systemImage: Self.targetSymbol(target))
                     Spacer()
-                    Text("手动")
+                    Text(L("relay_ui_target_manual"))
                         .font(.caption)
                         .foregroundStyle(ConsoleDesign.secondaryText)
-                    Button("复制 Base URL") { self.copyToPasteboard(self.model.baseURLText) }
+                    Button(L("relay_ui_copy_base_url")) { self.copyToPasteboard(self.model.baseURLText) }
                         .buttonStyle(.borderless)
-                    Button("复制 API Key") { self.copyToPasteboard(self.model.apiKeyInput) }
+                    Button(L("relay_ui_copy_api_key")) { self.copyToPasteboard(self.model.apiKeyInput) }
                         .buttonStyle(.borderless)
                 }
             } else {
@@ -1687,7 +1696,7 @@ private struct RelayProfileEditor: View {
                     self.targetActivationStatus(target)
                 }
                 TextField(
-                    "\(Self.targetLabel(target)) 模型 ID",
+                    L("relay_ui_target_model_field", Self.targetLabel(target)),
                     text: Binding(
                         get: { self.model.modelID(for: target) },
                         set: { self.model.setModelID($0, for: target) }),
@@ -1749,9 +1758,9 @@ private struct RelayProfileEditor: View {
 
     private static func usageQueryLabel(_ mode: RelayUsageQueryMode) -> String {
         switch mode {
-        case .disabled: "关闭"
+        case .disabled: L("relay_ui_usage_mode_off")
         case .sub2API: "Sub2API (/v1/usage)"
-        case .genericBalance: "通用余额 (/user/balance)"
+        case .genericBalance: L("relay_ui_usage_mode_generic")
         case .customBalance: L("relay_custom_balance_mode")
         }
     }
@@ -1776,11 +1785,11 @@ private struct RelayProfileEditor: View {
             return incompatibility
         }
         return switch target {
-        case .codex: "写入 Responses 直连配置，不改变 CodexBar 的官方账号切换功能。"
-        case .claudeCode: "通过 Anthropic Messages 直连；不会建立账号池或本地代理。"
-        case .claudeDesktop: "不会自动写配置；请在 Claude Desktop 的 Developer → Third-Party Inference 中手动填写。"
-        case .grokBuild: L("切换后需要重启；API Key 会从本地凭据文件复制到 Grok Build 配置。")
-        case .openCode: "支持三种协议；API Key 会从本地凭据文件复制到已识别的 V1 配置。"
+        case .codex: L("relay_ui_note_codex")
+        case .claudeCode: L("relay_ui_note_claude_code")
+        case .claudeDesktop: L("relay_ui_note_claude_desktop")
+        case .grokBuild: L("relay_ui_note_grok")
+        case .openCode: L("relay_ui_note_opencode")
         case .piAgent: L("relay_target_pi_note")
         }
     }
@@ -1913,13 +1922,10 @@ private struct RelayUsageSummaryCard: View {
                     .foregroundStyle(ConsoleDesign.criticalForeground)
             }
         }
-        .padding(12)
+        // Rendered as the first grouped-form section, which already draws the container; a
+        // second card border inside it would nest two frames.
+        .padding(.vertical, 4)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(ConsoleDesign.surface, in: RoundedRectangle(cornerRadius: ConsoleDesign.radiusCard))
-        .overlay {
-            RoundedRectangle(cornerRadius: ConsoleDesign.radiusCard)
-                .stroke(ConsoleDesign.border, lineWidth: 1)
-        }
         .accessibilityElement(children: .contain)
     }
 

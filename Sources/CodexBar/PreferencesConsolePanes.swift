@@ -28,16 +28,11 @@ struct DisplayPane: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker(L("settings_destination_appearance"), selection: self.$section) {
+            SettingsSubsectionPicker(L("settings_destination_appearance"), selection: self.$section) {
                 ForEach(Section.allCases) { section in
                     Text(section.title).tag(section)
                 }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(width: 260)
-            .padding(.top, 20)
-            .padding(.bottom, 8)
 
             Group {
                 switch self.section {
@@ -183,16 +178,11 @@ struct AdvancedContainerPane: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker(L("tab_advanced"), selection: self.$section) {
+            SettingsSubsectionPicker(L("tab_advanced"), selection: self.$section) {
                 ForEach(self.availableSections) { section in
                     Text(section.title).tag(section)
                 }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(width: 320)
-            .padding(.top, 20)
-            .padding(.bottom, 8)
 
             Group {
                 switch self.section {

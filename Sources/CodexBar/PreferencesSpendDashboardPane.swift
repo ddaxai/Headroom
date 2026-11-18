@@ -185,16 +185,16 @@ struct SpendDashboardPane: View {
         SpendDashboardSource.configuration(settings: self.settings, store: self.store)
     }
 
+    /// The window title already names this destination, so the header is a single control row:
+    /// a one-line description on the leading edge and the range/refresh controls trailing.
     private var header: some View {
-        HStack(alignment: .top, spacing: 16) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(L("Usage & Spend"))
-                    .font(.title2.weight(.semibold))
-                Text(L("Local estimated cost history across supported providers."))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
+        HStack(alignment: .center, spacing: 12) {
+            Text(L("Local estimated cost history across supported providers."))
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 12)
             Picker(L("Time range"), selection: self.daysBinding) {
                 Text(spendDashboardDayRangeText(7)).tag(7)
                 Text(spendDashboardDayRangeText(30)).tag(30)
@@ -206,11 +206,15 @@ struct SpendDashboardPane: View {
             Button {
                 self.controller.refresh()
             } label: {
-                if self.controller.isRefreshing {
-                    ProgressView().controlSize(.small)
-                } else {
-                    Label(L("Refresh"), systemImage: "arrow.clockwise")
-                }
+                // Keep the label in the layout while refreshing so the button keeps its width
+                // and the range picker beside it does not shift.
+                Label(L("Refresh"), systemImage: "arrow.clockwise")
+                    .opacity(self.controller.isRefreshing ? 0 : 1)
+                    .overlay {
+                        if self.controller.isRefreshing {
+                            ProgressView().controlSize(.small)
+                        }
+                    }
             }
             .disabled(self.controller.isRefreshing || !self.settings.costUsageEnabled)
         }
