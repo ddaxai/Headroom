@@ -12,7 +12,7 @@ struct KeychainReadDiagnosticsTests {
 
         let events = KeychainSecurity.withIsolatedCopyMatchingCacheForTesting {
             KeychainReadDiagnostics.withRecorderForTesting(recorder) {
-                KeychainSecurity.withCopyMatchingOverrideForTesting({ _, _ in errSecItemNotFound }) {
+                KeychainSecurity.withCopyMatchingOverrideForTesting { _, _ in errSecItemNotFound } operation: {
                     var firstResult: CFTypeRef?
                     _ = KeychainSecurity.copyMatching(["diagnostic-query": 1] as CFDictionary, &firstResult)
 
@@ -44,7 +44,7 @@ struct KeychainReadDiagnosticsTests {
 
         let events = await KeychainSecurity.withIsolatedCopyMatchingCacheForTesting {
             await KeychainReadDiagnostics.withRecorderForTesting(recorder) {
-                await KeychainSecurity.withCopyMatchingOverrideForTesting({ _, _ in errSecItemNotFound }) {
+                await KeychainSecurity.withCopyMatchingOverrideForTesting { _, _ in errSecItemNotFound } operation: {
                     await withTaskGroup(of: Void.self) { group in
                         for index in 0..<64 {
                             group.addTask {
@@ -70,7 +70,7 @@ struct KeychainReadDiagnosticsTests {
 
         let events = KeychainSecurity.withIsolatedCopyMatchingCacheForTesting {
             KeychainReadDiagnostics.withRecorderForTesting(recorder) {
-                KeychainSecurity.withCopyMatchingOverrideForTesting({ _, _ in errSecItemNotFound }) {
+                KeychainSecurity.withCopyMatchingOverrideForTesting { _, _ in errSecItemNotFound } operation: {
                     _ = ClaudeOAuthKeychainQueryTiming.copyMatching([:])
                 }
                 return KeychainReadDiagnostics.snapshot()

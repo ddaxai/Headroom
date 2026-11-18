@@ -3910,6 +3910,7 @@ enum CostUsageScanner {
             && !FileManager.default.fileExists(atPath: path)
     }
 
+    // swiftlint:disable:next function_body_length
     private static func loadCodexDaily(
         range: CostUsageDayRange,
         now: Date,

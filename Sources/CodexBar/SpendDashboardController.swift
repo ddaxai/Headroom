@@ -107,6 +107,7 @@ struct CodexSpendSnapshotLoadContext: Sendable {
     let includePiSessions: Bool
 }
 
+// swiftlint:disable:next type_body_length
 enum SpendDashboardSource {
     typealias CodexSnapshotLoader = @Sendable (CodexSpendSnapshotLoadContext) async throws
         -> CostUsageTokenSnapshot
@@ -638,10 +639,14 @@ enum SpendDashboardSource {
                 if let managedHome = account.managedCodexHomePath {
                     let identity = UsageIdentity.subscription(account: account, localHomePath: managedHome)
                     if let request = self.codexRequest(
-                        account: account, homePath: managedHome, providerName: providerName,
-                        index: index, count: projection.visibleAccounts.count,
+                        account: account,
+                        homePath: managedHome,
+                        providerName: providerName,
+                        index: index,
+                        count: projection.visibleAccounts.count,
                         sourceOverride: .liveSystem,
-                        usageIdentity: identity, retainUnavailable: true,
+                        usageIdentity: identity,
+                        retainUnavailable: true,
                         readCurrentAuthFingerprint: false,
                         homeReadabilityOverride: true)
                     {
@@ -667,9 +672,13 @@ enum SpendDashboardSource {
             guard let home = account.codexHomePath else { continue }
             let identity = UsageIdentity.subscription(account: account, localHomePath: home)
             guard let request = self.codexRequest(
-                account: account, homePath: home, providerName: providerName,
-                index: index, count: projection.visibleAccounts.count,
-                usageIdentity: identity, retainUnavailable: true,
+                account: account,
+                homePath: home,
+                providerName: providerName,
+                index: index,
+                count: projection.visibleAccounts.count,
+                usageIdentity: identity,
+                retainUnavailable: true,
                 readCurrentAuthFingerprint: false,
                 homeReadabilityOverride: true)
             else { continue }
@@ -937,6 +946,7 @@ enum SpendDashboardSource {
         }
     }
 
+    // swiftlint:disable:next function_parameter_count
     private static func requestsByAddingLiveSystemAttributionTargets(
         _ requests: [CodexSpendScanRequest],
         accounts: [CodexVisibleAccount],

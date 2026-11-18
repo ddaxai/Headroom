@@ -81,8 +81,7 @@ extension StatusItemController {
     func startLocalUsageRealtimeRefresh() {
         guard !SettingsStore.isRunningTests else { return }
         if self.localUsageRealtimeCoordinator == nil {
-            self.localUsageRealtimeCoordinator = LocalUsageRealtimeCoordinator(settings: self.settings) {
-                [weak self] sources in
+            let coordinator = LocalUsageRealtimeCoordinator(settings: self.settings) { [weak self] sources in
                 guard let self, !self.hasPreparedForAppShutdown else { return }
                 if sources.contains(.codex) {
                     await LocalUsageCatchUpRunner.run {
@@ -118,6 +117,7 @@ extension StatusItemController {
                     deferOpenParentMenuRebuild: true,
                     allowStaleContentDuringDataRefresh: true)
             }
+            self.localUsageRealtimeCoordinator = coordinator
         }
         self.localUsageRealtimeCoordinator?.restart()
     }

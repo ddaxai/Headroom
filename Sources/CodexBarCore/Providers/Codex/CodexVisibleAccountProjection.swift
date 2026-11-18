@@ -106,6 +106,7 @@ extension DefaultCodexAccountReconciler {
 }
 
 extension CodexVisibleAccountProjection {
+    // swiftlint:disable:next function_body_length
     public static func make(from snapshot: CodexAccountReconciliationSnapshot) -> CodexVisibleAccountProjection {
         let resolvedActiveSource = CodexActiveSourceResolver.resolve(from: snapshot).resolvedSource
         var drafts: [VisibleAccountDraft] = []

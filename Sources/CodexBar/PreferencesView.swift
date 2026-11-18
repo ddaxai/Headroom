@@ -503,7 +503,7 @@ final class SettingsWindowAppearanceView: NSView {
     }
 
     func invalidate() {
-        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.removeObserver(self, name: NSWindow.didUpdateNotification, object: nil)
         // The window owns one stable accessory controller. SwiftUI may dismantle and recreate
         // this bridge during locale or scene updates; synchronous AppKit removal here can race
         // NSToolbar teardown. The replacement bridge adopts and updates the existing controller.

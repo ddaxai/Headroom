@@ -72,7 +72,8 @@ struct TypographySnapshotTests {
             "New .font(.system( calls must use HeadroomTypography instead:\n\(unexpected.joined(separator: "\n"))")
         #expect(
             missing.isEmpty,
-            "Update the legacy allowlist only when an existing call is intentionally migrated:\n\(missing.joined(separator: "\n"))")
+            "Update the legacy allowlist only when an existing call is intentionally migrated:\n"
+                + missing.joined(separator: "\n"))
     }
 
     private func assertSnapshot(_ fixture: TypographySnapshotFixture) throws {
@@ -100,7 +101,8 @@ struct TypographySnapshotTests {
         #expect(baseline.pixelsHigh == actual.pixelsHigh)
         #expect(
             try Self.rgbaBytes(in: baseline) == Self.rgbaBytes(in: actual),
-            "Typography changed for \(fixture.rawValue); do not record a new baseline unless the M0 font contract changed")
+            "Typography changed for \(fixture.rawValue); "
+                + "do not record a new baseline unless the M0 font contract changed")
     }
 
     private static let repositoryURL = URL(fileURLWithPath: #filePath)

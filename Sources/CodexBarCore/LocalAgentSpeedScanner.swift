@@ -1,3 +1,5 @@
+// swiftlint:disable file_length
+
 import Foundation
 
 #if canImport(SQLite3)
@@ -343,6 +345,7 @@ public final class LocalAgentSpeedScanner: @unchecked Sendable {
         return Self.buildReport(samples: allSamples, configuration: configuration, now: now)
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     private static func buildReport(
         samples: [AgentSpeedSample],
         configuration: LocalAgentSpeedScanConfiguration,
@@ -989,7 +992,8 @@ extension LocalAgentSpeedScanner {
             let files = Self.collectJSONLFiles(under: sessionsDir, cutoff: cutoff)
             for fileURL in files {
                 guard let meta = Self.fileStamp(for: fileURL) else { continue }
-                let stamp = "\(meta.stamp)|tl:\(target.usesSharedTimeline ? timelineRevision : (target.fixedAccountKey ?? "fixed"))"
+                let timelineStamp = target.usesSharedTimeline ? timelineRevision : (target.fixedAccountKey ?? "fixed")
+                let stamp = "\(meta.stamp)|tl:\(timelineStamp)"
                 let fileSamples = self.cachedSamples(
                     tag: "codex",
                     path: fileURL.standardizedFileURL.path,
@@ -1106,6 +1110,7 @@ extension LocalAgentSpeedScanner {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     private static func parseCodexRollout(
         fileURL: URL,
         canonicalHomePath: String,

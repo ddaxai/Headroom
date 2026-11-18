@@ -110,6 +110,7 @@ struct MenuContent: View {
         action.systemImageName
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     private func perform(_ action: MenuDescriptor.MenuAction) {
         switch action {
         case .refresh:

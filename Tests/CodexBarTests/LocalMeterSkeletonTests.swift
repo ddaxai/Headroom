@@ -23,7 +23,7 @@ struct LocalMeterSkeletonTests {
             upstreamBaseURL: Self.baseURL(port: upstreamPort))
 
         #expect(result.route == .direct)
-        #expect(String(decoding: result.data, as: UTF8.self) == "direct-absent")
+        #expect(String(bytes: result.data, encoding: .utf8) == "direct-absent")
     }
 
     @Test
@@ -47,7 +47,7 @@ struct LocalMeterSkeletonTests {
             upstreamBaseURL: Self.baseURL(port: upstreamPort))
 
         #expect(result.route == .direct)
-        #expect(String(decoding: result.data, as: UTF8.self) == "direct-occupied")
+        #expect(String(bytes: result.data, encoding: .utf8) == "direct-occupied")
     }
 
     @Test
@@ -70,7 +70,7 @@ struct LocalMeterSkeletonTests {
             upstreamBaseURL: Self.baseURL(port: upstreamPort))
 
         #expect(result.route == .direct)
-        #expect(String(decoding: result.data, as: UTF8.self) == "direct-after-crash")
+        #expect(String(bytes: result.data, encoding: .utf8) == "direct-after-crash")
     }
 
     @Test
@@ -78,7 +78,7 @@ struct LocalMeterSkeletonTests {
         let upstream = LoopbackHTTPServer { request in
             #expect(request.method == "POST")
             #expect(request.path == "/v1/responses")
-            #expect(String(decoding: request.body, as: UTF8.self) == "fixture-body")
+            #expect(String(bytes: request.body, encoding: .utf8) == "fixture-body")
             return LoopbackHTTPResponse(statusCode: 201, body: Data("meter-forwarded".utf8))
         }
         let upstreamPort = try await upstream.start()
@@ -98,7 +98,7 @@ struct LocalMeterSkeletonTests {
 
         #expect(result.route == .meter)
         #expect(result.response.statusCode == 201)
-        #expect(String(decoding: result.data, as: UTF8.self) == "meter-forwarded")
+        #expect(String(bytes: result.data, encoding: .utf8) == "meter-forwarded")
 
         meter.stop()
         #expect(await !probe.isHealthy(baseURL: meterURL))

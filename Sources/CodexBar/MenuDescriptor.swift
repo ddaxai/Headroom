@@ -585,6 +585,7 @@ struct MenuDescriptor {
         return nil
     }
 
+    // swiftlint:disable:next function_parameter_count
     private static func actionsSection(
         for provider: UsageProvider?,
         store: UsageDomain,

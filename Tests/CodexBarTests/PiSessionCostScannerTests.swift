@@ -2,6 +2,7 @@ import Foundation
 import Testing
 @testable import CodexBarCore
 
+// swiftlint:disable:next type_body_length
 struct PiSessionCostScannerTests {
     @Test
     func `pi scanner attributes relay provider keys and preserves unassigned usage`() throws {

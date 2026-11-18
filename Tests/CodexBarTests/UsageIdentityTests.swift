@@ -174,9 +174,14 @@ struct UsageIdentityTests {
     @Test
     func `ambient current scope is never attributed to the active account`() {
         let account = CodexVisibleAccount(
-            id: "managed", email: "managed@example.com", storedAccountID: UUID(),
-            selectionSource: .managedAccount(id: UUID()), isActive: true, isLive: false,
-            canReauthenticate: true, canRemove: true)
+            id: "managed",
+            email: "managed@example.com",
+            storedAccountID: UUID(),
+            selectionSource: .managedAccount(id: UUID()),
+            isActive: true,
+            isLive: false,
+            canReauthenticate: true,
+            canRemove: true)
 
         let ambient = UsageIdentity.codexCurrentScope(activeAccount: account, localHomePath: nil)
         let isolated = UsageIdentity.codexCurrentScope(activeAccount: account, localHomePath: "/tmp/managed-home")

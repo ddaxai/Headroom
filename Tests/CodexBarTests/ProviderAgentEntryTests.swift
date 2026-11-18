@@ -140,7 +140,9 @@ struct ProviderAgentEntryTests {
 
     private static let piSessionJSONL = """
     {"type":"session","id":"session-1","timestamp":"2026-08-19T10:00:00Z"}
-    {"type":"message","id":"message-1","timestamp":"2026-08-19T10:01:00Z","message":{"role":"assistant","provider":"openai-codex","model":"gpt-5.4","timestamp":"2026-08-19T10:01:00Z","usage":{"input":10,"output":2,"totalTokens":12}}}
+    {"type":"message","id":"message-1","timestamp":"2026-08-19T10:01:00Z",\
+    "message":{"role":"assistant","provider":"openai-codex","model":"gpt-5.4",\
+    "timestamp":"2026-08-19T10:01:00Z","usage":{"input":10,"output":2,"totalTokens":12}}}
     """
 
     private static func temporaryDirectory() -> URL {

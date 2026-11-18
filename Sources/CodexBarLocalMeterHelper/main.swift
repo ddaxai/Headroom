@@ -154,23 +154,23 @@ private final class HelperConnection: @unchecked Sendable {
     }
 
     private func receive() {
-        self.connection.receive(minimumIncompleteLength: 1, maximumLength: 64 * 1024) {
-            [self] data, _, isComplete, error in
-            if let data { self.buffer.append(data) }
-            guard self.buffer.count <= HelperServer.maximumBytes else {
-                self.send(HTTPResponse(statusCode: 413))
-                return
+        self.connection
+            .receive(minimumIncompleteLength: 1, maximumLength: 64 * 1024) { [self] data, _, isComplete, error in
+                if let data { self.buffer.append(data) }
+                guard self.buffer.count <= HelperServer.maximumBytes else {
+                    self.send(HTTPResponse(statusCode: 413))
+                    return
+                }
+                if let request = self.parseRequest() {
+                    self.send(self.handler(request))
+                    return
+                }
+                if error != nil || isComplete {
+                    self.send(HTTPResponse(statusCode: 400))
+                    return
+                }
+                self.receive()
             }
-            if let request = self.parseRequest() {
-                self.send(self.handler(request))
-                return
-            }
-            if error != nil || isComplete {
-                self.send(HTTPResponse(statusCode: 400))
-                return
-            }
-            self.receive()
-        }
     }
 
     private func parseRequest() -> HTTPRequest? {
