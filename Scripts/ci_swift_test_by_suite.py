@@ -9,6 +9,7 @@ import re
 import signal
 import subprocess
 import sys
+import threading
 import time
 from collections.abc import Iterable
 from dataclasses import dataclass, field as dataclass_field
@@ -38,9 +39,9 @@ class RunStats:
     timed_out_groups: int = 0
     recovered_groups: int = 0
     isolated_selection_retries: int = 0
-    # One entry per group that failed its first pass, naming the selections it ran. The live log
-    # can be too long to read back, so the summary repeats where to look.
-    failed_groups: list[str] = dataclass_field(default_factory=list)
+    # One entry per group that failed its first pass: the selections it ran and the test issues it
+    # reported. The live log can be too long to read back, so the summary repeats what failed.
+    failed_groups: list[tuple[str, list[str]]] = dataclass_field(default_factory=list)
 
     def summary_rows(self) -> list[tuple[str, str]]:
         shard = "none"
@@ -88,11 +89,39 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def run_command(command: list[str], timeout: int | None = None) -> int:
+# Swift Testing reports each failed expectation as `✘ Test "name" recorded an issue at File.swift:…`.
+TEST_ISSUE_PATTERN = re.compile(r"✘ Test .* recorded an issue")
+MAX_ISSUES_PER_GROUP = 20
+MAX_ISSUE_LENGTH = 300
+
+
+def echo_output(stream: Iterable[str], issues: list[str] | None) -> None:
+    for line in stream:
+        sys.stdout.write(line)
+        sys.stdout.flush()
+        if issues is None or len(issues) >= MAX_ISSUES_PER_GROUP:
+            continue
+        if TEST_ISSUE_PATTERN.search(line):
+            issue = line.strip()[:MAX_ISSUE_LENGTH]
+            if issue not in issues:
+                issues.append(issue)
+
+
+def run_command(command: list[str], timeout: int | None = None, issues: list[str] | None = None) -> int:
     print(f"+ {' '.join(command)}", flush=True)
-    process = subprocess.Popen(command, start_new_session=True)
+    process = subprocess.Popen(
+        command,
+        start_new_session=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    reader = threading.Thread(target=echo_output, args=(process.stdout, issues), daemon=True)
+    reader.start()
     try:
-        return process.wait(timeout=timeout)
+        status = process.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
         print(f"::warning::Command timed out after {timeout}s: {' '.join(command)}", flush=True)
         os.killpg(process.pid, signal.SIGTERM)
@@ -101,7 +130,10 @@ def run_command(command: list[str], timeout: int | None = None) -> int:
         except subprocess.TimeoutExpired:
             os.killpg(process.pid, signal.SIGKILL)
             process.wait()
-        return 124
+        status = 124
+    # A child that escaped the process group can keep the pipe open; never wait on it forever.
+    reader.join(timeout=10)
+    return status
 
 
 def swift_test_list(swift_command: list[str]) -> tuple[list[TestSelection], list[str]]:
@@ -170,8 +202,10 @@ def append_github_summary(stats: RunStats) -> None:
         summary.write("\n")
         if stats.failed_groups:
             summary.write("#### First-pass failed groups\n\n")
-            for line in stats.failed_groups:
-                summary.write(f"- {line}\n")
+            for group, issues in stats.failed_groups:
+                summary.write(f"- {group}\n")
+                for issue in issues:
+                    summary.write(f"  - `{issue.replace('`', "'")}`\n")
             summary.write("\n")
 
 
@@ -181,8 +215,10 @@ def print_timing_summary(stats: RunStats) -> None:
         print(f"- {field}: {value}", flush=True)
     if stats.failed_groups:
         print("First-pass failed groups:", flush=True)
-        for line in stats.failed_groups:
-            print(f"  - {line}", flush=True)
+        for group, issues in stats.failed_groups:
+            print(f"  - {group}", flush=True)
+            for issue in issues:
+                print(f"      {issue}", flush=True)
 
 
 def chunks(items: list[TestSelection], size: int) -> Iterable[list[TestSelection]]:
@@ -248,8 +284,13 @@ def command_for_group(suites: list[TestSelection], swift_command: list[str]) -> 
     return command
 
 
-def run_group(suites: list[TestSelection], timeout: int, swift_command: list[str]) -> int:
-    return run_command(command_for_group(suites, swift_command), timeout=timeout)
+def run_group(
+    suites: list[TestSelection],
+    timeout: int,
+    swift_command: list[str],
+    issues: list[str] | None = None,
+) -> int:
+    return run_command(command_for_group(suites, swift_command), timeout=timeout, issues=issues)
 
 
 def retry_selections_individually(
@@ -365,15 +406,18 @@ def main() -> int:
                 f"({len(group)} selections)",
                 flush=True,
             )
-            group_result = run_group(group, args.timeout, swift_command)
+            group_issues: list[str] = []
+            group_result = run_group(group, args.timeout, swift_command, issues=group_issues)
             print("::endgroup::", flush=True)
             if group_result == 0:
                 stats.first_pass_successful_groups += 1
                 continue
 
             stats.first_pass_failed_groups += 1
-            stats.failed_groups.append(
-                f"group {group_index}/{len(suite_groups)}: " + "; ".join(suite.name for suite in group))
+            stats.failed_groups.append((
+                f"group {group_index}/{len(suite_groups)}: " + "; ".join(suite.name for suite in group),
+                group_issues,
+            ))
             group_timed_out = group_result == 124
             if group_timed_out:
                 stats.timed_out_groups += 1
