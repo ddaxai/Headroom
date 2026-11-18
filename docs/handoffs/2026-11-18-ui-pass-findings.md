@@ -29,6 +29,12 @@ after that, launch the packaged app and look at Settings and the menu bar popup.
    sidebar collapses, the sidebar is resized or the title changes can only be confirmed by looking at it. If it still
    moves, a SwiftUI `ToolbarItem` for the pin is the likely fix, and the source assertion
    `!source.contains(".toolbar {")` would need updating.
+   CI on `macos-15-intel` already shows a geometry problem:
+   `settings titlebar accessory exposes the full pin button frame` fails at
+   `NinthRoundN4SettingsShellTests.swift:90` with `outsideRoot("pin")`, while the accessory width is still 56.
+   So part of the pin button's frame lies outside the accessory view, which can leave part of the button unclickable.
+   It also fails on the CI baseline branch, so the UI pass didn't cause it. Check the button frames in that window on
+   macOS 15 before changing the layout.
 5. **Unused code in `PreferencesSidebar.swift`.** `RelaySettingsSidebarRow`, `SettingsSidebarPaneRow`,
    `SettingsSidebarAboutRow`, `SettingsSidebarProviderRow` (plus `SettingsSidebarBrandIcon` and
    `SettingsSidebarStatusDot`, which only that row uses), `SettingsSidebarSearchField` and
