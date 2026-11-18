@@ -67,7 +67,7 @@ public struct UsageIdentity: Hashable, Codable, Sendable {
         Self(
             kind: .subscription,
             provider: .codex,
-            accountKey: Self.systemUnassignedAccountKey,
+            accountKey: self.systemUnassignedAccountKey,
             displayLabel: "System / Unassigned",
             localHomePath: localHomePath)
     }
@@ -77,10 +77,10 @@ public struct UsageIdentity: Hashable, Codable, Sendable {
     /// another when multiple ambient homes are visible.
     public static func systemUnassignedSourceID(localHomePath: String) -> String {
         let normalized = URL(fileURLWithPath: localHomePath, isDirectory: true).standardizedFileURL.path
-        var hash: UInt64 = 0xcbf29ce484222325
+        var hash: UInt64 = 0xCBF2_9CE4_8422_2325
         for byte in normalized.utf8 {
             hash ^= UInt64(byte)
-            hash &*= 0x100000001b3
+            hash &*= 0x100_0000_01B3
         }
         return String(format: "system-unassigned:%016llx", hash)
     }

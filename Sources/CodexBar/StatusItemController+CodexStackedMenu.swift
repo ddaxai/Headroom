@@ -419,7 +419,9 @@ extension StatusItemController {
             providerOptions
                 .filter { meteredRelayIDs.contains($0.id) }
                 .map(\.providerKey))
-        for snapshot in [self.codexMenuFullCorpusCostSnapshot, self.codexMenuRelayAggregateCostSnapshot].compactMap(\.self) {
+        for snapshot in [self.codexMenuFullCorpusCostSnapshot, self.codexMenuRelayAggregateCostSnapshot]
+            .compactMap(\.self)
+        {
             for breakdown in snapshot.rolling24Hours?.modelProviderBreakdowns ?? [] where breakdown.totalTokens > 0 {
                 codexProviderKeys.insert(RelayProviderKey.slug(for: breakdown.modelProvider))
             }

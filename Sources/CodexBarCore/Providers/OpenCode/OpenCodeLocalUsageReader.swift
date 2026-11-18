@@ -185,7 +185,7 @@ public struct OpenCodeLocalUsageReader: Sendable {
     }
 
     private static func profileKey(from rawProviderID: String?) -> String {
-        guard let rawProviderID else { return Self.unassignedProfileKey }
+        guard let rawProviderID else { return self.unassignedProfileKey }
         let name = rawProviderID.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { return Self.unassignedProfileKey }
         let key = RelayProviderKey.slug(for: name)

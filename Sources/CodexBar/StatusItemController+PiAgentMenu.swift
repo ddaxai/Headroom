@@ -33,8 +33,9 @@ private struct PiAgentUnavailableMenuCard: View {
             } label: {
                 Image(systemName: "arrow.clockwise")
                     .font(HeadroomTypography.text(11, weight: .semibold))
-                    .frame(width: PiAgentUsageCardPresentation.refreshButtonSize,
-                           height: PiAgentUsageCardPresentation.refreshButtonSize)
+                    .frame(
+                        width: PiAgentUsageCardPresentation.refreshButtonSize,
+                        height: PiAgentUsageCardPresentation.refreshButtonSize)
                     .contentShape(Circle())
             }
             .buttonStyle(.plain)

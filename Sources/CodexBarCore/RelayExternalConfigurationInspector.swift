@@ -360,7 +360,10 @@ extension RelayExternalConfigurationInspector {
                             apiFormat: format,
                             model: topModel,
                             isActive: true,
-                            credentialKind: Self.tomlCredentialKind(fields: fields, authFields: authFields, fallbackKey: authJSONKey),
+                            credentialKind: Self.tomlCredentialKind(
+                                fields: fields,
+                                authFields: authFields,
+                                fallbackKey: authJSONKey),
                             importableAPIKey: Self.tomlImportableKey(fields: fields, fallbackKey: authJSONKey))
                         activeRoute = .external(detail, displayName: displayName)
                         observations.append(RawProviderObservation(
@@ -830,7 +833,7 @@ extension RelayExternalConfigurationInspector {
             let groupID = "\(slug)|\(endpointKey)"
             if var existing = bucketsByKey[groupID] {
                 if let currentTarget = existing.targets[obs.detail.app] {
-                    if obs.detail.isActive && !currentTarget.isActive {
+                    if obs.detail.isActive, !currentTarget.isActive {
                         existing.targets[obs.detail.app] = obs.detail
                     }
                 } else {
@@ -892,7 +895,7 @@ extension RelayExternalConfigurationInspector {
 
     static func readJSONCObject(_ url: URL, fileSystem: any RelayConfigurationFileSystem) -> [String: Any]? {
         guard let data = self.readDataIfExists(url, fileSystem: fileSystem),
-              let sanitized = Self.stripJSONCCommentsAndTrailingCommas(data)
+              let sanitized = stripJSONCCommentsAndTrailingCommas(data)
         else { return nil }
         return (try? JSONSerialization.jsonObject(with: sanitized)) as? [String: Any]
     }
@@ -999,7 +1002,7 @@ extension RelayExternalConfigurationInspector {
     }
 
     private static func extractPiAuthKey(for providerID: String, in authRoot: [String: Any]) -> String? {
-        if let direct = Self.nonEmpty(authRoot[providerID] as? String) {
+        if let direct = nonEmpty(authRoot[providerID] as? String) {
             return direct
         }
         if let dict = authRoot[providerID] as? [String: Any] {
@@ -1012,7 +1015,7 @@ extension RelayExternalConfigurationInspector {
     }
 
     private static func classifyJSONAPIKey(_ rawKey: String?) -> (ExternalRelayCredentialKind, String?) {
-        guard let rawKey = Self.nonEmpty(rawKey) else { return (.missing, nil) }
+        guard let rawKey = nonEmpty(rawKey) else { return (.missing, nil) }
         if rawKey.hasPrefix("{env:"), rawKey.hasSuffix("}") {
             let name = String(rawKey.dropFirst(5).dropLast())
             return (.environmentVariable(name), nil)
@@ -1024,7 +1027,7 @@ extension RelayExternalConfigurationInspector {
     }
 
     private static func usesDefaultOpenAIEnvKey(_ fields: [String: SimpleTOMLValue]) -> Bool {
-        guard let envKey = Self.nonEmpty(fields["env_key"]?.stringValue) else { return true }
+        guard let envKey = nonEmpty(fields["env_key"]?.stringValue) else { return true }
         return envKey == "OPENAI_API_KEY"
     }
 
@@ -1032,8 +1035,8 @@ extension RelayExternalConfigurationInspector {
         fields: [String: SimpleTOMLValue],
         fallbackKey: String?) -> String?
     {
-        Self.nonEmpty(fields["experimental_bearer_token"]?.stringValue)
-            ?? Self.nonEmpty(fields["api_key"]?.stringValue)
+        self.nonEmpty(fields["experimental_bearer_token"]?.stringValue)
+            ?? self.nonEmpty(fields["api_key"]?.stringValue)
             ?? fallbackKey
     }
 
@@ -1042,10 +1045,10 @@ extension RelayExternalConfigurationInspector {
         authFields: [String: SimpleTOMLValue],
         fallbackKey: String?) -> ExternalRelayCredentialKind
     {
-        if Self.tomlImportableKey(fields: fields, fallbackKey: fallbackKey) != nil {
+        if self.tomlImportableKey(fields: fields, fallbackKey: fallbackKey) != nil {
             return .inlineAPIKey
         }
-        if let command = Self.nonEmpty(authFields["command"]?.stringValue) {
+        if let command = nonEmpty(authFields["command"]?.stringValue) {
             return .commandHelper(command)
         }
         if let envKey = Self.nonEmpty(fields["env_key"]?.stringValue) {
@@ -1105,7 +1108,7 @@ extension RelayExternalConfigurationInspector {
             if baseURL.port == 15721 {
                 return "CC Switch Local"
             }
-            if let providerID = Self.nonEmpty(providerID) {
+            if let providerID = nonEmpty(providerID) {
                 return providerID
             }
             return baseURL.port.map { "Local API (:\($0))" } ?? "Local API"
@@ -1115,7 +1118,8 @@ extension RelayExternalConfigurationInspector {
         }
         guard let host = baseURL.host else { return "External API" }
         let parts = host.split(separator: ".").map(String.init)
-        let filtered = parts.filter { !["api", "www", "v1", "com", "net", "org", "io", "ai", "dev", "tech"].contains($0.lowercased()) }
+        let filtered = parts
+            .filter { !["api", "www", "v1", "com", "net", "org", "io", "ai", "dev", "tech"].contains($0.lowercased()) }
         if let main = filtered.first ?? parts.first, !main.isEmpty {
             return main.prefix(1).uppercased() + main.dropFirst()
         }
@@ -1237,7 +1241,7 @@ struct SimpleTOMLDocument {
     private static func parseValue(_ raw: String) -> SimpleTOMLValue? {
         if raw == "true" { return .bool(true) }
         if raw == "false" { return .bool(false) }
-        if let str = Self.parseQuotedString(raw) {
+        if let str = parseQuotedString(raw) {
             return .string(str)
         }
         if raw.hasPrefix("["), raw.hasSuffix("]") {

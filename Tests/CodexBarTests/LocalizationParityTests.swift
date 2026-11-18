@@ -4,8 +4,8 @@ import Testing
 struct LocalizationParityTests {
     @Test
     func `English and Simplified Chinese key sets match exactly`() throws {
-        let englishKeys = Set(try Self.catalog("en").keys)
-        let chineseKeys = Set(try Self.catalog("zh-Hans").keys)
+        let englishKeys = try Set(Self.catalog("en").keys)
+        let chineseKeys = try Set(Self.catalog("zh-Hans").keys)
         let missingFromChinese = englishKeys.subtracting(chineseKeys).sorted()
         let missingFromEnglish = chineseKeys.subtracting(englishKeys).sorted()
 
@@ -55,8 +55,8 @@ struct LocalizationParityTests {
 
     @Test
     func `parity diagnostics expose both key set differences`() {
-        let englishKeys: Set<String> = ["shared", "english_only"]
-        let chineseKeys: Set<String> = ["shared", "chinese_only"]
+        let englishKeys: Set = ["shared", "english_only"]
+        let chineseKeys: Set = ["shared", "chinese_only"]
 
         #expect(englishKeys.subtracting(chineseKeys).sorted() == ["english_only"])
         #expect(chineseKeys.subtracting(englishKeys).sorted() == ["chinese_only"])

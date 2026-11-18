@@ -631,7 +631,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let fetcher = UsageFetcher()
         let browserDetection = BrowserDetection(cacheTTL: BrowserDetection.defaultCacheTTL)
         let fallbackAccount = fetcher.loadAccountInfo()
-        let fallbackStore = UsageDomain(fetcher: fetcher, browserDetection: browserDetection, settings: fallbackSettings)
+        let fallbackStore = UsageDomain(
+            fetcher: fetcher,
+            browserDetection: browserDetection,
+            settings: fallbackSettings)
         let fallbackManagedCodexAccountCoordinator = ManagedCodexAccountCoordinator()
         let fallbackCodexAccountPromotionCoordinator = CodexAccountPromotionCoordinator(
             settingsStore: fallbackSettings,

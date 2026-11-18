@@ -73,8 +73,8 @@ struct OverviewMenuCardRowView: View {
 
     let model: UsageMenuCardView.Model
     let storageText: String?
-    var speedText: String? = nil
-    var speedTooltip: String? = nil
+    var speedText: String?
+    var speedTooltip: String?
     let width: CGFloat
     @Environment(\.menuItemHighlighted) private var isHighlighted
 

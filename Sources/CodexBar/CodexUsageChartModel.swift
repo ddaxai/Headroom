@@ -7,7 +7,9 @@ enum UsageWindow: String, CaseIterable, Identifiable {
     case days7 = "7D"
     case days30 = "30D"
 
-    var id: String { self.rawValue }
+    var id: String {
+        self.rawValue
+    }
 }
 
 struct CodexUsageChartSlot: Equatable, Identifiable {
@@ -29,11 +31,11 @@ enum CodexUsageChartProjection {
     {
         switch window {
         case .hours24:
-            Self.hours(entries: snapshot.hourly24Hours, count: 24, now: now, calendar: calendar)
+            self.hours(entries: snapshot.hourly24Hours, count: 24, now: now, calendar: calendar)
         case .days7:
-            Self.days(entries: snapshot.daily, count: 7, now: now, calendar: calendar)
+            self.days(entries: snapshot.daily, count: 7, now: now, calendar: calendar)
         case .days30:
-            Self.days(entries: snapshot.daily, count: 30, now: now, calendar: calendar)
+            self.days(entries: snapshot.daily, count: 30, now: now, calendar: calendar)
         }
     }
 
@@ -42,7 +44,7 @@ enum CodexUsageChartProjection {
         now: Date,
         calendar: Calendar = .current) -> [CodexUsageChartSlot]
     {
-        Self.hours(entries: entries, count: 24, now: now, calendar: calendar)
+        self.hours(entries: entries, count: 24, now: now, calendar: calendar)
     }
 
     private static func hours(
@@ -78,7 +80,7 @@ enum CodexUsageChartProjection {
         now: Date,
         calendar: Calendar = .current) -> [CodexUsageChartSlot]
     {
-        Self.days(entries: entries, count: 30, now: now, calendar: calendar)
+        self.days(entries: entries, count: 30, now: now, calendar: calendar)
     }
 
     private static func days(

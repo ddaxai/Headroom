@@ -24,7 +24,7 @@ struct ProviderAgentEntryTests {
     }
 
     @Test
-    func `Pi command missing is unavailable`() throws {
+    func `Pi command missing is unavailable`() {
         let root = Self.temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: root) }
 
@@ -107,9 +107,9 @@ struct ProviderAgentEntryTests {
 
     @Test
     @MainActor
-    func `Pi usage is enabled by default and persists its toggle`() {
+    func `Pi usage is enabled by default and persists its toggle`() throws {
         let suite = "ProviderAgentEntryTests-pi-enabled-\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
+        let defaults = try #require(UserDefaults(suiteName: suite))
         defaults.removePersistentDomain(forName: suite)
         defer { defaults.removePersistentDomain(forName: suite) }
         let settings = testSettingsStore(suiteName: suite)

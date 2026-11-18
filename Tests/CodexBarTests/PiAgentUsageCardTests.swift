@@ -6,8 +6,21 @@ struct PiAgentUsageCardTests {
     @Test
     func `pi card exposes relay profile sections`() {
         let report = CostUsageDailyReport(
-            data: [.init(date: "2026-08-20", inputTokens: 10, outputTokens: 5, totalTokens: 15, costUSD: 0.015, modelsUsed: ["gpt-5.4"], modelBreakdowns: nil)],
-            summary: .init(totalInputTokens: 10, totalOutputTokens: 5, cacheReadTokens: nil, cacheCreationTokens: nil, totalTokens: 15, totalCostUSD: 0.015))
+            data: [.init(
+                date: "2026-08-20",
+                inputTokens: 10,
+                outputTokens: 5,
+                totalTokens: 15,
+                costUSD: 0.015,
+                modelsUsed: ["gpt-5.4"],
+                modelBreakdowns: nil)],
+            summary: .init(
+                totalInputTokens: 10,
+                totalOutputTokens: 5,
+                cacheReadTokens: nil,
+                cacheCreationTokens: nil,
+                totalTokens: 15,
+                totalCostUSD: 0.015))
         let snapshot = PiAgentUsageCardSnapshot(
             profileReports: ["liang": [PiAgentUsageCardSnapshot.WindowKind.last30Days: report]])
 

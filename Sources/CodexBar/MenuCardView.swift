@@ -14,18 +14,27 @@ struct HeadroomProviderCardSectionPolicy: Equatable {
         self.showsCost = descriptor.capabilities.contains(.cost)
     }
 
-    var showsMetricRows: Bool { self.showsQuota || self.showsCost }
-    var showsTokenRows: Bool { self.showsLocalUsage || self.showsCost }
+    var showsMetricRows: Bool {
+        self.showsQuota || self.showsCost
+    }
+
+    var showsTokenRows: Bool {
+        self.showsLocalUsage || self.showsCost
+    }
 
     /// Missing sections are omitted by conditional composition; no spacer or divider is reserved.
-    var reservesMissingSections: Bool { false }
+    var reservesMissingSections: Bool {
+        false
+    }
 }
 
 /// SwiftUI card used inside the NSMenu to mirror Apple's rich menu panels.
 struct UsageMenuCardView: View {
     enum RefreshPresentation {
         static let buttonSize: CGFloat = 22
-        static var accessibilityLabel: String { L("local_usage_refresh") }
+        static var accessibilityLabel: String {
+            L("local_usage_refresh")
+        }
     }
 
     struct Model {
@@ -171,7 +180,7 @@ struct UsageMenuCardView: View {
         var codexResetCredits: CodexResetCreditsPresentation?
         let providerCost: ProviderCostSection?
         let tokenUsage: TokenUsageSection?
-        var agentSpeed: AgentSpeedPresentation? = nil
+        var agentSpeed: AgentSpeedPresentation?
         let placeholder: String?
         let progressColor: Color
     }
@@ -180,7 +189,7 @@ struct UsageMenuCardView: View {
     var layoutModel: Model?
     let width: CGFloat
     var planAction: (() -> Void)?
-    var onRefresh: (@MainActor () async -> Void)? = nil
+    var onRefresh: (@MainActor () async -> Void)?
     @Environment(\.menuItemHighlighted) private var isHighlighted
     @Environment(\.menuCardRefreshMonitor) private var refreshMonitor
 
@@ -692,7 +701,7 @@ struct UsageMenuCardHeaderSectionView: View {
     let model: UsageMenuCardView.Model
     let showDivider: Bool
     let width: CGFloat
-    var onRefresh: (@MainActor () async -> Void)? = nil
+    var onRefresh: (@MainActor () async -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: UsageMenuCardLayout.headerContentSpacing) {

@@ -127,7 +127,8 @@ public struct AgentSpeedSummary: Sendable, Equatable, Codable {
         guard let latest = eligible.last else { return nil }
 
         let cutoff = now.addingTimeInterval(-rollingWindowSeconds)
-        let recent = eligible.filter { $0.sample.timestamp >= cutoff && $0.sample.timestamp <= now.addingTimeInterval(60) }
+        let recent = eligible
+            .filter { $0.sample.timestamp >= cutoff && $0.sample.timestamp <= now.addingTimeInterval(60) }
 
         var exactOutput = 0
         var exactGenMs: Int64 = 0
@@ -319,8 +320,8 @@ public final class LocalAgentSpeedScanner: @unchecked Sendable {
         sources: Set<LocalAgentSpeedSource> = Set(LocalAgentSpeedSource.allCases),
         now: Date = Date()) -> LocalAgentSpeedReport
     {
-        let fileCutoff = min(now, Date()).addingTimeInterval(-TimeInterval(configuration.lookbackDays) * 86_400)
-        let eventCutoff = now.addingTimeInterval(-TimeInterval(configuration.lookbackDays) * 86_400)
+        let fileCutoff = min(now, Date()).addingTimeInterval(-TimeInterval(configuration.lookbackDays) * 86400)
+        let eventCutoff = now.addingTimeInterval(-TimeInterval(configuration.lookbackDays) * 86400)
         var allSamples: [AgentSpeedSample] = []
 
         if sources.contains(.antigravity) {
@@ -364,28 +365,40 @@ public final class LocalAgentSpeedScanner: @unchecked Sendable {
         let codexOfficialSummary = AgentSpeedSummary.summarize(codexOfficialSamples, now: now)
 
         var codexByAccountKey: [String: AgentSpeedSummary] = [:]
-        for (key, group) in Dictionary(grouping: codexOfficialSamples.filter { $0.codexAccountKey != nil }, by: { $0.codexAccountKey! }) {
+        for (key, group) in Dictionary(
+            grouping: codexOfficialSamples.filter { $0.codexAccountKey != nil },
+            by: { $0.codexAccountKey! })
+        {
             if let summary = AgentSpeedSummary.summarize(group, now: now) {
                 codexByAccountKey[key] = summary
             }
         }
 
         var codexByHomePath: [String: AgentSpeedSummary] = [:]
-        for (home, group) in Dictionary(grouping: codexSamples.filter { $0.codexHomePath != nil }, by: { $0.codexHomePath! }) {
+        for (home, group) in Dictionary(
+            grouping: codexSamples.filter { $0.codexHomePath != nil },
+            by: { $0.codexHomePath! })
+        {
             if let summary = AgentSpeedSummary.summarize(group, now: now) {
                 codexByHomePath[home] = summary
             }
         }
 
         var codexByRelayProfileID: [UUID: AgentSpeedSummary] = [:]
-        for (profileID, group) in Dictionary(grouping: codexSamples.filter { $0.codexRelayProfileID != nil }, by: { $0.codexRelayProfileID! }) {
+        for (profileID, group) in Dictionary(
+            grouping: codexSamples.filter { $0.codexRelayProfileID != nil },
+            by: { $0.codexRelayProfileID! })
+        {
             if let summary = AgentSpeedSummary.summarize(group, now: now) {
                 codexByRelayProfileID[profileID] = summary
             }
         }
 
         var codexByProviderKey: [String: AgentSpeedSummary] = [:]
-        for (providerKey, group) in Dictionary(grouping: codexSamples.filter { $0.providerKey != nil }, by: { $0.providerKey! }) {
+        for (providerKey, group) in Dictionary(
+            grouping: codexSamples.filter { $0.providerKey != nil },
+            by: { $0.providerKey! })
+        {
             if let summary = AgentSpeedSummary.summarize(group, now: now) {
                 codexByProviderKey[providerKey] = summary
             }
@@ -1445,15 +1458,15 @@ extension LocalAgentSpeedScanner {
             Self.sqliteTableExists(db, name: "session_message")
         let sql = hasV2
             ? """
-              SELECT data, type FROM session_message
-              WHERE time_created >= ?1 AND type IN ('assistant', 'compaction')
-              ORDER BY time_created ASC
-              """
+            SELECT data, type FROM session_message
+            WHERE time_created >= ?1 AND type IN ('assistant', 'compaction')
+            ORDER BY time_created ASC
+            """
             : """
-              SELECT data, NULL FROM message
-              WHERE time_created >= ?1
-              ORDER BY time_created ASC
-              """
+            SELECT data, NULL FROM message
+            WHERE time_created >= ?1
+            ORDER BY time_created ASC
+            """
 
         var stmt: OpaquePointer?
         guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { return [] }
@@ -1704,7 +1717,7 @@ extension LocalAgentSpeedScanner {
 
     fileprivate static func parseFlexibleTimestampMs(_ raw: Any?) -> Int64? {
         if let str = raw as? String {
-            return Self.parseISO8601Millis(str)
+            return self.parseISO8601Millis(str)
         }
         if let num = Self.int64Value(raw) {
             // Distinguish Unix seconds vs Unix milliseconds
@@ -1717,7 +1730,7 @@ extension LocalAgentSpeedScanner {
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmed.count >= 20 else { return nil }
         let bytes = Array(trimmed.utf8)
-        // Fast ASCII path for YYYY-MM-DDTHH:MM:SS(.fraction)?(Z|[+-]HH:MM)
+        /// Fast ASCII path for YYYY-MM-DDTHH:MM:SS(.fraction)?(Z|[+-]HH:MM)
         func digit(_ idx: Int) -> Int? {
             let b = bytes[idx]
             return (b >= 48 && b <= 57) ? Int(b - 48) : nil
@@ -1731,7 +1744,7 @@ extension LocalAgentSpeedScanner {
             }
             return acc
         }
-        if bytes[4] == 45, bytes[7] == 45, (bytes[10] == 84 || bytes[10] == 116 || bytes[10] == 32),
+        if bytes[4] == 45, bytes[7] == 45, bytes[10] == 84 || bytes[10] == 116 || bytes[10] == 32,
            bytes[13] == 58, bytes[16] == 58,
            let year = num(0, 4), let month = num(5, 2), let day = num(8, 2),
            let hour = num(11, 2), let minute = num(14, 2), let second = num(17, 2)
@@ -1765,7 +1778,7 @@ extension LocalAgentSpeedScanner {
                 }
             }
             if let epochDays = Self.daysFromCivil(year: year, month: month, day: day) {
-                let totalSeconds = Int64(epochDays) * 86_400
+                let totalSeconds = Int64(epochDays) * 86400
                     + Int64(hour * 3600 + minute * 60 + second - tzOffsetSeconds)
                 return totalSeconds * 1000 + Int64(millis)
             }

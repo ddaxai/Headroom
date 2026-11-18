@@ -925,7 +925,7 @@ extension CodexLocalProjectUsageIndexer {
     }
 
     static func stableScopeSignature(options: CostUsageScanner.Options) -> String {
-        self.stableScopeSignature(options: options, scannerVersion: Self.scannerVersion)
+        self.stableScopeSignature(options: options, scannerVersion: self.scannerVersion)
     }
 
     static func stableScopeSignature(

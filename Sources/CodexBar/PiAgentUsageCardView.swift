@@ -5,7 +5,9 @@ enum PiAgentUsageCardPresentation {
     static let refreshButtonSize: CGFloat = 22
     static let profileCardHeight: CGFloat = 54
     static let profileCardHeightWithSpeed: CGFloat = 68
-    static var refreshAccessibilityLabel: String { L("pi_agent_refresh") }
+    static var refreshAccessibilityLabel: String {
+        L("pi_agent_refresh")
+    }
 }
 
 enum PiAgentUsageRefreshCadence {
@@ -19,8 +21,8 @@ enum PiAgentUsageRefreshCadence {
 struct PiAgentProfileCardView: View {
     let section: PiAgentUsageCardSnapshot.ProfileSection
     let width: CGFloat
-    var speedLine: String? = nil
-    var speedTooltip: String? = nil
+    var speedLine: String?
+    var speedTooltip: String?
 
     var body: some View {
         HStack(alignment: .center, spacing: 9) {
@@ -79,8 +81,8 @@ struct PiAgentProfileCardView: View {
 struct PiAgentUsageSummaryView: View {
     let snapshot: PiAgentUsageCardSnapshot
     let width: CGFloat
-    var speedBadgeText: String? = nil
-    var speedTooltip: String? = nil
+    var speedBadgeText: String?
+    var speedTooltip: String?
     let onRefresh: @MainActor () async -> Void
 
     var body: some View {
