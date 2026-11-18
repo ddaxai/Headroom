@@ -106,12 +106,14 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.macos-tests == 'true' && needs.changes.outputs.macos-tests-deferred != 'true' }}
     runs-on: macos-15-intel
-    timeout-minutes: 60
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
         # Two shards amortize SwiftPM's per-shard discovery/cold build.
-        # Each shard remains within the 50-minute Swift Test timeout.
+        # On macos-15-intel a shard spends ~27 minutes on the cold build and
+        # discovery and ~19 minutes executing, and slower runners take about a
+        # third longer, so the Swift Test step allows 75 minutes.
         shard-index: [0, 1]
         shard-count: [2]
     steps:
@@ -143,7 +145,7 @@ jobs:
 
       - name: Swift Test
         # Keep small batches to reduce SwiftPM process overhead without returning to one aggregate run.
-        timeout-minutes: 50
+        timeout-minutes: 75
         run: |
           CODEXBAR_TEST_GROUP_SIZE=4 \
             CODEXBAR_TEST_SUITE_TIMEOUT=120 \
