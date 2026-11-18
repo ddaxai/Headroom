@@ -58,7 +58,7 @@ extension StatusItemController {
                         return RelayQuickSwitchOutcome(
                             succeeded: false,
                             selection: .official(.codex),
-                            message: "菜单已关闭。")
+                            message: L("relay_menu_closed"))
                     }
                     let outcome = self.relayQuickSwitchCoordinator.select(selection, confirmed: confirmed)
                     if outcome.succeeded {

@@ -260,52 +260,56 @@ struct UpdatePane: View {
         Form {
             Section(L("update_version_section")) {
                 LabeledContent(L("update_current_version"), value: self.versionAndCommitString)
-                HStack {
-                    Button {
-                        self.lastManualCheckAt = Date().timeIntervalSince1970
-                        self.updater.checkForUpdates(nil)
-                    } label: {
-                        Label(L("check_for_updates"), systemImage: "arrow.clockwise")
+                if self.updater.isAvailable {
+                    HStack {
+                        Button {
+                            self.lastManualCheckAt = Date().timeIntervalSince1970
+                            self.updater.checkForUpdates(nil)
+                        } label: {
+                            Label(L("check_for_updates"), systemImage: "arrow.clockwise")
+                        }
+                        Spacer()
+                        Text(self.lastCheckText)
+                            .font(ConsoleDesign.mono(10))
+                            .foregroundStyle(ConsoleDesign.tertiaryForeground)
                     }
-                    .disabled(!self.updater.isAvailable)
-                    Spacer()
-                    Text(self.lastCheckText)
-                        .font(ConsoleDesign.mono(10))
-                        .foregroundStyle(ConsoleDesign.tertiaryForeground)
+                } else {
+                    // Builds without a feed cannot use Sparkle. Say so once here instead of
+                    // listing automatic-update controls that would have no effect.
+                    Text(self.updater.unavailableReason ?? L("updates_unavailable"))
+                        .foregroundStyle(ConsoleDesign.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
-            Section(L("update_automatic_section")) {
-                Toggle(L("check_updates_auto"), isOn: self.automaticChecksBinding)
-                Picker(L("update_check_frequency"), selection: self.frequencyBinding) {
-                    ForEach(ConsoleUpdateFrequency.allCases) { frequency in
-                        Text(frequency.title).tag(frequency)
+            if self.updater.isAvailable {
+                Section(L("update_automatic_section")) {
+                    Toggle(L("check_updates_auto"), isOn: self.automaticChecksBinding)
+                    Picker(L("update_check_frequency"), selection: self.frequencyBinding) {
+                        ForEach(ConsoleUpdateFrequency.allCases) { frequency in
+                            Text(frequency.title).tag(frequency)
+                        }
                     }
-                }
-                Toggle(L("update_automatic_downloads"), isOn: self.automaticDownloadsBinding)
-                    .disabled(!self.updater.automaticallyChecksForUpdates)
-                Picker(L("update_channel"), selection: self.updateChannelBinding) {
-                    ForEach(UpdateChannel.allCases) { channel in
-                        Text(channel.displayName).tag(channel)
+                    Toggle(L("update_automatic_downloads"), isOn: self.automaticDownloadsBinding)
+                        .disabled(!self.updater.automaticallyChecksForUpdates)
+                    Picker(L("update_channel"), selection: self.updateChannelBinding) {
+                        ForEach(UpdateChannel.allCases) { channel in
+                            Text(channel.displayName).tag(channel)
+                        }
                     }
                 }
             }
 
             self.sourceUpdateSection
 
-            Section(L("Advanced")) {
-                LabeledContent(L("update_feed_url")) {
-                    Text(self.feedURL)
-                        .font(ConsoleDesign.mono(10))
-                        .textSelection(.enabled)
-                        .foregroundStyle(ConsoleDesign.secondaryText)
-                }
-            }
-
-            if !self.updater.isAvailable {
-                Section {
-                    Text(self.updater.unavailableReason ?? L("updates_unavailable"))
-                        .foregroundStyle(ConsoleDesign.secondaryText)
+            if self.updater.isAvailable {
+                Section(L("Advanced")) {
+                    LabeledContent(L("update_feed_url")) {
+                        Text(self.feedURL)
+                            .font(ConsoleDesign.mono(10))
+                            .textSelection(.enabled)
+                            .foregroundStyle(ConsoleDesign.secondaryText)
+                    }
                 }
             }
         }
@@ -326,7 +330,7 @@ struct UpdatePane: View {
 
     private var sourceUpdateSection: some View {
         Section {
-            LabeledContent(L("source_update_current_build"), value: self.versionAndCommitString)
+            // The current build is already shown in the Version section directly above.
             LabeledContent(L("source_update_source_directory")) {
                 Text(self.sourceUpdater.configuration.sourceDirectory.path)
                     .font(ConsoleDesign.mono(10))

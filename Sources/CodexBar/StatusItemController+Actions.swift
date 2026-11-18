@@ -588,7 +588,7 @@ extension StatusItemController: StatusItemMenuPersistentActionDelegate {
     {
         let outcome = self.relayQuickSwitchCoordinator.select(selection)
         guard outcome.succeeded else {
-            self.presentLoginAlert(title: "Codex 切换失败", message: outcome.message)
+            self.presentLoginAlert(title: L("codex_switch_failed_title"), message: outcome.message)
             return outcome
         }
         self.applyIcon(phase: nil)

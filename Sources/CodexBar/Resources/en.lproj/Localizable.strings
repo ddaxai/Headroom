@@ -1788,3 +1788,17 @@
 "Toggle Sidebar" = "Toggle Sidebar";
 "Requesting login…" = "Requesting login…";
 "Waiting in browser…" = "Waiting in browser…";
+
+/* Menu popup */
+"relay_usage_line_remaining" = "Balance %@";
+"relay_usage_line_used_of_total" = "Used %@ / %@";
+"relay_usage_line_used" = "Used %@";
+"relay_usage_line_total" = "Total %@";
+"relay_menu_custom_api" = "Custom API";
+"relay_menu_quota" = "Balance";
+"codex_hourly_usage_menu_title" = "Past 24 hours · Hourly usage";
+"codex_switch_failed_title" = "Codex switch failed";
+"relay_menu_closed" = "Menu closed";
+"chart_reset_filter" = "Reset filter";
+"relay_status_item_accessibility" = "Headroom Relay, Codex remaining %@";
+"about_credits_tagline" = "Headroom — a focused integration of CodexBar and CC Switch";

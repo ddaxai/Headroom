@@ -1759,3 +1759,17 @@
 "Toggle Sidebar" = "显示或隐藏侧边栏";
 "Requesting login…" = "正在请求登录…";
 "Waiting in browser…" = "正在浏览器中等待…";
+
+/* Menu popup */
+"relay_usage_line_remaining" = "余额 %@";
+"relay_usage_line_used_of_total" = "已用 %@ / %@";
+"relay_usage_line_used" = "已用 %@";
+"relay_usage_line_total" = "总额 %@";
+"relay_menu_custom_api" = "自定义 API";
+"relay_menu_quota" = "额度";
+"codex_hourly_usage_menu_title" = "过去 24 小时 · 分时用量";
+"codex_switch_failed_title" = "Codex 切换失败";
+"relay_menu_closed" = "菜单已关闭";
+"chart_reset_filter" = "重置筛选";
+"relay_status_item_accessibility" = "Headroom Relay，Codex 剩余 %@";
+"about_credits_tagline" = "Headroom — CodexBar 与 CC Switch 的定向整合分支";

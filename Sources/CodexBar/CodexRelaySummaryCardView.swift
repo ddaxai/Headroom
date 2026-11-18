@@ -74,7 +74,7 @@ struct CodexRelaySummaryCardModel {
         if self.localMeterProtocolStatus == .unsupported {
             return L("local_meter_protocol_unsupported")
         }
-        return "自定义 API"
+        return L("relay_menu_custom_api")
     }
 
     private var localMeterProtocolStatus: LocalMeterProtocolStatus {
@@ -372,8 +372,8 @@ struct CodexRelaySummaryCardView: View {
     }
 
     private var statusText: String {
-        if self.model.isActive { return "使用中" }
-        return self.model.isReady ? "已保存" : "未就绪"
+        if self.model.isActive { return L("relay_usage_card_status_active") }
+        return self.model.isReady ? L("relay_usage_card_status_saved") : L("relay_usage_card_status_not_ready")
     }
 
     private var statusForegroundColor: Color {
@@ -390,7 +390,7 @@ struct CodexRelaySummaryCardView: View {
         guard let planName = summary.planName?.trimmingCharacters(in: .whitespacesAndNewlines),
               !planName.isEmpty
         else {
-            return "额度"
+            return L("relay_menu_quota")
         }
         return planName
     }
