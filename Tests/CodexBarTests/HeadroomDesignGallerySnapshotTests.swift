@@ -34,12 +34,12 @@ struct HeadroomDesignGallerySnapshotTests {
         .never
     }
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `gallery cards preserve the pre-panel appearance`() throws {
         try Self.assertGalleryReferences()
     }
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `reset credit fixtures cover available and unavailable states`() throws {
         try Self.assertResetCreditReferences()
     }
@@ -102,7 +102,7 @@ struct HeadroomDesignGallerySnapshotTests {
         }
     }
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `pi agent card has a dedicated visual baseline`() throws {
         try TypographySnapshotTests.registerBerkeleyMono()
         let controller = NSHostingController(rootView: SnapshotPiAgentCard())

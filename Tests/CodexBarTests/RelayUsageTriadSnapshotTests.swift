@@ -13,7 +13,7 @@ struct RelayUsageTriadSnapshotTests {
     private static let narrowWidth: CGFloat = 220
     private static let snapshotHeight: CGFloat = 240
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `relay triad renders wide and narrow cards in both languages`() throws {
         try TypographySnapshotTests.registerBerkeleyMono()
 

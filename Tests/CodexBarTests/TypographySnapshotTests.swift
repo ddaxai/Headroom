@@ -15,7 +15,7 @@ struct TypographySnapshotTests {
             "HeadroomTypography.swift must own the frozen font and line-height values")
     }
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `typography metrics and Berkeley Mono faces remain frozen`() throws {
         try Self.registerBerkeleyMono()
 
@@ -31,22 +31,22 @@ struct TypographySnapshotTests {
         #expect(HeadroomTypography.relayStatusItemBaselineOffset == -1)
     }
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `English typography matches baseline`() throws {
         try self.assertSnapshot(.english)
     }
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `digit typography matches baseline`() throws {
         try self.assertSnapshot(.digits)
     }
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `Simplified Chinese typography matches baseline`() throws {
         try self.assertSnapshot(.simplifiedChinese)
     }
 
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `mixed typography matches baseline`() throws {
         try self.assertSnapshot(.mixed)
     }
@@ -149,13 +149,25 @@ struct TypographySnapshotTests {
         return Dictionary(entries.map { ($0, 1) }, uniquingKeysWith: +)
     }
 
+    private nonisolated static let berkeleyMonoFaces = [
+        (file: "Berkeley Mono Regular.otf", name: "BerkeleyMono-Regular"),
+        (file: "Berkeley Mono Bold.otf", name: "BerkeleyMono-Bold"),
+    ]
+
+    private nonisolated static var berkeleyMonoFontDirectory: URL {
+        FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Fonts")
+    }
+
+    nonisolated static var berkeleyMonoIsInstalled: Bool {
+        self.berkeleyMonoFaces.allSatisfy { face in
+            FileManager.default.fileExists(
+                atPath: self.berkeleyMonoFontDirectory.appendingPathComponent(face.file).path)
+        }
+    }
+
     static func registerBerkeleyMono() throws {
-        let faces = [
-            (file: "Berkeley Mono Regular.otf", name: "BerkeleyMono-Regular"),
-            (file: "Berkeley Mono Bold.otf", name: "BerkeleyMono-Bold"),
-        ]
-        let fontDirectory = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Fonts")
+        let faces = self.berkeleyMonoFaces
+        let fontDirectory = self.berkeleyMonoFontDirectory
         for face in faces where NSFont(name: face.name, size: 11) == nil {
             let url = fontDirectory.appendingPathComponent(face.file)
             var error: Unmanaged<CFError>?

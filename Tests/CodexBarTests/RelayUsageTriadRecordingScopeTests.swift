@@ -27,7 +27,7 @@ struct RelayUsageTriadRecordingScopeTests {
 
     #if DEBUG
     @MainActor
-    @Test
+    @Test(.enabled(if: TypographySnapshotTests.berkeleyMonoIsInstalled))
     func `triad recording switch cannot rewrite the seventeen frozen gallery references`() throws {
         let key = "CODEXBAR_RECORD_RELAY_TRIAD_SNAPSHOTS"
         let originalValue = ProcessInfo.processInfo.environment[key]
