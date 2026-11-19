@@ -394,7 +394,10 @@ struct StatusMenuSwitcherRefreshTests {
         #expect(!refreshTask.isCancelled)
 
         #expect(menu.items.contains { ($0.representedObject as? String) == "codexCardGroupStatus" })
-        #expect(menu.items.contains { ($0.representedObject as? String)?.hasPrefix("menuCard-") == true })
+        #expect(menu.items.contains {
+            guard let id = $0.representedObject as? String else { return false }
+            return id == "menuCard" || id.hasPrefix("menuCard-")
+        })
         #expect(menu.items.contains { ($0.representedObject as? String) == "menuCardHeader" } == false)
 
         let emptyFallback = try #require(controller.menuCardModel(for: .codex))

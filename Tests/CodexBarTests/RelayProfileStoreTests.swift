@@ -27,7 +27,12 @@ struct RelayProfileStoreTests {
         try credentialStore.storeCredential(credential, reference: profile.credentialReference)
         try profileStore.storeProfiles([profile])
 
-        #expect(try profileStore.loadProfiles() == [profile])
+        var normalizedProfile = profile
+        let configuredApps = Set(profile.targets.map(\.app))
+        normalizedProfile.targets += RelayTargetApp.allCases
+            .filter { !configuredApps.contains($0) }
+            .map { RelayTargetConfiguration(app: $0, model: nil, isEnabled: false) }
+        #expect(try profileStore.loadProfiles() == [normalizedProfile])
         #expect(try credentialStore.loadCredential(reference: profile.credentialReference) == credential)
         let serialized = try String(contentsOf: fileURL, encoding: .utf8)
         #expect(serialized.contains(profile.credentialReference))

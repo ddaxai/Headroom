@@ -357,6 +357,11 @@ final class RelayQuickSwitchCoordinator {
         self.routesDomain = routesDomain ?? LiveRoutesDomain(actions: resolvedActions)
     }
 
+    func providerKeyByProfileID() -> [UUID: String] {
+        let profiles = (try? self.routesDomain.profiles()) ?? []
+        return Dictionary(profiles.map { ($0.id, $0.providerKey) }, uniquingKeysWith: { first, _ in first })
+    }
+
     func snapshot() -> RelayQuickSwitchSnapshot {
         do {
             let profiles = try self.routesDomain.profiles()

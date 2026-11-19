@@ -8,6 +8,7 @@ struct CodexUsageFetcherFallbackTests {
     func `public CLI fetcher reads quota with current approval policy parser`() async throws {
         let path = try self.makeCurrentCLIStub()
         defer { try? FileManager.default.removeItem(atPath: path) }
+        try self.warmUpStubInterpreter()
         let fetcher = UsageFetcher(environment: ["CODEX_CLI_PATH": path])
         let snapshot = try await fetcher.loadLatestCLIAccountSnapshot()
         #expect(snapshot.usage?.primary?.usedPercent == 23)
@@ -342,6 +343,16 @@ struct CodexUsageFetcherFallbackTests {
         try Data(script.utf8).write(to: url)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: url.path)
         return url.path
+    }
+
+    private func warmUpStubInterpreter() throws {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/python3")
+        process.arguments = ["-S", "-c", "pass"]
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.nullDevice
+        try process.run()
+        process.waitUntilExit()
     }
 
     private func makeStubUsageFetcher(_ stubCLIPath: String) -> UsageFetcher {

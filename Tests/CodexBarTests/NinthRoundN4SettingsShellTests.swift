@@ -87,7 +87,10 @@ struct NinthRoundN4SettingsShellTests {
         ]
         let failures = HeadroomGeometryAssertions.failures(root: controls.view, targets: targets)
 
-        #expect(failures.isEmpty, "Settings titlebar geometry failures: \(failures)")
+        let frames = targets.map { "\($0.name)=\($0.view.convert($0.view.bounds, to: controls.view))" }
+        #expect(
+            failures.isEmpty,
+            "Settings titlebar geometry failures: \(failures); root=\(controls.view.bounds); \(frames)")
         #expect(controls.layoutAttribute == .left)
         #expect(controls.view.bounds.width == SettingsTitlebarControlsController.contentSize.width)
         #expect(controls.preferredContentSize == SettingsTitlebarControlsController.contentSize)

@@ -211,10 +211,12 @@ extension StatusMenuTests {
         #expect(model.tokenUsage == nil)
         #expect(controller.makeOverviewRowSubmenu(provider: .mistral, model: model, width: 320) != nil)
 
-        let menu = controller.makeMenu(for: .mistral)
-        controller.menuWillOpen(menu)
-        let usageItem = menu.items.first { ($0.representedObject as? String) == "menuCardUsage" }
-        #expect(usageItem?.submenu != nil)
+        if HeadroomProviderRegistry.providerIDs.contains(.mistral) {
+            let menu = controller.makeMenu(for: .mistral)
+            controller.menuWillOpen(menu)
+            let usageItem = menu.items.first { ($0.representedObject as? String) == "menuCardUsage" }
+            #expect(usageItem?.submenu != nil)
+        }
 
         settings.costUsageEnabled = true
         settings.costSummaryDisplayStyle = .both

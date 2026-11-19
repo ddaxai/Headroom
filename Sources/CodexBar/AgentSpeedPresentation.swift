@@ -161,8 +161,7 @@ extension StatusItemController {
         }
         let timeline = codexRequests.compactMap(\.sessionOwnershipTimeline).first
             ?? (try? FileCodexSessionOwnershipTimelineStore.default.load())
-        let profiles = (try? FileRelayProfileStore().loadProfiles()) ?? []
-        let relayProviderMap = Dictionary(uniqueKeysWithValues: profiles.map { ($0.id, $0.providerKey) })
+        let relayProviderMap = self.relayQuickSwitchCoordinator.providerKeyByProfileID()
         var accountKeyByVisibleID: [String: String] = [:]
         for req in codexRequests where !req.usageIdentity.isSystemUnassigned {
             accountKeyByVisibleID[req.id] = req.usageIdentity.accountKey
