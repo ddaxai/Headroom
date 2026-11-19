@@ -35,25 +35,12 @@ after that, launch the packaged app and look at Settings and the menu bar popup.
    So part of the pin button's frame lies outside the accessory view, which can leave part of the button unclickable.
    It also fails on the CI baseline branch, so the UI pass didn't cause it. Check the button frames in that window on
    macOS 15 before changing the layout.
-5. **Unused code in `PreferencesSidebar.swift`.** `RelaySettingsSidebarRow`, `SettingsSidebarPaneRow`,
-   `SettingsSidebarAboutRow`, `SettingsSidebarProviderRow` (plus `SettingsSidebarBrandIcon` and
-   `SettingsSidebarStatusDot`, which only that row uses), `SettingsSidebarSearchField` and
-   `SettingsSidebarSortToggle` are private and never referenced.
-6. **The legacy `PreferencesProviderManagementPane.swift` still has hard-coded Chinese** (`Text("服务商")`,
-   `TextField("搜索服务商", …)`, `Toggle("显示未配置", …)`). It appears unreachable from the narrow entry. Delete it
-   or localize it.
-7. **Two localization keys are missing in both catalogs:** `Could not start Claude Code login` and
-   `claude auth login exited with status %d.` (`StatusItemController+Actions.swift`).
-8. **Sidebar width is written on every layout pass.** `PreferencesView` and `RelaySettingsPane` write `sidebarWidth`
-   and `relayListWidth` to `UserDefaults` from a `PreferenceKey` on every pass that changes the width by 0.5pt or
-   more, which includes live dragging. Consider writing once the drag ends, or debouncing.
+Items 5–8 (unused sidebar views, the legacy provider management pane, two missing localization keys, split widths
+written on every layout pass) are fixed.
 
 ## Menu bar popup
 
-9. **`HeadroomPopupCardStack` uses `@ObservedObject var presentation: HeadroomPopupPresentationModel`.** AGENTS.md
-   prefers `@Observable` with `@State` and `@Bindable`.
-10. **`MenuCardView.groupHeader` uses `.textCase(.uppercase)`.** It only applies to the Doubao split, which upstream
-    code still includes. Sentence case would match the rest of the UI.
+Items 9–10 (`@ObservedObject` in `HeadroomPopupCardStack`, uppercase group header) are fixed.
 
 ## Naming and identity (rename to Headroom)
 

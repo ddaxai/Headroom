@@ -122,7 +122,7 @@
 "Cost" = "费用";
 "Could not add Codex account" = "无法添加 Codex 账户";
 "Could not open Terminal for Gemini" = "无法为 Gemini 打开终端";
-"Could not start claude /login" = "无法启动 claude /login";
+"Could not start Claude Code login" = "无法启动 Claude Code 登录";
 "Could not start codex login" = "无法启动 codex login";
 "Could not switch system account" = "无法切换系统账户";
 "Credits" = "额度";
@@ -1167,7 +1167,7 @@
 "Windsurf session JSON bundle" = "Windsurf 会话 JSON 包";
 "Workspace ID" = "工作区 ID";
 "Your StepFun platform password. Used to login and obtain a session token." = "你的 StepFun 平台密码。用于登录并获取会话 token。";
-"claude /login exited with status %d." = "claude /login 以状态 %d 结束。";
+"claude auth login exited with status %d." = "claude auth login 以状态 %d 结束。";
 "codex login exited with status %d." = "codex login 以状态 %d 结束。";
 "Cookie: …\n\nor paste a cURL capture from the Abacus AI dashboard" = "Cookie: …\n\n或粘贴 Abacus AI 仪表盘的 cURL 捕获内容";
 "Cookie: …\n\nor paste the __Secure-next-auth.session-token value" = "Cookie: …\n\n或粘贴 __Secure-next-auth.session-token 值";

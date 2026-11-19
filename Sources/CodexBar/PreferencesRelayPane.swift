@@ -1202,8 +1202,7 @@ struct RelaySettingsPane: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .onPreferenceChange(RelayListWidthPreferenceKey.self) { width in
-            guard width > 0, abs(width - self.settings.relayListWidth) >= 0.5 else { return }
+        .persistingSettledWidth(RelayListWidthPreferenceKey.self, current: self.settings.relayListWidth) { width in
             self.settings.relayListWidth = width
         }
         .onAppear { self.model.loadIfNeeded() }
