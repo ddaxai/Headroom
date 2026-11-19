@@ -124,6 +124,50 @@ public struct CostUsageHourlyEntry: Sendable, Equatable, Identifiable {
     }
 }
 
+/// Share of prompt tokens served from cache: `cacheRead / (newInput + cacheCreation + cacheRead)`.
+public enum CacheHitRate {
+    public static func fraction(newInputTokens: Int, cacheCreationTokens: Int, cacheReadTokens: Int) -> Double? {
+        let read = max(0, cacheReadTokens)
+        let prompt = max(0, newInputTokens) + max(0, cacheCreationTokens) + read
+        guard prompt > 0 else { return nil }
+        return Double(read) / Double(prompt)
+    }
+
+    /// For sources such as Codex logs, whose input count already includes cache reads and which report no cache
+    /// writes.
+    public static func fraction(inputTokensIncludingCacheRead input: Int, cacheReadTokens: Int) -> Double? {
+        let read = min(max(0, cacheReadTokens), max(0, input))
+        return self.fraction(newInputTokens: input - read, cacheCreationTokens: 0, cacheReadTokens: read)
+    }
+}
+
+extension CostUsageDailyReport.Entry {
+    /// `inputIncludesCacheRead` is true for Codex entries and false for Claude entries, where input, cache reads and
+    /// cache writes are counted separately.
+    public func cacheHitRate(inputIncludesCacheRead: Bool) -> Double? {
+        guard let input = self.inputTokens else { return nil }
+        if inputIncludesCacheRead {
+            return CacheHitRate.fraction(
+                inputTokensIncludingCacheRead: input,
+                cacheReadTokens: self.cacheReadTokens ?? 0)
+        }
+        guard let read = self.cacheReadTokens else { return nil }
+        return CacheHitRate.fraction(
+            newInputTokens: input,
+            cacheCreationTokens: self.cacheCreationTokens ?? 0,
+            cacheReadTokens: read)
+    }
+}
+
+extension CostUsageSessionBreakdown {
+    public var cacheHitRate: Double? {
+        guard let input = self.inputTokens else { return nil }
+        return CacheHitRate.fraction(
+            inputTokensIncludingCacheRead: input,
+            cacheReadTokens: self.cachedInputTokens ?? 0)
+    }
+}
+
 /// An estimated local Codex conversation total derived from one session log.
 /// This is intentionally distinct from account-level billing or quota data.
 public struct CostUsageSessionBreakdown: Sendable, Equatable, Identifiable {

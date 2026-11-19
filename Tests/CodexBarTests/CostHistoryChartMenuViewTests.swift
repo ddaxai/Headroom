@@ -417,9 +417,9 @@ struct CostHistoryChartMenuViewTests {
             modelBreakdowns: [visibleModel])
         let hiddenFieldsChanged = CostUsageDailyReport.Entry(
             date: base.date,
-            inputTokens: 999,
+            inputTokens: 1000,
             outputTokens: 888,
-            cacheReadTokens: 777,
+            cacheReadTokens: 200,
             cacheCreationTokens: 666,
             totalTokens: base.totalTokens,
             requestCount: base.requestCount,
@@ -865,6 +865,51 @@ struct CostHistoryChartMenuViewTests {
 }
 
 extension CostHistoryChartMenuViewTests {
+    @Test
+    func `daily cache hit rate follows each provider's token accounting`() {
+        let entry = CostUsageDailyReport.Entry(
+            date: "2026-06-07",
+            inputTokens: 100,
+            outputTokens: 50,
+            cacheReadTokens: 60,
+            cacheCreationTokens: 40,
+            totalTokens: 250,
+            costUSD: 1,
+            modelsUsed: nil,
+            modelBreakdowns: nil)
+
+        // Codex input already contains the 60 cached tokens: 60 / 100.
+        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .codex, entry: entry) == "60%")
+        // Claude counts them separately: 60 / (100 + 40 + 60).
+        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .claude, entry: entry) == "30%")
+        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .vertexai, entry: entry) == "30%")
+        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .cursor, entry: entry) == nil)
+        #expect(
+            Self.fingerprint(daily: [entry], provider: .codex)
+                != Self.fingerprint(daily: [entry], provider: .claude))
+    }
+
+    @Test
+    func `session usage line shows the cache hit rate next to cached tokens`() {
+        func line(input: Int?, cached: Int?) -> String {
+            CostHistoryChartMenuView.sessionUsageLine(CostUsageSessionBreakdown(
+                sessionID: "session-1",
+                lastActivity: Date(timeIntervalSince1970: 100),
+                inputTokens: input,
+                cachedInputTokens: cached,
+                outputTokens: 100_000,
+                totalTokens: nil,
+                requestCount: nil,
+                costUSD: nil,
+                modelBreakdowns: []))
+        }
+
+        #expect(line(input: 2_000_000, cached: 1_500_000)
+            == "Unknown model · 2.00M input · 1.50M cached (75%) · 0.10M output")
+        #expect(line(input: 2_000_000, cached: nil) == "Unknown model · 2.00M input · — cached · 0.10M output")
+        #expect(line(input: nil, cached: 1_500_000) == "Unknown model · — input · 1.50M cached · 0.10M output")
+    }
+
     @Test
     func `session labels distinguish concurrent uuid v7 identifiers`() {
         let first = CostHistoryChartMenuView.shortSessionID("019f6d91-970b-7e13-b08e-000000000001")

@@ -417,21 +417,6 @@ struct CostHistoryChartMenuView: View {
         return "\(trimmed.prefix(4))...\(trimmed.suffix(8))"
     }
 
-    private static func sessionUsageLine(_ session: CostUsageSessionBreakdown) -> String {
-        let models = session.modelBreakdowns.map(\.modelName)
-        let modelLabel = if models.isEmpty {
-            "Unknown model"
-        } else if models.count == 1 {
-            models[0]
-        } else {
-            "\(models[0]) +\(models.count - 1)"
-        }
-        let input = session.inputTokens.map(UsageFormatter.tokenCountString) ?? "—"
-        let cached = session.cachedInputTokens.map(UsageFormatter.tokenCountString) ?? "—"
-        let output = session.outputTokens.map(UsageFormatter.tokenCountString) ?? "—"
-        return "\(modelLabel) · \(input) input · \(cached) cached · \(output) output"
-    }
-
     static func windowLabel(days: Int) -> String {
         if days == 1 {
             return L("Today")
@@ -784,6 +769,11 @@ struct CostHistoryChartMenuView: View {
         if let requests = point.requestCount {
             parts.append("\(UsageFormatter.compactCountString(requests)) requests")
         }
+        if let entry = model.entriesByDateKey[key],
+           let hitRate = Self.cacheHitRateText(provider: self.provider, entry: entry)
+        {
+            parts.append(L("%@ cache hit", hitRate))
+        }
         let primary = "\(dayLabel): \(parts.joined(separator: " · "))"
         return DetailContent(primary: primary, rows: self.breakdownRows(key: key, model: model))
     }
@@ -885,6 +875,34 @@ struct CostHistoryChartMenuView: View {
 }
 
 extension CostHistoryChartMenuView {
+    static func sessionUsageLine(_ session: CostUsageSessionBreakdown) -> String {
+        let models = session.modelBreakdowns.map(\.modelName)
+        let modelLabel = if models.isEmpty {
+            "Unknown model"
+        } else if models.count == 1 {
+            models[0]
+        } else {
+            "\(models[0]) +\(models.count - 1)"
+        }
+        let input = session.inputTokens.map(UsageFormatter.tokenCountString) ?? "—"
+        var cached = session.cachedInputTokens.map(UsageFormatter.tokenCountString) ?? "—"
+        if session.cachedInputTokens != nil, let hitRate = session.cacheHitRate {
+            cached += " (\(UsageFormatter.percentString(hitRate * 100)))"
+        }
+        let output = session.outputTokens.map(UsageFormatter.tokenCountString) ?? "—"
+        return "\(modelLabel) · \(input) input · \(cached) cached · \(output) output"
+    }
+
+    /// Only providers whose daily entries have known cache accounting get a hit rate.
+    static func cacheHitRateText(provider: UsageProvider, entry: DailyEntry) -> String? {
+        let hitRate: Double? = switch provider {
+        case .codex: entry.cacheHitRate(inputIncludesCacheRead: true)
+        case .claude, .vertexai: entry.cacheHitRate(inputIncludesCacheRead: false)
+        default: nil
+        }
+        return hitRate.map { UsageFormatter.percentString($0 * 100) }
+    }
+
     struct RenderFingerprint: Equatable {
         let currencyCode: String
         let historyDays: Int
@@ -901,6 +919,7 @@ extension CostHistoryChartMenuView {
         let totalTokens: Int?
         let requestCount: Int?
         let costBitPattern: UInt64?
+        let cacheHitRate: String?
         let modelBreakdowns: [VisibleModelBreakdownFingerprint]
     }
 
@@ -957,7 +976,7 @@ extension CostHistoryChartMenuView {
             daily: snapshot.daily
                 .filter { self.chartPointInput(for: $0) != nil }
                 .sorted { $0.date < $1.date }
-                .map(self.visibleDailyFingerprint),
+                .map { self.visibleDailyFingerprint($0, provider: provider) },
             projects: Array(projects.prefix(self.maxVisibleProjectRows)).map { project in
                 let visibleSources = self.visibleProjectSources(project)
                 return VisibleProjectFingerprint(
@@ -997,12 +1016,16 @@ extension CostHistoryChartMenuView {
             })
     }
 
-    private static func visibleDailyFingerprint(_ entry: DailyEntry) -> VisibleDailyFingerprint {
+    private static func visibleDailyFingerprint(
+        _ entry: DailyEntry,
+        provider: UsageProvider) -> VisibleDailyFingerprint
+    {
         VisibleDailyFingerprint(
             date: entry.date,
             totalTokens: entry.totalTokens,
             requestCount: entry.requestCount,
             costBitPattern: entry.costUSD.map(\.bitPattern),
+            cacheHitRate: self.cacheHitRateText(provider: provider, entry: entry),
             modelBreakdowns: self.orderedBreakdownItems(entry.modelBreakdowns ?? []).map { item in
                 VisibleModelBreakdownFingerprint(
                     modelName: item.modelName,
