@@ -35,6 +35,7 @@ after that, launch the packaged app and look at Settings and the menu bar popup.
    So part of the pin button's frame lies outside the accessory view, which can leave part of the button unclickable.
    It also fails on the CI baseline branch, so the UI pass didn't cause it. Check the button frames in that window on
    macOS 15 before changing the layout.
+
 Items 5–8 (unused sidebar views, the legacy provider management pane, two missing localization keys, split widths
 written on every layout pass) are fixed.
 
