@@ -885,12 +885,12 @@ extension CostHistoryChartMenuView {
             "\(models[0]) +\(models.count - 1)"
         }
         let input = session.inputTokens.map(UsageFormatter.tokenCountString) ?? "—"
-        var cached = session.cachedInputTokens.map(UsageFormatter.tokenCountString) ?? "—"
+        var cached = "\(session.cachedInputTokens.map(UsageFormatter.tokenCountString) ?? "—") cached"
         if session.cachedInputTokens != nil, let hitRate = session.cacheHitRate {
             cached += " (\(UsageFormatter.percentString(hitRate * 100)))"
         }
         let output = session.outputTokens.map(UsageFormatter.tokenCountString) ?? "—"
-        return "\(modelLabel) · \(input) input · \(cached) cached · \(output) output"
+        return "\(modelLabel) · \(input) input · \(cached) · \(output) output"
     }
 
     /// Only providers whose daily totals are known to count every prompt token once get a hit rate.
