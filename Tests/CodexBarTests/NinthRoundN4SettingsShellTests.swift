@@ -85,9 +85,18 @@ struct NinthRoundN4SettingsShellTests {
             HeadroomGeometryAssertions.Target(name: "sidebar", view: controls.sidebarButton),
             HeadroomGeometryAssertions.Target(name: "pin", view: controls.pinButton),
         ]
-        let failures = HeadroomGeometryAssertions.failures(root: controls.view, targets: targets)
+        let failures = HeadroomGeometryAssertions.failures(
+            root: controls.view,
+            targets: targets,
+            usesAlignmentRects: true)
 
-        let frames = targets.map { "\($0.name)=\($0.view.convert($0.view.bounds, to: controls.view))" }
+        let frames = targets.map { target in
+            let frame = HeadroomGeometryAssertions.frame(
+                of: target.view,
+                in: controls.view,
+                usesAlignmentRect: true)
+            return "\(target.name)=\(frame)"
+        }
         #expect(
             failures.isEmpty,
             "Settings titlebar geometry failures: \(failures); root=\(controls.view.bounds); \(frames)")

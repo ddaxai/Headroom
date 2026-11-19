@@ -17,7 +17,8 @@ enum HeadroomGeometryAssertions {
     static func failures(
         root: NSView,
         targets: [Target],
-        minimumHitTarget: NSSize = NSSize(width: 22, height: 22)) -> [Failure]
+        minimumHitTarget: NSSize = NSSize(width: 22, height: 22),
+        usesAlignmentRects: Bool = false) -> [Failure]
     {
         var failures: [Failure] = []
         if root.bounds.width <= 0 || root.bounds.height <= 0 {
@@ -25,7 +26,7 @@ enum HeadroomGeometryAssertions {
         }
 
         let frames = targets.map { target in
-            (target, target.view.convert(target.view.bounds, to: root))
+            (target, Self.frame(of: target.view, in: root, usesAlignmentRect: usesAlignmentRects))
         }
         for (target, frame) in frames {
             if !root.bounds.contains(frame) {
@@ -47,5 +48,13 @@ enum HeadroomGeometryAssertions {
             }
         }
         return failures
+    }
+
+    /// Auto Layout sizes a control's alignment rect; its frame can extend past it by the bezel insets.
+    static func frame(of view: NSView, in root: NSView, usesAlignmentRect: Bool) -> NSRect {
+        guard usesAlignmentRect, let superview = view.superview else {
+            return view.convert(view.bounds, to: root)
+        }
+        return superview.convert(view.alignmentRect(forFrame: view.frame), to: root)
     }
 }
