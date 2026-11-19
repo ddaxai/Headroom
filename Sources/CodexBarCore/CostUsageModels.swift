@@ -142,20 +142,15 @@ public enum CacheHitRate {
 }
 
 extension CostUsageDailyReport.Entry {
-    /// `inputIncludesCacheRead` is true for Codex entries and false for Claude entries, where input, cache reads and
-    /// cache writes are counted separately.
-    public func cacheHitRate(inputIncludesCacheRead: Bool) -> Double? {
-        guard let input = self.inputTokens else { return nil }
-        if inputIncludesCacheRead {
-            return CacheHitRate.fraction(
-                inputTokensIncludingCacheRead: input,
-                cacheReadTokens: self.cacheReadTokens ?? 0)
-        }
-        guard let read = self.cacheReadTokens else { return nil }
-        return CacheHitRate.fraction(
-            newInputTokens: input,
-            cacheCreationTokens: self.cacheCreationTokens ?? 0,
-            cacheReadTokens: read)
+    /// Prompt tokens are taken as `totalTokens - outputTokens`. Sources disagree on whether `inputTokens` contains
+    /// cache reads (Codex does, Claude and Pi do not) and a Codex day can merge both kinds, but the total always
+    /// counts each prompt token once.
+    public var cacheHitRate: Double? {
+        guard let total = self.totalTokens, let output = self.outputTokens else { return nil }
+        let prompt = total - max(0, output)
+        guard prompt > 0 else { return nil }
+        let read = min(max(0, self.cacheReadTokens ?? 0), prompt)
+        return Double(read) / Double(prompt)
     }
 }
 

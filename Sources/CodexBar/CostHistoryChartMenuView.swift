@@ -893,14 +893,14 @@ extension CostHistoryChartMenuView {
         return "\(modelLabel) · \(input) input · \(cached) cached · \(output) output"
     }
 
-    /// Only providers whose daily entries have known cache accounting get a hit rate.
+    /// Only providers whose daily totals are known to count every prompt token once get a hit rate.
     static func cacheHitRateText(provider: UsageProvider, entry: DailyEntry) -> String? {
-        let hitRate: Double? = switch provider {
-        case .codex: entry.cacheHitRate(inputIncludesCacheRead: true)
-        case .claude, .vertexai: entry.cacheHitRate(inputIncludesCacheRead: false)
-        default: nil
+        switch provider {
+        case .codex, .claude, .vertexai:
+            entry.cacheHitRate.map { UsageFormatter.percentString($0 * 100) }
+        default:
+            nil
         }
-        return hitRate.map { UsageFormatter.percentString($0 * 100) }
     }
 
     struct RenderFingerprint: Equatable {

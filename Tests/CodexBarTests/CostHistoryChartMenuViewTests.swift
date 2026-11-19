@@ -417,9 +417,9 @@ struct CostHistoryChartMenuViewTests {
             modelBreakdowns: [visibleModel])
         let hiddenFieldsChanged = CostUsageDailyReport.Entry(
             date: base.date,
-            inputTokens: 1000,
-            outputTokens: 888,
-            cacheReadTokens: 200,
+            inputTokens: 999,
+            outputTokens: base.outputTokens,
+            cacheReadTokens: base.cacheReadTokens,
             cacheCreationTokens: 666,
             totalTokens: base.totalTokens,
             requestCount: base.requestCount,
@@ -866,8 +866,19 @@ struct CostHistoryChartMenuViewTests {
 
 extension CostHistoryChartMenuViewTests {
     @Test
-    func `daily cache hit rate follows each provider's token accounting`() {
-        let entry = CostUsageDailyReport.Entry(
+    func `daily cache hit rate is shown for providers with known token totals`() {
+        // Codex: input already contains the 60 cached tokens, so total is input + output.
+        let codex = CostUsageDailyReport.Entry(
+            date: "2026-06-07",
+            inputTokens: 100,
+            outputTokens: 50,
+            cacheReadTokens: 60,
+            totalTokens: 150,
+            costUSD: 1,
+            modelsUsed: nil,
+            modelBreakdowns: nil)
+        // Claude: input, cache reads and cache writes are separate, so total is their sum plus output.
+        let claude = CostUsageDailyReport.Entry(
             date: "2026-06-07",
             inputTokens: 100,
             outputTokens: 50,
@@ -878,15 +889,21 @@ extension CostHistoryChartMenuViewTests {
             modelsUsed: nil,
             modelBreakdowns: nil)
 
-        // Codex input already contains the 60 cached tokens: 60 / 100.
-        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .codex, entry: entry) == "60%")
-        // Claude counts them separately: 60 / (100 + 40 + 60).
-        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .claude, entry: entry) == "30%")
-        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .vertexai, entry: entry) == "30%")
-        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .cursor, entry: entry) == nil)
-        #expect(
-            Self.fingerprint(daily: [entry], provider: .codex)
-                != Self.fingerprint(daily: [entry], provider: .claude))
+        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .codex, entry: codex) == "60%")
+        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .claude, entry: claude) == "30%")
+        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .vertexai, entry: claude) == "30%")
+        #expect(CostHistoryChartMenuView.cacheHitRateText(provider: .cursor, entry: claude) == nil)
+
+        let fewerCacheReads = CostUsageDailyReport.Entry(
+            date: codex.date,
+            inputTokens: codex.inputTokens,
+            outputTokens: codex.outputTokens,
+            cacheReadTokens: 30,
+            totalTokens: codex.totalTokens,
+            costUSD: codex.costUSD,
+            modelsUsed: nil,
+            modelBreakdowns: nil)
+        #expect(Self.fingerprint(daily: [codex]) != Self.fingerprint(daily: [fewerCacheReads]))
     }
 
     @Test

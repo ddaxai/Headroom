@@ -18,42 +18,39 @@ struct CacheHitRateLinuxTests {
     }
 
     @Test
-    func `daily entries use the accounting of their source`() {
-        let entry = CostUsageDailyReport.Entry(
-            date: "2026-06-07",
-            inputTokens: 100,
-            outputTokens: 50,
-            cacheReadTokens: 60,
-            cacheCreationTokens: 40,
-            totalTokens: 250,
-            costUSD: 1,
-            modelsUsed: nil,
-            modelBreakdowns: nil)
-        #expect(entry.cacheHitRate(inputIncludesCacheRead: true) == 0.6)
-        #expect(entry.cacheHitRate(inputIncludesCacheRead: false) == 0.3)
+    func `daily entries count each prompt token once whatever the source's accounting`() {
+        func entry(input: Int?, output: Int?, read: Int?, write: Int?, total: Int?) -> CostUsageDailyReport.Entry {
+            CostUsageDailyReport.Entry(
+                date: "2026-06-07",
+                inputTokens: input,
+                outputTokens: output,
+                cacheReadTokens: read,
+                cacheCreationTokens: write,
+                totalTokens: total,
+                costUSD: 1,
+                modelsUsed: nil,
+                modelBreakdowns: nil)
+        }
 
-        let withoutCacheFields = CostUsageDailyReport.Entry(
-            date: "2026-06-07",
-            inputTokens: 100,
-            outputTokens: 50,
-            totalTokens: 150,
-            costUSD: 1,
-            modelsUsed: nil,
-            modelBreakdowns: nil)
-        #expect(withoutCacheFields.cacheHitRate(inputIncludesCacheRead: true) == 0)
-        #expect(withoutCacheFields.cacheHitRate(inputIncludesCacheRead: false) == nil)
+        // Codex: input includes the cache reads.
+        let codex = entry(input: 1000, output: 50, read: 600, write: nil, total: 1050)
+        #expect(codex.cacheHitRate == 0.6)
+        // Claude and Pi: input, cache reads and cache writes are separate.
+        let pi = entry(input: 100, output: 50, read: 900, write: 0, total: 1050)
+        #expect(pi.cacheHitRate == 0.9)
+        #expect(entry(input: 100, output: 50, read: 60, write: 40, total: 250).cacheHitRate == 0.3)
 
-        let withoutInput = CostUsageDailyReport.Entry(
-            date: "2026-06-07",
-            inputTokens: nil,
-            outputTokens: nil,
-            cacheReadTokens: 60,
-            totalTokens: 150,
-            costUSD: 1,
-            modelsUsed: nil,
-            modelBreakdowns: nil)
-        #expect(withoutInput.cacheHitRate(inputIncludesCacheRead: true) == nil)
-        #expect(withoutInput.cacheHitRate(inputIncludesCacheRead: false) == nil)
+        // A Codex day with Pi usage merged in: 1500 of 2000 prompt tokens were cache reads.
+        let merged = CostUsageDailyReport.merged([
+            CostUsageDailyReport(data: [codex], summary: nil),
+            CostUsageDailyReport(data: [pi], summary: nil),
+        ])
+        #expect(merged.data.first?.cacheHitRate == 0.75)
+
+        #expect(entry(input: 100, output: 50, read: nil, write: nil, total: 150).cacheHitRate == 0)
+        #expect(entry(input: 100, output: 50, read: 60, write: nil, total: nil).cacheHitRate == nil)
+        #expect(entry(input: nil, output: nil, read: 60, write: nil, total: 150).cacheHitRate == nil)
+        #expect(entry(input: 0, output: 50, read: 0, write: nil, total: 50).cacheHitRate == nil)
     }
 
     @Test
