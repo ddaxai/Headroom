@@ -857,9 +857,13 @@ final class HeadroomPopupPresentationModel: ObservableObject {
     @Published private(set) var state: HeadroomPopupPresentationState = .closed
     var onTogglePin: (() -> Void)?
     var onSubmenuDidDismiss: (() -> Void)?
+    /// The hosted toolbar follows the state directly. SwiftUI refreshes its representable only on
+    /// the next update pass, which left the pin icon, tooltip and VoiceOver label one state behind.
+    weak var toolbar: HeadroomPopupToolbarView?
 
     func update(state: HeadroomPopupPresentationState) {
         self.state = state
+        self.toolbar?.updatePresentation(state: state)
     }
 
     func togglePin() {
@@ -891,6 +895,7 @@ final class HeadroomPopupToolbarView: NSView {
         self.pinButton.action = #selector(self.togglePin)
         self.addSubview(self.pinButton)
         self.updatePresentation(state: presentation.state)
+        presentation.toolbar = self
     }
 
     @available(*, unavailable)

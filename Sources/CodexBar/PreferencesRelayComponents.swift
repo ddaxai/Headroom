@@ -40,23 +40,25 @@ struct RelayIdentityBanner: View {
 
     var body: some View {
         HStack(spacing: 8) {
+            // Static in Settings: the state is a persistent setting, not ongoing work, so the
+            // tile changes color instead of looping an animation behind the form.
             RelaySprinklerSymbol(
-                isAnimated: self.isActive,
-                primaryColor: .white,
+                isAnimated: false,
+                primaryColor: self.isActive ? .white : ConsoleDesign.secondaryText,
                 size: 14)
                 .frame(width: 24, height: 24)
                 .background(
                     RoundedRectangle(cornerRadius: ConsoleDesign.radiusControl, style: .continuous)
-                        .fill(ConsoleDesign.accent))
+                        .fill(self.isActive ? ConsoleDesign.accent : ConsoleDesign.surface2))
 
-            Text("中转站切换")
+            Text(L("relay_ui_banner_title"))
                 .font(.subheadline.weight(.semibold))
 
             Spacer(minLength: 8)
 
             Text(self.isActive
-                ? L("当前接管 %d 个客户端", self.activeApplicationCount)
-                : "未启用")
+                ? L("relay_ui_banner_active", self.activeApplicationCount)
+                : L("relay_ui_banner_inactive"))
                 .font(.caption)
                 .foregroundStyle(ConsoleDesign.secondaryText)
                 .lineLimit(1)

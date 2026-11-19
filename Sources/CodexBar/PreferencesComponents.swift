@@ -25,6 +25,44 @@ struct SettingsIconChip: View {
     }
 }
 
+/// Geometry shared by every settings destination that splits into sub-sections.
+enum SettingsSubsectionMetrics {
+    /// One width for every destination so the control does not resize or shift when the
+    /// sidebar selection changes. Fits three localized segments.
+    static let width: CGFloat = 320
+    static let topPadding: CGFloat = 16
+    static let bottomPadding: CGFloat = 8
+}
+
+/// Second-level navigation for a settings destination (for example Providers / API & Relay).
+///
+/// Destinations used to size and pad their own segmented pickers (240, 260 or 320 points),
+/// so the control jumped whenever the sidebar selection changed. Every destination now uses
+/// this view, which keeps the same width, the same vertical position and the same centering.
+struct SettingsSubsectionPicker<Selection: Hashable, Content: View>: View {
+    private let title: String
+    @Binding private var selection: Selection
+    private let content: Content
+
+    init(_ title: String, selection: Binding<Selection>, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self._selection = selection
+        self.content = content()
+    }
+
+    var body: some View {
+        Picker(self.title, selection: self.$selection) {
+            self.content
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+        .frame(width: SettingsSubsectionMetrics.width)
+        .frame(maxWidth: .infinity)
+        .padding(.top, SettingsSubsectionMetrics.topPadding)
+        .padding(.bottom, SettingsSubsectionMetrics.bottomPadding)
+    }
+}
+
 /// Two-line label for grouped-form rows that genuinely need a supporting sentence.
 struct SettingsRowLabel: View {
     let title: String

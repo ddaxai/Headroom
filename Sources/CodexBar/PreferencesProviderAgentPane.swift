@@ -62,6 +62,7 @@ struct ProviderAgentPane: View {
                         provider: provider,
                         capabilities: descriptor.capabilities,
                         statusText: self.providerStatus(provider, descriptor: descriptor),
+                        statusIsError: self.providerHasError(provider, descriptor: descriptor),
                         isEnabled: self.providerBinding(provider, descriptor: descriptor),
                         onConfigure: self.onConfigureProvider.map { action in
                             { action(provider) }
@@ -125,6 +126,16 @@ struct ProviderAgentPane: View {
         return L("provider_agent_status_detected")
     }
 
+    private func providerHasError(
+        _ provider: UsageProvider,
+        descriptor: ProviderDescriptor) -> Bool
+    {
+        guard self.settings.isProviderEnabled(provider: provider, metadata: descriptor.metadata),
+              let error = self.store?.error(for: provider)
+        else { return false }
+        return !error.isEmpty
+    }
+
     private var piEnabledBinding: Binding<Bool> {
         Binding(
             get: { self.settings.piAgentUsageEnabled },
@@ -177,6 +188,7 @@ private struct ProviderAgentRow: View {
     let provider: UsageProvider
     let capabilities: ProviderCapabilities
     let statusText: String
+    var statusIsError = false
     @Binding var isEnabled: Bool
     var onConfigure: (() -> Void)?
 
@@ -197,15 +209,21 @@ private struct ProviderAgentRow: View {
             ProviderAgentRowContent(
                 name: self.name,
                 capabilities: self.capabilities,
-                statusText: self.statusText)
+                statusText: self.statusText,
+                statusIsError: self.statusIsError)
 
-            if let onConfigure {
-                Button(action: onConfigure) {
-                    Image(systemName: "slider.horizontal.3")
+            // Fixed slot: rows with and without a trailing action keep their toggles aligned.
+            Group {
+                if let onConfigure {
+                    Button(action: onConfigure) {
+                        Image(systemName: "slider.horizontal.3")
+                    }
+                    .buttonStyle(.borderless)
+                    .help(L("Settings..."))
+                    .accessibilityLabel(L("Settings..."))
                 }
-                .buttonStyle(.borderless)
-                .help(L("Settings..."))
             }
+            .frame(width: ProviderAgentRowMetrics.actionSlotSide, height: ProviderAgentRowMetrics.actionSlotSide)
 
             Toggle("", isOn: self.$isEnabled)
                 .labelsHidden()
@@ -236,19 +254,25 @@ private struct PiAgentEntryRow: View {
                 capabilities: self.capabilities,
                 statusText: self.statusText)
 
-            if self.isEnabled {
-                Button(action: self.onRefresh) {
-                    if self.isLoading {
-                        ProgressView()
-                            .controlSize(.small)
-                    } else {
-                        Image(systemName: "arrow.clockwise")
+            // Same fixed slot as provider rows so the toggle column never shifts when the
+            // refresh button appears, disappears or turns into a spinner.
+            Group {
+                if self.isEnabled {
+                    Button(action: self.onRefresh) {
+                        if self.isLoading {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                        }
                     }
+                    .buttonStyle(.borderless)
+                    .help(L("provider_agent_refresh_probe"))
+                    .accessibilityLabel(L("provider_agent_refresh_probe"))
+                    .disabled(self.isLoading)
                 }
-                .buttonStyle(.borderless)
-                .help(L("provider_agent_refresh_probe"))
-                .disabled(self.isLoading)
             }
+            .frame(width: ProviderAgentRowMetrics.actionSlotSide, height: ProviderAgentRowMetrics.actionSlotSide)
 
             Toggle("", isOn: self.$isEnabled)
                 .labelsHidden()
@@ -259,10 +283,15 @@ private struct PiAgentEntryRow: View {
     }
 }
 
+private enum ProviderAgentRowMetrics {
+    static let actionSlotSide: CGFloat = 24
+}
+
 private struct ProviderAgentRowContent: View {
     let name: String
     let capabilities: ProviderCapabilities
     let statusText: String
+    var statusIsError = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -283,7 +312,10 @@ private struct ProviderAgentRowContent: View {
             }
             Text(self.statusText)
                 .font(ConsoleDesign.text(10.5))
-                .foregroundStyle(ConsoleDesign.secondaryText)
+                .foregroundStyle(self.statusIsError ? ConsoleDesign.criticalForeground : ConsoleDesign.secondaryText)
+                .lineLimit(2)
+                .truncationMode(.tail)
+                .help(self.statusIsError ? self.statusText : "")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

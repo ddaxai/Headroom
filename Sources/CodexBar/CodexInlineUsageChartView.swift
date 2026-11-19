@@ -222,7 +222,7 @@ struct UsageDetail: View {
             Spacer(minLength: 0)
             HStack {
                 Spacer(minLength: 0)
-                Button("重置筛选") { self.rangeRaw = UsageWindow.hours24.rawValue }
+                Button(L("chart_reset_filter")) { self.rangeRaw = UsageWindow.hours24.rawValue }
                     .buttonStyle(.borderless)
                     .font(ConsoleDesign.text(10))
                     .foregroundStyle(ConsoleDesign.secondaryText)

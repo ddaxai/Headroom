@@ -104,10 +104,10 @@ struct RelayDefaultModelSettingsTests {
         let editor = try #require(
             source.split(separator: "private struct RelayProfileEditor: View", maxSplits: 1).last.map(String.init))
         let usageCard = try #require(editor.range(of: "RelayUsageSummaryCard(")?.lowerBound)
-        let configuration = try #require(editor.range(of: #"Text("中转站配置")"#)?.lowerBound)
-        let usage = try #require(editor.range(of: #"Text("中转站额度")"#)?.lowerBound)
-        let targets = try #require(editor.range(of: #"Text("可用于")"#)?.lowerBound)
-        let history = try #require(editor.range(of: #"Text("Codex 历史")"#)?.lowerBound)
+        let configuration = try #require(editor.range(of: #"Text(L("relay_ui_section_configuration"))"#)?.lowerBound)
+        let usage = try #require(editor.range(of: #"Text(L("relay_ui_section_usage"))"#)?.lowerBound)
+        let targets = try #require(editor.range(of: #"Text(L("relay_ui_section_targets"))"#)?.lowerBound)
+        let history = try #require(editor.range(of: #"Text(L("relay_ui_section_codex_history"))"#)?.lowerBound)
         #expect(editor.contains("self.visibleTargetBinding(target)"))
         #expect(editor.contains("self.model.isTargetVisible($0)"))
         #expect(editor.contains(#"L("relay_visible_targets_toggle")"#))
@@ -130,8 +130,9 @@ struct RelayDefaultModelSettingsTests {
             encoding: .utf8)
         let editor = try #require(
             source.split(separator: "private struct RelayProfileEditor: View", maxSplits: 1).last.map(String.init))
-        let usageSectionStart = try #require(editor.range(of: #"Picker("额度接口""#)?.lowerBound)
-        let usageSectionEnd = try #require(editor.range(of: #"Text("中转站额度")"#)?.upperBound)
+        let usageSectionStart = try #require(
+            editor.range(of: #"Picker(L("relay_ui_field_usage_endpoint")"#)?.lowerBound)
+        let usageSectionEnd = try #require(editor.range(of: #"Text(L("relay_ui_section_usage"))"#)?.upperBound)
         let usageConfiguration = String(editor[usageSectionStart..<usageSectionEnd])
 
         #expect(source.contains("private struct RelayUsageSummaryCard: View"))
@@ -277,7 +278,9 @@ struct RelaySettingsModelTests {
         model.modelID = ""
 
         #expect(model.canSave)
-        #expect(model.switchBlockers.contains { $0.contains("模型 ID") })
+        #expect(model.switchBlockers.contains {
+            $0 == L("relay_ui_blocker_model_id", RelaySettingsModel.displayName(for: .codex))
+        })
         #expect(!model.canSwitch)
 
         model.save()
@@ -297,7 +300,7 @@ struct RelaySettingsModelTests {
 
         model.save()
 
-        #expect(model.switchBlockers.contains { $0.contains("API Key") })
+        #expect(model.switchBlockers.contains { $0 == L("relay_ui_blocker_api_key") })
         #expect(recorder.appliedProfiles.isEmpty)
     }
 
@@ -346,7 +349,7 @@ struct RelaySettingsModelTests {
         let reloadedModel = RelaySettingsModel(actions: recorder.actions)
         reloadedModel.loadIfNeeded()
 
-        #expect(reloadedModel.switchBlockers.contains { $0.contains("API Key") })
+        #expect(reloadedModel.switchBlockers.contains { $0 == L("relay_ui_blocker_api_key") })
     }
 
     @Test
@@ -451,7 +454,7 @@ struct RelaySettingsModelTests {
         #expect(snapshot.optionsByTarget[.codex]?.isEmpty == true)
         #expect(snapshot.optionsByTarget[.openCode]?.map(\.id) == [profileID])
         #expect(RelayQuickSwitchCoordinator.readinessBlocker(for: profile, target: .codex)
-            == "这个配置未允许用于 Codex。")
+            == L("relay_menu_target_not_allowed", RelaySettingsModel.displayName(for: .codex)))
     }
 
     @Test
@@ -677,10 +680,10 @@ struct RelaySettingsModelTests {
 
         #expect(model.switchBlockers.contains { $0.contains("Claude Code") })
         #expect(!model.switchBlockers.contains { $0.contains("Third-Party Inference") })
-        #expect(!model.switchBlockers.contains { $0.contains("OpenCode 直连") })
+        #expect(!model.switchBlockers.contains { $0.contains("OpenCode") })
 
         model.apiFormat = .anthropicMessages
-        #expect(model.switchBlockers.contains { $0.contains("Codex 直连") })
+        #expect(model.switchBlockers.contains { $0 == L("relay_ui_incompatible_codex") })
         #expect(model.switchBlockers.contains { $0.contains("Grok Build") })
     }
 
@@ -847,7 +850,9 @@ struct RelaySettingsModelTests {
         let profile = try #require(recorder.storedProfiles.last?.first)
         #expect(profile.configuration(for: .codex)?.model == "codex-model")
         #expect(profile.configuration(for: .openCode)?.model == nil)
-        #expect(model.switchBlockers.contains { $0.contains("OpenCode") && $0.contains("模型 ID") })
+        #expect(model.switchBlockers.contains {
+            $0 == L("relay_ui_blocker_model_id", RelaySettingsModel.displayName(for: .openCode))
+        })
     }
 
     @Test

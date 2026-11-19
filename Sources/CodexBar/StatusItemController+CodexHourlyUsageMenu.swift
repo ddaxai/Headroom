@@ -43,7 +43,7 @@ extension StatusItemController {
         submenu.minimumWidth = width
 
         if !self.menuCardRenderingEnabledForController {
-            let item = NSMenuItem(title: "过去 24 小时 · 分时用量", action: nil, keyEquivalent: "")
+            let item = NSMenuItem(title: L("codex_hourly_usage_menu_title"), action: nil, keyEquivalent: "")
             item.isEnabled = false
             submenu.addItem(item)
             return submenu

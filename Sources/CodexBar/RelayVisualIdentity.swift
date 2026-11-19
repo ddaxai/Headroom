@@ -55,7 +55,7 @@ enum RelayVisualIdentity {
     private static func makeMenuBarImage(sprayFrame: Int?) -> NSImage? {
         guard let base = NSImage(
             systemSymbolName: self.symbolName,
-            accessibilityDescription: "CodexBar Relay")
+            accessibilityDescription: "Headroom Relay")
         else { return nil }
 
         let size = NSImage.SymbolConfiguration(pointSize: 16, weight: .semibold)

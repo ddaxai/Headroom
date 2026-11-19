@@ -94,6 +94,10 @@ struct PreferencesView: View {
                     min: SettingsPane.sidebarMinWidth,
                     ideal: self.settings.sidebarWidth,
                     max: SettingsPane.sidebarMaxWidth)
+                // The titlebar accessory already owns the sidebar toggle beside the pin. Without
+                // this, NavigationSplitView adds a second toggle that moves between the sidebar
+                // edge and the traffic lights as the sidebar collapses.
+                .toolbar(removing: .sidebarToggle)
                 .background {
                     GeometryReader { proxy in
                         Color.clear.preference(
@@ -231,15 +235,10 @@ struct AccountsAndAPIsPane: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("", selection: self.section) {
+            SettingsSubsectionPicker(L("settings_destination_accounts_apis"), selection: self.section) {
                 Text(L("tab_providers")).tag(Section.providers)
                 Text(L("API / Relay")).tag(Section.relay)
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(width: 260)
-            .padding(.top, 20)
-            .padding(.bottom, 8)
 
             Group {
                 switch self.section.wrappedValue {

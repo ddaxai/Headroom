@@ -21,7 +21,7 @@ func showAbout() {
         ])
     }
 
-    let credits = NSMutableAttributedString(string: "Headroom — CodexBar 与 CC Switch 的定向整合分支\n")
+    let credits = NSMutableAttributedString(string: L("about_credits_tagline") + "\n")
     credits.append(makeLink("GitHub", urlString: "https://github.com/ddaxai/Headroom"))
     credits.append(separator)
     credits.append(makeLink("Upstream", urlString: "https://github.com/steipete/CodexBar"))

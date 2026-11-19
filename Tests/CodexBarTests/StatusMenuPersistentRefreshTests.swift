@@ -263,7 +263,7 @@ struct StatusMenuPersistentRefreshTests {
         #expect(settingsItem.keyEquivalent == ",")
         #expect(settingsItem.keyEquivalentModifierMask == [.command])
 
-        for (title, key) in [("About CodexBar", ""), ("Quit", "q")] {
+        for (title, key) in [("About Headroom", ""), ("Quit", "q")] {
             let item = try #require(moreMenu.items.first { $0.title == title })
             #expect(item.view == nil)
             #expect(item.action != nil)

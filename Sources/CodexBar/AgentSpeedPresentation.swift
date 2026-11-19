@@ -39,11 +39,11 @@ struct AgentSpeedPresentation: Equatable, Sendable {
         // 1. Compact badge for Overview rows
         let badgeParts: [String] = switch (latestFormatted, rollingFormatted) {
         case let (latest?, rolling?) where latest != rolling && summary.rolling24hSampleCount >= 2:
-            ["⚡ \(latest)", "\(L("relay_local_usage_24h")) \(rolling)"]
+            [latest, "\(L("relay_local_usage_24h")) \(rolling)"]
         case let (latest?, _):
-            ["⚡ \(latest)"]
+            [latest]
         case let (nil, rolling?):
-            ["⚡ \(L("relay_local_usage_24h")) \(rolling)"]
+            ["\(L("relay_local_usage_24h")) \(rolling)"]
         case (nil, nil):
             []
         }
@@ -74,7 +74,7 @@ struct AgentSpeedPresentation: Equatable, Sendable {
         // 4. Single-line compact string for Codex account / Relay / Profile summary cards
         var inlineParts: [String] = []
         if let latestFormatted {
-            inlineParts.append("⚡ \(latestFormatted)")
+            inlineParts.append(latestFormatted)
         }
         if let ttftMs = summary.latestFirstTokenMs, ttftMs > 0 {
             inlineParts.append(L("agent_speed_ttft_format", AgentSpeedSummary.formatFirstTokenSeconds(ttftMs)))

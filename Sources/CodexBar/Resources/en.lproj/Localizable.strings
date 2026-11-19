@@ -1,8 +1,8 @@
 /* English localization for CodexBar (base/fallback) */
 
-"ollama_safari_cookie_access_hint" = "Safari cookies need Full Disk Access for CodexBar (System Settings > Privacy & Security).";
+"ollama_safari_cookie_access_hint" = "Safari cookies need Full Disk Access for Headroom (System Settings > Privacy & Security).";
 "ollama_browser_cookie_decryption_denied" = "%@ cookie decryption was declined in Keychain; retry with a manual refresh.";
-"ollama_browser_cookie_decryption_disabled" = "%@ cookie decryption is disabled in CodexBar; enable Keychain access and refresh.";
+"ollama_browser_cookie_decryption_disabled" = "%@ cookie decryption is disabled in Headroom; enable Keychain access and refresh.";
 
 " providers" = " providers";
 "(System)" = "(System)";
@@ -43,7 +43,7 @@
 "Automatic imports browser cookies or stored sessions." = "Automatic imports browser cookies or stored sessions.";
 "Automatic imports browser cookies." = "Automatic imports browser cookies.";
 "Automatically imports browser session cookie." = "Automatically imports browser session cookie.";
-"Automatically opens CodexBar when you start your Mac." = "Automatically opens CodexBar when you start your Mac.";
+"Automatically opens CodexBar when you start your Mac." = "Automatically opens Headroom when you start your Mac.";
 "Automation" = "Automation";
 "Average (\\(label1) + \\(label2))" = "Average (\\(label1) + \\(label2))";
 "Average (\\(metadata.sessionLabel) + \\(metadata.weeklyLabel))" = "Average (\\(metadata.sessionLabel) + \\(metadata.weeklyLabel))";
@@ -63,7 +63,7 @@
 "Check for updates automatically" = "Check for updates automatically";
 "Check if you like your agents having some fun up there." = "Check if you like your agents having some fun up there.";
 "Check provider status" = "Check provider status";
-"Choose a supported browser so CodexBar can read the matching account." = "Choose a supported browser so CodexBar can read the matching account.";
+"Choose a supported browser so CodexBar can read the matching account." = "Choose a supported browser so Headroom can read the matching account.";
 "Choose Codex workspace" = "Choose Codex workspace";
 "Choose Cursor account" = "Choose Cursor account";
 "Choose the MiniMax host (global .io or China mainland .com)." = "Choose the MiniMax host (global .io or China mainland .com).";
@@ -71,8 +71,8 @@
 "Choose up to \\(Self.maxOverviewProviders) providers" = "Choose up to \\(Self.maxOverviewProviders) providers";
 "Choose up to \\(count) providers" = "Choose up to \\(count) providers";
 "Choose what to show in the menu bar (Pace shows usage vs. expected)." = "Choose what to show in the menu bar (Pace shows usage vs. expected).";
-"Choose which Codex account CodexBar should follow." = "Choose which Codex account CodexBar should follow.";
-"Choose which Cursor account CodexBar should use." = "Choose which Cursor account CodexBar should use.";
+"Choose which Codex account CodexBar should follow." = "Choose which Codex account Headroom should follow.";
+"Choose which Cursor account CodexBar should use." = "Choose which Cursor account Headroom should use.";
 "Choose which window drives the menu bar percent." = "Choose which window drives the menu bar percent.";
 "Chrome" = "Chrome";
 "Claude CLI not found" = "Claude CLI not found";
@@ -88,8 +88,8 @@
 "Codex login failed" = "Codex login failed";
 "Codex login timed out" = "Codex login timed out";
 "CodexBar Lifecycle Keepalive" = "CodexBar Lifecycle Keepalive";
-"CodexBar can't show its menu bar icon" = "CodexBar can't show its menu bar icon";
-"CodexBar could not read managed account storage. " = "CodexBar could not read managed account storage. ";
+"CodexBar can't show its menu bar icon" = "Headroom can't show its menu bar icon";
+"CodexBar could not read managed account storage. " = "Headroom could not read managed account storage. ";
 "Configure…" = "Configure…";
 "Connected" = "Connected";
 "Controls how much detail is logged." = "Controls how much detail is logged.";
@@ -151,13 +151,13 @@
 "Hide details" = "Hide details";
 "Hide personal information" = "Hide personal information";
 "Historical tracking" = "Historical tracking";
-"How often CodexBar polls providers in the background." = "How often CodexBar polls providers in the background.";
+"How often CodexBar polls providers in the background." = "How often Headroom polls providers in the background.";
 "Inactive" = "Inactive";
 "Install CLI" = "Install CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Install the Codex CLI (npm i -g @openai/codex) and try again.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again.";
-"Install a JetBrains IDE with AI Assistant enabled, then refresh CodexBar." = "Install a JetBrains IDE with AI Assistant enabled, then refresh CodexBar.";
+"Install a JetBrains IDE with AI Assistant enabled, then refresh CodexBar." = "Install a JetBrains IDE with AI Assistant enabled, then refresh Headroom.";
 "JetBrains AI is ready" = "JetBrains AI is ready";
 "JetBrains IDE" = "JetBrains IDE";
 "Keep CLI sessions alive" = "Keep CLI sessions alive";
@@ -210,7 +210,7 @@
 "Open" = "Open";
 "Open API Keys" = "Open API Keys";
 "Open Amp Settings" = "Open Amp Settings";
-"Open Antigravity to sign in, then refresh CodexBar." = "Open Antigravity to sign in, then refresh CodexBar.";
+"Open Antigravity to sign in, then refresh CodexBar." = "Open Antigravity to sign in, then refresh Headroom.";
 "Open Browser" = "Open Browser";
 "Open Coding Plan" = "Open Coding Plan";
 "Open Console" = "Open Console";
@@ -255,7 +255,7 @@
 "Progress bars fill as you consume quota (instead of showing remaining)." = "Progress bars fill as you consume quota (instead of showing remaining).";
 "Provider" = "Provider";
 "Providers" = "Providers";
-"Quit CodexBar" = "Quit CodexBar";
+"Quit CodexBar" = "Quit Headroom";
 "Random (default)" = "Random (default)";
 "Reads local usage logs. Shows today + last 30 days cost in the menu." = "Reads local usage logs. Shows today + the selected history window in the menu.";
 "Refresh" = "Refresh";
@@ -263,8 +263,8 @@
 "Remote" = "Remote";
 "Remove" = "Remove";
 "Remove Codex account?" = "Remove Codex account?";
-"Remove \\(account.email) from CodexBar? Its managed Codex home will be deleted." = "Remove \\(account.email) from CodexBar? Its managed Codex home will be deleted.";
-"Remove \\(email) from CodexBar? Its managed Codex home will be deleted." = "Remove \\(email) from CodexBar? Its managed Codex home will be deleted.";
+"Remove \\(account.email) from CodexBar? Its managed Codex home will be deleted." = "Remove \\(account.email) from Headroom? Its managed Codex home will be deleted.";
+"Remove \\(email) from CodexBar? Its managed Codex home will be deleted." = "Remove \\(email) from Headroom? Its managed Codex home will be deleted.";
 "Remove selected account" = "Remove selected account";
 "Replace critter bars with provider branding icons and a percentage." = "Replace critter bars with provider branding icons and a percentage.";
 "Replay selected animation" = "Replay selected animation";
@@ -306,7 +306,7 @@
 "Store multiple Ollama Cookie headers." = "Store multiple Ollama Cookie headers.";
 "Store multiple OpenCode Cookie headers." = "Store multiple OpenCode Cookie headers.";
 "Store multiple OpenCode Go Cookie headers." = "Store multiple OpenCode Go Cookie headers.";
-"Stored in the CodexBar config file." = "Stored in the CodexBar config file.";
+"Stored in the CodexBar config file." = "Stored in the Headroom config file.";
 "Stored in ~/.codexbar/config.json. " = "Stored in ~/.codexbar/config.json. ";
 "Stored in ~/.codexbar/config.json. Paste the key from the Synthetic dashboard." = "Stored in ~/.codexbar/config.json. Paste the key from the Synthetic dashboard.";
 "Stored in ~/.codexbar/config.json. Paste your Coding Plan API key from Model Studio." = "Stored in ~/.codexbar/config.json. Paste your Coding Plan API key from Model Studio.";
@@ -382,8 +382,8 @@
 "cursor_on_demand" = "On-demand: %@";
 "cursor_on_demand_with_limit" = "On-demand: %1$@ / %2$@";
 "extra_usage_format" = "Extra usage: %1$@ / %2$@";
-"jetbrains_detected_generate" = "Detected: %@. Use the AI assistant once to generate quota data, then refresh CodexBar.";
-"jetbrains_detected_select" = "Detected: %@. Select your preferred IDE in Settings, then refresh CodexBar.";
+"jetbrains_detected_generate" = "Detected: %@. Use the AI assistant once to generate quota data, then refresh Headroom.";
+"jetbrains_detected_select" = "Detected: %@. Select your preferred IDE in Settings, then refresh Headroom.";
 "last_fetch_failed_with_provider" = "Last %@ fetch failed:";
 "last_spend" = "Last spend: %@";
 "mcp_model_usage" = "%1$@: %2$@";
@@ -393,10 +393,10 @@
 "metric_primary" = "Primary (%@)";
 "metric_secondary" = "Secondary (%@)";
 "metric_tertiary" = "Tertiary (%@)";
-"multiple_workspaces_found" = "CodexBar found multiple workspaces for %@. Please choose the workspace to add.";
+"multiple_workspaces_found" = "Headroom found multiple workspaces for %@. Please choose the workspace to add.";
 "ory_session_…=…; csrftoken=…" = "ory_session_…=…; csrftoken=…";
 "overview_choose_providers" = "Choose up to %@ providers";
-"remove_account_message" = "Remove %@ from CodexBar? Its managed Codex home will be deleted.";
+"remove_account_message" = "Remove %@ from Headroom? Its managed Codex home will be deleted.";
 "version_format" = "Version %@";
 "vertex_ai_login_instructions" = "To track Vertex AI usage, authenticate with Google Cloud.\n\n1. Open Terminal\n2. Run: gcloud auth application-default login\n3. Follow the browser prompts to sign in\n4. Set your project: gcloud config set project PROJECT_ID\n\nOpen Terminal now?";
 "workspaceID is set but only opencode, opencodego, and deepgram support workspaceID." = "workspaceID is set but only opencode, opencodego, and deepgram support workspaceID.";
@@ -437,7 +437,7 @@
 "language_italian" = "Italiano";
 "language_polish" = "Polski";
 "start_at_login_title" = "Start at login";
-"start_at_login_subtitle" = "Automatically opens CodexBar when you start your Mac.";
+"start_at_login_subtitle" = "Automatically opens Headroom when you start your Mac.";
 "show_cost_summary_subtitle" = "Reads local usage logs. Shows today + the selected history window in the menu.";
 "cost_summary_style_title" = "Display style";
 "cost_summary_style_inline" = "Inline only";
@@ -504,7 +504,7 @@
 "quota_warning_warning" = "Warning";
 "quota_warning_critical" = "Critical";
 "apply" = "Apply";
-"quit_app" = "Quit CodexBar";
+"quit_app" = "Quit Headroom";
 "restart_app" = "Restart Headroom";
 
 /* Tab titles */
@@ -558,8 +558,8 @@
 "managed_login_missing_email" = "Codex login completed, but no account email was available. Try again after confirming the account is fully signed in.";
 "login_success_notification_title" = "%@ login successful";
 "login_success_notification_body" = "You can return to the app; authentication finished.";
-"workspace_selection_cancelled" = "CodexBar found multiple workspaces, but no workspace was selected.";
-"unsafe_managed_home" = "CodexBar refused to modify an unexpected managed home path: %@";
+"workspace_selection_cancelled" = "Headroom found multiple workspaces, but no workspace was selected.";
+"unsafe_managed_home" = "Headroom refused to modify an unexpected managed home path: %@";
 "menu_bar_metric_title" = "Menu bar metric";
 "menu_bar_metric_subtitle" = "Choose which window drives the menu bar percent.";
 "menu_bar_metric_subtitle_deepseek" = "Shows the DeepSeek balance in the menu bar.";
@@ -715,7 +715,7 @@
 "login_shell_path" = "Login shell PATH (startup capture)";
 "cleared" = "Cleared.";
 "no_fetch_attempts" = "No fetch attempts yet.";
-"macOS Tahoe can block menu bar apps in System Settings → Menu Bar → Allow in the Menu Bar. CodexBar is running, but macOS may be hiding its icon. Open Menu Bar settings and turn CodexBar on." = "macOS Tahoe can block menu bar apps in System Settings → Menu Bar → Allow in the Menu Bar. CodexBar is running, but macOS may be hiding its icon. Open Menu Bar settings and turn CodexBar on.";
+"macOS Tahoe can block menu bar apps in System Settings → Menu Bar → Allow in the Menu Bar. CodexBar is running, but macOS may be hiding its icon. Open Menu Bar settings and turn CodexBar on." = "macOS Tahoe can block menu bar apps in System Settings → Menu Bar → Allow in the Menu Bar. Headroom is running, but macOS may be hiding its icon. Open Menu Bar settings and turn Headroom on.";
 
 /* Metric preferences */
 "metric_pref_automatic" = "Automatic";
@@ -758,7 +758,7 @@
 "refresh_adaptive" = "Adaptive";
 "refresh_adaptive_agent_aware" = "Adaptive (agent-aware)";
 "adaptive_activity_consent_title" = "Allow agent-aware refresh?";
-"adaptive_activity_consent_message" = "Adaptive (agent-aware) can inspect the local running-process list, including command lines, to identify Codex and Claude, then read known session metadata every 30 seconds while you are coding. With Agent Sessions off, CodexBar uses only the latest activity time in memory and discards session paths and identities. This activity data is not sent anywhere, and remote discovery and SSH stay off. If you decline, CodexBar returns to plain Adaptive without local activity scans.";
+"adaptive_activity_consent_message" = "Adaptive (agent-aware) can inspect the local running-process list, including command lines, to identify Codex and Claude, then read known session metadata every 30 seconds while you are coding. With Agent Sessions off, Headroom uses only the latest activity time in memory and discards session paths and identities. This activity data is not sent anywhere, and remote discovery and SSH stay off. If you decline, Headroom returns to plain Adaptive without local activity scans.";
 "adaptive_activity_consent_allow" = "Allow Local Activity";
 "adaptive_activity_consent_decline" = "Use Plain Adaptive";
 
@@ -792,7 +792,7 @@
 "No local data found" = "No local data found";
 "Credits unavailable; keep Codex running to refresh." = "Credits unavailable; keep Codex running to refresh.";
 "No available fetch strategy for minimax." = "No available fetch strategy for minimax.";
-"No Cursor session found. Please log in to cursor.com in Safari, Chrome, Microsoft Edge, Brave, Arc, Dia, ChatGPT Atlas, Chromium, Helium, Vivaldi, Yandex Browser, Firefox, Zen, Colibri, Sidekick, Opera, Opera GX, or Edge Canary. If you use Safari, grant CodexBar Full Disk Access in System Settings ▸ Privacy & Security. You can also sign in to Cursor from the CodexBar menu (Add / switch account)." = "No Cursor session found. Please log in to cursor.com in Safari, Chrome, Microsoft Edge, Brave, Arc, Dia, ChatGPT Atlas, Chromium, Helium, Vivaldi, Yandex Browser, Firefox, Zen, Colibri, Sidekick, Opera, Opera GX, or Edge Canary. If you use Safari, grant CodexBar Full Disk Access in System Settings ▸ Privacy & Security. You can also sign in to Cursor from the CodexBar menu (Add / switch account).";
+"No Cursor session found. Please log in to cursor.com in Safari, Chrome, Microsoft Edge, Brave, Arc, Dia, ChatGPT Atlas, Chromium, Helium, Vivaldi, Yandex Browser, Firefox, Zen, Colibri, Sidekick, Opera, Opera GX, or Edge Canary. If you use Safari, grant CodexBar Full Disk Access in System Settings ▸ Privacy & Security. You can also sign in to Cursor from the CodexBar menu (Add / switch account)." = "No Cursor session found. Please log in to cursor.com in Safari, Chrome, Microsoft Edge, Brave, Arc, Dia, ChatGPT Atlas, Chromium, Helium, Vivaldi, Yandex Browser, Firefox, Zen, Colibri, Sidekick, Opera, Opera GX, or Edge Canary. If you use Safari, grant Headroom Full Disk Access in System Settings ▸ Privacy & Security. You can also sign in to Cursor from the Headroom menu (Add / switch account).";
 "No OpenCode session cookies found in browsers." = "No OpenCode session cookies found in browsers.";
 "No available fetch strategy for %@." = "No available fetch strategy for %@.";
 "Today" = "Today";
@@ -808,7 +808,7 @@
 "Status Page" = "Status Page";
 "Open Status Page" = "Open Status Page";
 "Settings..." = "Settings...";
-"About CodexBar" = "About CodexBar";
+"About CodexBar" = "About Headroom";
 "Restart" = "Restart";
 "Quit" = "Quit";
 "Last %d day" = "Last %d day";
@@ -1077,31 +1077,31 @@
 "Capacity Start" = "Capacity Start";
 "Changelog" = "Changelog";
 "Choose the Moonshot/Kimi API host for international or China mainland accounts." = "Choose the Moonshot/Kimi API host for international or China mainland accounts.";
-"CodexBar can't replace a system account that is signed in with an API key only setup." = "CodexBar can't replace a system account that is signed in with an API key only setup.";
-"CodexBar could not find saved auth for that account. Re-authenticate it and try again." = "CodexBar could not find saved auth for that account. Re-authenticate it and try again.";
-"CodexBar could not read managed account storage. Recover the store before adding another account." = "CodexBar could not read managed account storage. Recover the store before adding another account.";
-"CodexBar could not read saved auth for that account. Re-authenticate it and try again." = "CodexBar could not read saved auth for that account. Re-authenticate it and try again.";
-"CodexBar could not read the current system account on this Mac." = "CodexBar could not read the current system account on this Mac.";
-"CodexBar could not replace the live Codex auth on this Mac." = "CodexBar could not replace the live Codex auth on this Mac.";
-"CodexBar could not safely preserve the current system account before switching." = "CodexBar could not safely preserve the current system account before switching.";
-"CodexBar could not save the current system account before switching." = "CodexBar could not save the current system account before switching.";
-"CodexBar could not update managed account storage." = "CodexBar could not update managed account storage.";
-"CodexBar found another managed account that already uses the current system account. Resolve the duplicate account before switching." = "CodexBar found another managed account that already uses the current system account. Resolve the duplicate account before switching.";
-"CodexBar will ask macOS Keychain for “%@” so it can decrypt browser cookies and authenticate your account. Click OK to continue." = "CodexBar will ask macOS Keychain for “%@” so it can decrypt browser cookies and authenticate your account. Click OK to continue.";
-"CodexBar will ask macOS Keychain for the Claude Code OAuth token so it can fetch your Claude usage. Click OK to continue." = "CodexBar will ask macOS Keychain for the Claude Code OAuth token so it can fetch your Claude usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your Amp cookie header so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your Amp cookie header so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your Augment cookie header so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your Augment cookie header so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your Claude cookie header so it can fetch Claude web usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your Claude cookie header so it can fetch Claude web usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your Cursor cookie header so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your Cursor cookie header so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your Factory cookie header so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your Factory cookie header so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your GitHub Copilot token so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your GitHub Copilot token so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your Kimi auth token so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your Kimi auth token so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your MiniMax API token so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your MiniMax API token so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your MiniMax cookie header so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your MiniMax cookie header so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your OpenAI cookie header so it can fetch Codex dashboard extras. Click OK to continue." = "CodexBar will ask macOS Keychain for your OpenAI cookie header so it can fetch Codex dashboard extras. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your OpenCode cookie header so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your OpenCode cookie header so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your Synthetic API key so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your Synthetic API key so it can fetch usage. Click OK to continue.";
-"CodexBar will ask macOS Keychain for your z.ai API token so it can fetch usage. Click OK to continue." = "CodexBar will ask macOS Keychain for your z.ai API token so it can fetch usage. Click OK to continue.";
+"CodexBar can't replace a system account that is signed in with an API key only setup." = "Headroom can't replace a system account that is signed in with an API key only setup.";
+"CodexBar could not find saved auth for that account. Re-authenticate it and try again." = "Headroom could not find saved auth for that account. Re-authenticate it and try again.";
+"CodexBar could not read managed account storage. Recover the store before adding another account." = "Headroom could not read managed account storage. Recover the store before adding another account.";
+"CodexBar could not read saved auth for that account. Re-authenticate it and try again." = "Headroom could not read saved auth for that account. Re-authenticate it and try again.";
+"CodexBar could not read the current system account on this Mac." = "Headroom could not read the current system account on this Mac.";
+"CodexBar could not replace the live Codex auth on this Mac." = "Headroom could not replace the live Codex auth on this Mac.";
+"CodexBar could not safely preserve the current system account before switching." = "Headroom could not safely preserve the current system account before switching.";
+"CodexBar could not save the current system account before switching." = "Headroom could not save the current system account before switching.";
+"CodexBar could not update managed account storage." = "Headroom could not update managed account storage.";
+"CodexBar found another managed account that already uses the current system account. Resolve the duplicate account before switching." = "Headroom found another managed account that already uses the current system account. Resolve the duplicate account before switching.";
+"CodexBar will ask macOS Keychain for “%@” so it can decrypt browser cookies and authenticate your account. Click OK to continue." = "Headroom will ask macOS Keychain for “%@” so it can decrypt browser cookies and authenticate your account. Click OK to continue.";
+"CodexBar will ask macOS Keychain for the Claude Code OAuth token so it can fetch your Claude usage. Click OK to continue." = "Headroom will ask macOS Keychain for the Claude Code OAuth token so it can fetch your Claude usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your Amp cookie header so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your Amp cookie header so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your Augment cookie header so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your Augment cookie header so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your Claude cookie header so it can fetch Claude web usage. Click OK to continue." = "Headroom will ask macOS Keychain for your Claude cookie header so it can fetch Claude web usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your Cursor cookie header so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your Cursor cookie header so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your Factory cookie header so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your Factory cookie header so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your GitHub Copilot token so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your GitHub Copilot token so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your Kimi auth token so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your Kimi auth token so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your MiniMax API token so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your MiniMax API token so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your MiniMax cookie header so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your MiniMax cookie header so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your OpenAI cookie header so it can fetch Codex dashboard extras. Click OK to continue." = "Headroom will ask macOS Keychain for your OpenAI cookie header so it can fetch Codex dashboard extras. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your OpenCode cookie header so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your OpenCode cookie header so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your Synthetic API key so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your Synthetic API key so it can fetch usage. Click OK to continue.";
+"CodexBar will ask macOS Keychain for your z.ai API token so it can fetch usage. Click OK to continue." = "Headroom will ask macOS Keychain for your z.ai API token so it can fetch usage. Click OK to continue.";
 "Could not open Cursor login in your browser." = "Could not open Cursor login in your browser.";
 "Could not open browser for Antigravity" = "Could not open browser for Antigravity";
 "Credits used" = "Credits used";
@@ -1116,7 +1116,7 @@
 "Extra usage balance: %@" = "Extra usage balance: %@";
 "Keychain Access Required" = "Keychain Access Required";
 "keychain_prompt_learn_more" = "Learn More…";
-"keychain_prompt_privacy_note" = "macOS—not CodexBar—handles any Mac login password entry. You can disable all Keychain access at any time in Settings → Advanced.";
+"keychain_prompt_privacy_note" = "macOS—not Headroom—handles any Mac login password entry. You can disable all Keychain access at any time in Settings → Advanced.";
 "Kiro menu bar value" = "Kiro menu bar value";
 "Label" = "Label";
 "No organizations loaded. Click Refresh after setting your API key." = "No organizations loaded. Click Refresh after setting your API key.";
@@ -1177,7 +1177,7 @@
 "Service" = "Service";
 "Show or hide Kiro credits, percent, or both next to the menu bar icon." = "Show or hide Kiro credits, percent, or both next to the menu bar icon.";
 "Show usage for organizations you belong to. Personal account is always shown." = "Show usage for organizations you belong to. Personal account is always shown.";
-"Sign in to cursor.com in your browser, then refresh Cursor in CodexBar." = "Sign in to cursor.com in your browser, then refresh Cursor in CodexBar.";
+"Sign in to cursor.com in your browser, then refresh Cursor in CodexBar." = "Sign in to cursor.com in your browser, then refresh Cursor in Headroom.";
 "Simulated error text" = "Simulated error text";
 "StepFun platform account (phone number or email)." = "StepFun platform account (phone number or email).";
 "Stored in ~/.codexbar/config.json." = "Stored in ~/.codexbar/config.json.";
@@ -1193,12 +1193,12 @@
 "Stored in ~/.codexbar/config.json. OPENAI_ADMIN_KEY is preferred; OPENAI_API_KEY still works." = "Stored in ~/.codexbar/config.json. OPENAI_ADMIN_KEY is preferred; OPENAI_API_KEY still works.";
 "Stored in ~/.codexbar/config.json. Requires an Anthropic Admin API key." = "Stored in ~/.codexbar/config.json. Requires an Anthropic Admin API key.";
 "Stored in ~/.codexbar/config.json. Used for /v1/quota-stats." = "Stored in ~/.codexbar/config.json. Used for /v1/quota-stats.";
-"Stored in ~/.codexbar/config.json. You can also provide CODEBUFF_API_KEY or let CodexBar read ~/.config/manicode/credentials.json (created by `codebuff login`)." = "Stored in ~/.codexbar/config.json. You can also provide CODEBUFF_API_KEY or let CodexBar read ~/.config/manicode/credentials.json (created by `codebuff login`).";
+"Stored in ~/.codexbar/config.json. You can also provide CODEBUFF_API_KEY or let CodexBar read ~/.config/manicode/credentials.json (created by `codebuff login`)." = "Stored in ~/.codexbar/config.json. You can also provide CODEBUFF_API_KEY or let Headroom read ~/.config/manicode/credentials.json (created by `codebuff login`).";
 "Stored in ~/.codexbar/config.json. You can also provide CROF_API_KEY." = "Stored in ~/.codexbar/config.json. You can also provide CROF_API_KEY.";
 "Stored in ~/.codexbar/config.json. You can also provide KILO_API_KEY or ~/.local/share/kilo/auth.json (kilo.access)." = "Stored in ~/.codexbar/config.json. You can also provide KILO_API_KEY or ~/.local/share/kilo/auth.json (kilo.access).";
 "T3 Chat cookie" = "T3 Chat cookie";
 "Team mode" = "Team mode";
-"That account is no longer available in CodexBar. Refresh the account list and try again." = "That account is no longer available in CodexBar. Refresh the account list and try again.";
+"That account is no longer available in CodexBar. Refresh the account list and try again." = "That account is no longer available in Headroom. Refresh the account list and try again.";
 "The browser login did not complete in time. Try Antigravity login again." = "The browser login did not complete in time. Try Antigravity login again.";
 "Timed out waiting for Cursor login. %@" = "Timed out waiting for Cursor login. %@";
 "Timed out waiting for Cursor login. %@ Last error: %@" = "Timed out waiting for Cursor login. %@ Last error: %@";
@@ -1688,3 +1688,117 @@
 "relay_quick_switch_external_help" = "External API active: %@ (%@). Click to view or import in Settings.";
 "relay_quick_switch_external_help_model" = "External API active: %@ (%@ · %@). Click to view or import in Settings.";
 "relay_quick_switch_external_manage_hint" = "“%@” was configured externally. Open Settings to import it into Headroom.";
+
+/* Relay settings */
+"relay_ui_status_restored" = "Restored the configuration from before relays were first enabled";
+"relay_ui_status_restored_warning" = "Restored the original configuration, but backup cleanup failed: %@";
+"relay_ui_status_unified_history_enabled" = "Unified Codex history is on. Migrated %d session files and %d index rows. Restart Codex.";
+"relay_ui_status_deleted" = "Deleted “%@” and its local API key";
+"relay_ui_blocker_name" = "Enter a name";
+"relay_ui_blocker_base_url" = "Base URL must use HTTPS. HTTP is allowed only for localhost, 127.0.0.1 or ::1.";
+"relay_ui_blocker_no_client" = "Select at least one client";
+"relay_ui_blocker_api_key" = "Save the API key to the local credential file before switching";
+"relay_ui_blocker_model_id" = "%@ needs a model ID before switching";
+"relay_ui_error_baseline_backup" = "Couldn't back up the original configuration";
+"relay_ui_error_no_baseline" = "No baseline backup is available to restore";
+"relay_ui_error_select_to_delete" = "Select a relay to delete first";
+"relay_ui_usage_error_no_mode" = "Choose a balance endpoint this relay supports first";
+"relay_ui_usage_error_invalid" = "This configuration can't query the balance";
+"relay_ui_usage_error_no_key" = "Querying the balance needs a saved API key";
+"relay_ui_incompatible_codex" = "Codex direct connection supports only the OpenAI Responses protocol";
+"relay_ui_incompatible_claude_code" = "Claude Code direct connection supports only the Anthropic Messages protocol";
+"relay_ui_incompatible_grok" = "Grok Build direct connection supports only the OpenAI Responses protocol";
+"relay_ui_error_invalid_draft" = "The draft is invalid";
+"relay_ui_error_operation_failed" = "Operation failed (%@)";
+"relay_ui_list_app_count" = "Clients: %d";
+"relay_ui_list_active_accessibility" = "Managed clients: %d";
+"relay_ui_list_empty_title" = "No relays";
+"relay_ui_list_empty_description" = "Create one, then save it";
+"relay_ui_list_new" = "New";
+"relay_ui_list_delete" = "Delete";
+"relay_ui_list_delete_help" = "Delete the selected relay";
+"relay_ui_delete_title" = "Delete “%@”?";
+"relay_ui_delete_confirm" = "Delete relay";
+"relay_ui_delete_message_active" = "This relay manages %@. Deleting it restores only these clients and leaves other relays untouched, then removes the configuration and local API key.";
+"relay_ui_list_separator" = ", ";
+"relay_ui_delete_message" = "Removes this configuration and its local API key.";
+"relay_ui_field_name" = "Name";
+"relay_ui_field_name_prompt" = "e.g. Work relay";
+"relay_ui_field_protocol" = "Protocol";
+"relay_ui_field_default_model" = "Default model ID";
+"relay_ui_field_default_model_prompt" = "Can be overridden per client";
+"relay_ui_api_key_hide" = "Hide API key";
+"relay_ui_api_key_show" = "Show API key";
+"relay_ui_section_configuration" = "Relay configuration";
+"relay_ui_section_configuration_footer" = "Selecting a saved relay loads its API key, hidden until you click the eye button. Save updates only the local configuration and doesn't write client files.";
+"relay_ui_field_usage_endpoint" = "Balance endpoint";
+"relay_ui_section_usage" = "Relay balance";
+"relay_ui_section_targets" = "Use with";
+"relay_ui_unified_history_toggle" = "Turn on when switching to a relay";
+"relay_ui_unified_history_done" = "Migration complete. It won't roll back automatically.";
+"relay_ui_unified_history_pending" = "Runs only when you switch Codex to a relay from the menu. Saving here doesn't rewrite any configuration.";
+"relay_ui_unified_history_title" = "Unified Codex session history";
+"relay_ui_section_codex_history" = "Codex history";
+"relay_ui_section_codex_history_footer" = "You'll confirm before the first switch and a backup is made. OpenCode, Claude Code and Grok Build never trigger the migration.";
+"relay_ui_key_copy_note" = "When you switch from the menu bar, the API key is copied from the local credential file into the selected client's configuration.";
+"relay_ui_section_key_copy" = "API key handling";
+"relay_ui_restore_all" = "Restore all official configs";
+"relay_ui_restore_all_help" = "Restores the official configuration of every managed client. The Official button in the menu restores one client at a time.";
+"relay_ui_restore_all_title" = "Restore all official configurations?";
+"relay_ui_restore_all_confirm" = "Restore and clear relay state";
+"relay_ui_restore_all_none" = "No client is using a relay right now.";
+"relay_ui_restore_all_message" = "Will restore: %@. Clients not managed by a relay stay as they are.";
+"relay_ui_validation_idle" = "Save stores the configuration only. Switch each client from the menu bar.";
+"relay_ui_validation_requirements" = "To switch: %@";
+"relay_ui_target_manual" = "Manual";
+"relay_ui_copy_base_url" = "Copy Base URL";
+"relay_ui_copy_api_key" = "Copy API key";
+"relay_ui_target_model_field" = "%@ model ID";
+"relay_ui_usage_mode_off" = "Off";
+"relay_ui_usage_mode_generic" = "Generic balance (/user/balance)";
+"relay_ui_note_codex" = "Writes a direct Responses configuration. Official account switching in Headroom is unaffected.";
+"relay_ui_note_claude_code" = "Connects directly over Anthropic Messages. No account pool or local proxy is created.";
+"relay_ui_note_claude_desktop" = "Not configured automatically. Enter the values in Claude Desktop under Developer → Third-Party Inference.";
+"relay_ui_note_grok" = "Restart required after switching. The API key is copied from the local credential file into the Grok Build configuration.";
+"relay_ui_note_opencode" = "Supports all three protocols. The API key is copied from the local credential file into the detected V1 configuration.";
+"relay_ui_banner_title" = "Relay switching";
+"relay_ui_banner_active" = "Active on %d clients";
+"relay_ui_banner_inactive" = "Off";
+
+/* Relay menu */
+"relay_menu_resave_api_key" = "Save the API key again in Settings. This version stores it in a local file instead of the Keychain.";
+"relay_menu_load_failed" = "Couldn't read configuration";
+"relay_menu_label_official" = "Official account";
+"relay_menu_label_relay" = "Relay";
+"relay_menu_label_mixed" = "Mixed configuration";
+"relay_menu_label_mixed_prefix" = "Mixed";
+"relay_menu_profile_missing" = "This relay configuration no longer exists";
+"relay_menu_usage_disabled" = "Balance queries are off for this relay";
+"relay_menu_usage_refreshed" = "Refreshed %@";
+"relay_menu_requires_migration" = "Before the first Codex switch, unified session history is migrated and Codex restarts.";
+"relay_menu_mixed_not_target" = "A mixed configuration can't be a switch target";
+"relay_menu_target_not_enabled" = "This client isn't enabled in the configuration";
+"relay_menu_target_not_allowed" = "This configuration isn't allowed for %@";
+"relay_menu_model_id_required" = "Enter a model ID for %@ first";
+"relay_menu_switched" = "Switched %@ to “%@”";
+"relay_menu_already_official" = "%@ already uses the official configuration";
+"relay_menu_switch_failed" = "Switch failed (%@)";
+
+/* Previously missing keys */
+"Toggle Sidebar" = "Toggle Sidebar";
+"Requesting login…" = "Requesting login…";
+"Waiting in browser…" = "Waiting in browser…";
+
+/* Menu popup */
+"relay_usage_line_remaining" = "Balance %@";
+"relay_usage_line_used_of_total" = "Used %@ / %@";
+"relay_usage_line_used" = "Used %@";
+"relay_usage_line_total" = "Total %@";
+"relay_menu_custom_api" = "Custom API";
+"relay_menu_quota" = "Balance";
+"codex_hourly_usage_menu_title" = "Past 24 hours · Hourly usage";
+"codex_switch_failed_title" = "Codex switch failed";
+"relay_menu_closed" = "Menu closed";
+"chart_reset_filter" = "Reset filter";
+"relay_status_item_accessibility" = "Headroom Relay, Codex remaining %@";
+"about_credits_tagline" = "Headroom — a focused integration of CodexBar and CC Switch";

@@ -262,7 +262,7 @@ extension StatusItemController {
         }
 
         self.setRelayButtonContent(image: displayedImage, title: displayText, for: button)
-        let accessibilityText = displayText.map { "CodexBar Relay, Codex 剩余 \($0)" } ?? "CodexBar Relay"
+        let accessibilityText = displayText.map { L("relay_status_item_accessibility", $0) } ?? "Headroom Relay"
         button.setAccessibilityTitle(accessibilityText)
         self.noteIconPerfRender(skipped: false)
         return false
