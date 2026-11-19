@@ -1,3 +1,5 @@
+// swiftlint:disable file_length
+
 import AppKit
 import CodexBarCore
 import QuartzCore
@@ -47,6 +49,7 @@ final class ProviderSwitcherView: NSView {
     private static let quotaIndicatorBottomInset: CGFloat = 2
     private static let quotaIndicatorHorizontalInset: CGFloat = 8
 
+    // swiftlint:disable:next function_body_length
     init(
         providers: [UsageProvider],
         selected: ProviderSwitcherSelection?,

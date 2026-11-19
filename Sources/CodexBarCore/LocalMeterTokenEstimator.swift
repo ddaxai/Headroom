@@ -66,17 +66,17 @@ public enum LocalMeterTokenEstimator {
     private static func estimateRun(kind: ScalarKind, count: Int) -> Int {
         switch kind {
         case .asciiWord:
-            count <= 20 ? 1 : Self.ceilingDivide(count, by: 6)
+            count <= 20 ? 1 : self.ceilingDivide(count, by: 6)
         case .digit:
-            Self.ceilingDivide(count, by: 3)
+            self.ceilingDivide(count, by: 3)
         case .ideograph:
-            Self.ceilingDivide(count * 3, by: 4)
+            self.ceilingDivide(count * 3, by: 4)
         case .horizontalWhitespace:
             0
         case .lineBreak:
-            max(1, Self.ceilingDivide(count, by: 2))
+            max(1, self.ceilingDivide(count, by: 2))
         case .punctuation:
-            Self.ceilingDivide(count, by: 2)
+            self.ceilingDivide(count, by: 2)
         case .other:
             count * 2
         }

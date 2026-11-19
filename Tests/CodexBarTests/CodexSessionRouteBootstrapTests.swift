@@ -1,17 +1,17 @@
+import CodexBarCore
 import Foundation
 import Testing
-import CodexBarCore
 @testable import CodexBar
 
 struct CodexSessionRouteBootstrapTests {
     @Test
     @MainActor
-    func `external relay configuration is resolved when activation metadata is stale`() {
-        let relayID = UUID(uuidString: "11111111-1111-4111-8111-111111111111")!
-        let profile = RelayProfile(
+    func `external relay configuration is resolved when activation metadata is stale`() throws {
+        let relayID = try #require(UUID(uuidString: "11111111-1111-4111-8111-111111111111"))
+        let profile = try RelayProfile(
             id: relayID,
             name: "Relay",
-            baseURL: URL(string: "https://relay.example")!,
+            baseURL: #require(URL(string: "https://relay.example")),
             apiFormat: .openAIResponses,
             credentialReference: "relay",
             targets: [.init(app: .codex)])
@@ -28,9 +28,9 @@ struct CodexSessionRouteBootstrapTests {
 
     @Test
     @MainActor
-    func `ambiguous external relay matches fail closed to unknown`() {
-        let firstID = UUID(uuidString: "11111111-1111-4111-8111-111111111111")!
-        let secondID = UUID(uuidString: "22222222-2222-4222-8222-222222222222")!
+    func `ambiguous external relay matches fail closed to unknown`() throws {
+        let firstID = try #require(UUID(uuidString: "11111111-1111-4111-8111-111111111111"))
+        let secondID = try #require(UUID(uuidString: "22222222-2222-4222-8222-222222222222"))
         let makeProfile: (UUID) -> RelayProfile = { id in
             RelayProfile(
                 id: id,

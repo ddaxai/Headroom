@@ -16,6 +16,7 @@ extension CodexBarCLI {
           no activation is recorded. It never reads or prints credentials.
         """
     }
+
     static func cardsHelp(version: String) -> String {
         """
         CodexBar \(version)

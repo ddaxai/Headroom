@@ -173,7 +173,9 @@ public struct CodexUsageLedgerSnapshotPartition: Sendable, Equatable {
                 modelBreakdowns: breakdowns)
         }
         var totals = AmountAccumulator()
-        for entry in windowEntries { totals.add(entry) }
+        for entry in windowEntries {
+            totals.add(entry)
+        }
         let report = CostUsageDailyReport(
             data: daily,
             summary: CostUsageDailyReport.Summary(
@@ -206,11 +208,15 @@ public struct CodexUsageLedgerSnapshotPartition: Sendable, Equatable {
     {
         guard !entries.isEmpty else { return nil }
         var total = AmountAccumulator()
-        for entry in entries { total.add(entry) }
+        for entry in entries {
+            total.add(entry)
+        }
         let providerBreakdowns = Dictionary(grouping: entries, by: Self.modelProvider)
             .map { provider, entries in
                 var amounts = AmountAccumulator()
-                for entry in entries { amounts.add(entry) }
+                for entry in entries {
+                    amounts.add(entry)
+                }
                 return CostUsageModelProviderBreakdown(
                     modelProvider: provider,
                     totalTokens: amounts.total,
@@ -232,7 +238,9 @@ public struct CodexUsageLedgerSnapshotPartition: Sendable, Equatable {
         }
         .map { start, entries in
             var amounts = AmountAccumulator()
-            for entry in entries { amounts.add(entry) }
+            for entry in entries {
+                amounts.add(entry)
+            }
             return CostUsageHourlyEntry(
                 startDate: start,
                 totalTokens: amounts.total,
@@ -255,8 +263,8 @@ public struct CodexUsageLedgerSnapshotPartition: Sendable, Equatable {
     }
 
     private static func modelProvider(_ entry: UsageLedgerEntry) -> String {
-        if Self.isRelay(entry) { return CodexSessionProvenanceClassifier.relayProvider }
-        if Self.isOfficial(entry) { return CodexSessionProvenanceClassifier.officialProvider }
+        if self.isRelay(entry) { return CodexSessionProvenanceClassifier.relayProvider }
+        if self.isOfficial(entry) { return CodexSessionProvenanceClassifier.officialProvider }
         return "unknown"
     }
 }

@@ -185,7 +185,7 @@ public struct OpenCodeLocalUsageReader: Sendable {
     }
 
     private static func profileKey(from rawProviderID: String?) -> String {
-        guard let rawProviderID else { return Self.unassignedProfileKey }
+        guard let rawProviderID else { return self.unassignedProfileKey }
         let name = rawProviderID.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { return Self.unassignedProfileKey }
         let key = RelayProviderKey.slug(for: name)
@@ -240,7 +240,8 @@ public struct OpenCodeLocalUsageReader: Sendable {
                   WHERE json_valid(m.data) AND json_extract(m.data, '$.role') = 'assistant'
                 ), step_parts AS (
                   SELECT p.message_id,
-                    CAST(COALESCE(json_extract(p.data, '$.time.created'), p.time_created, m.createdMs) AS INTEGER) AS createdMs,
+                    CAST(COALESCE(json_extract(p.data, '$.time.created'), p.time_created, m.createdMs) AS INTEGER)
+                        AS createdMs,
                     CAST(COALESCE(json_extract(p.data, '$.tokens.input'), 0) AS INTEGER) AS input,
                     CAST(COALESCE(json_extract(p.data, '$.tokens.output'), 0) AS INTEGER) AS output,
                     CAST(json_extract(p.data, '$.cost') AS REAL) AS cost,

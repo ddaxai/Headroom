@@ -15,9 +15,10 @@ struct CodexResetCreditExpiryNotifierTests {
         var posts: [(prefix: String, title: String, body: String)] = []
         let notifier = CodexResetCreditExpiryNotifier(
             userDefaults: defaults,
-            clock: { now }) { prefix, title, body in
+            clock: { now },
+            notificationPoster: { prefix, title, body in
                 posts.append((prefix, title, body))
-            }
+            })
         let snapshot = CodexRateLimitResetCreditsSnapshot(
             credits: [
                 Self.credit(id: rawID, expiresAt: now.addingTimeInterval(86400)),
@@ -52,9 +53,10 @@ struct CodexResetCreditExpiryNotifierTests {
         var postCount = 0
         let notifier = CodexResetCreditExpiryNotifier(
             userDefaults: defaults,
-            clock: { now }) { _, _, _ in
+            clock: { now },
+            notificationPoster: { _, _, _ in
                 postCount += 1
-            }
+            })
         let firstAccount = CodexRateLimitResetCreditsSnapshot(
             credits: [Self.credit(id: "first-account-credit", expiresAt: now.addingTimeInterval(86400))],
             availableCount: 1,
@@ -82,9 +84,10 @@ struct CodexResetCreditExpiryNotifierTests {
         var postCount = 0
         let notifier = CodexResetCreditExpiryNotifier(
             userDefaults: defaults,
-            clock: { now }) { _, _, _ in
+            clock: { now },
+            notificationPoster: { _, _, _ in
                 postCount += 1
-            }
+            })
 
         notifier.postExpiringCreditsIfNeeded(
             snapshot: CodexRateLimitResetCreditsSnapshot(

@@ -5,6 +5,7 @@ import Testing
 
 @Suite(.serialized)
 @MainActor
+// swiftlint:disable:next type_body_length
 struct ManagedCodexAccountServiceTests {
     @Test
     func `duplicate removal requires a readable live duplicate auth witness`() async throws {
@@ -18,16 +19,27 @@ struct ManagedCodexAccountServiceTests {
         try authData.write(to: CodexAuthFingerprint.authFileURL(homePath: firstHome.path))
         let fingerprint = CodexAuthFingerprint.fingerprint(data: authData)
         let first = ManagedCodexAccount(
-            id: UUID(), email: "first@example.com", workspaceAccountID: "workspace-a",
-            authFingerprint: fingerprint, managedHomePath: firstHome.path,
-            createdAt: 1, updatedAt: 1, lastAuthenticatedAt: 1)
+            id: UUID(),
+            email: "first@example.com",
+            workspaceAccountID: "workspace-a",
+            authFingerprint: fingerprint,
+            managedHomePath: firstHome.path,
+            createdAt: 1,
+            updatedAt: 1,
+            lastAuthenticatedAt: 1)
         let second = ManagedCodexAccount(
-            id: UUID(), email: "second@example.com", workspaceAccountID: "workspace-b",
-            authFingerprint: fingerprint, managedHomePath: secondHome.path,
-            createdAt: 1, updatedAt: 1, lastAuthenticatedAt: 1)
+            id: UUID(),
+            email: "second@example.com",
+            workspaceAccountID: "workspace-b",
+            authFingerprint: fingerprint,
+            managedHomePath: secondHome.path,
+            createdAt: 1,
+            updatedAt: 1,
+            lastAuthenticatedAt: 1)
         let store = InMemoryManagedCodexAccountStore(accounts: .init(version: 1, accounts: [first, second]))
         let service = ManagedCodexAccountService(
-            store: store, homeFactory: TestManagedCodexHomeFactory(root: root),
+            store: store,
+            homeFactory: TestManagedCodexHomeFactory(root: root),
             loginRunner: StubManagedCodexLoginRunner.success,
             identityReader: StubManagedCodexIdentityReader.emails([]),
             workspaceResolver: StubManagedCodexWorkspaceResolver())
@@ -51,16 +63,27 @@ struct ManagedCodexAccountServiceTests {
         try FileManager.default.createDirectory(at: secondHome, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: root) }
         let first = ManagedCodexAccount(
-            id: UUID(), email: "first@example.com", workspaceAccountID: "workspace-a",
-            authFingerprint: "persisted-match", managedHomePath: firstHome.path,
-            createdAt: 1, updatedAt: 1, lastAuthenticatedAt: 1)
+            id: UUID(),
+            email: "first@example.com",
+            workspaceAccountID: "workspace-a",
+            authFingerprint: "persisted-match",
+            managedHomePath: firstHome.path,
+            createdAt: 1,
+            updatedAt: 1,
+            lastAuthenticatedAt: 1)
         let second = ManagedCodexAccount(
-            id: UUID(), email: "second@example.com", workspaceAccountID: "workspace-b",
-            authFingerprint: "persisted-match", managedHomePath: secondHome.path,
-            createdAt: 1, updatedAt: 1, lastAuthenticatedAt: 1)
+            id: UUID(),
+            email: "second@example.com",
+            workspaceAccountID: "workspace-b",
+            authFingerprint: "persisted-match",
+            managedHomePath: secondHome.path,
+            createdAt: 1,
+            updatedAt: 1,
+            lastAuthenticatedAt: 1)
         let store = InMemoryManagedCodexAccountStore(accounts: .init(version: 1, accounts: [first, second]))
         let service = ManagedCodexAccountService(
-            store: store, homeFactory: TestManagedCodexHomeFactory(root: root),
+            store: store,
+            homeFactory: TestManagedCodexHomeFactory(root: root),
             loginRunner: StubManagedCodexLoginRunner.success,
             identityReader: StubManagedCodexIdentityReader.emails([]),
             workspaceResolver: StubManagedCodexWorkspaceResolver())
@@ -85,16 +108,27 @@ struct ManagedCodexAccountServiceTests {
         try FileManager.default.createDirectory(at: secondHome, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: root) }
         let first = ManagedCodexAccount(
-            id: UUID(), email: "first@example.com", workspaceAccountID: "workspace-a",
-            authFingerprint: "old-auth", managedHomePath: firstHome.path,
-            createdAt: 1, updatedAt: 1, lastAuthenticatedAt: 1)
+            id: UUID(),
+            email: "first@example.com",
+            workspaceAccountID: "workspace-a",
+            authFingerprint: "old-auth",
+            managedHomePath: firstHome.path,
+            createdAt: 1,
+            updatedAt: 1,
+            lastAuthenticatedAt: 1)
         let second = ManagedCodexAccount(
-            id: UUID(), email: "second@example.com", workspaceAccountID: "workspace-b",
-            authFingerprint: "old-auth", managedHomePath: secondHome.path,
-            createdAt: 1, updatedAt: 1, lastAuthenticatedAt: 1)
+            id: UUID(),
+            email: "second@example.com",
+            workspaceAccountID: "workspace-b",
+            authFingerprint: "old-auth",
+            managedHomePath: secondHome.path,
+            createdAt: 1,
+            updatedAt: 1,
+            lastAuthenticatedAt: 1)
         let store = InMemoryManagedCodexAccountStore(accounts: .init(version: 1, accounts: [first, second]))
         let service = ManagedCodexAccountService(
-            store: store, homeFactory: TestManagedCodexHomeFactory(root: root),
+            store: store,
+            homeFactory: TestManagedCodexHomeFactory(root: root),
             loginRunner: StubManagedCodexLoginRunner.success,
             identityReader: StubManagedCodexIdentityReader.emails([]),
             workspaceResolver: StubManagedCodexWorkspaceResolver())

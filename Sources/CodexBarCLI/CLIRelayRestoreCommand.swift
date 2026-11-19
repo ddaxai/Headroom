@@ -82,7 +82,7 @@ extension CodexBarCLI {
         if let data = try? JSONSerialization.data(
             withJSONObject: payload,
             options: output.pretty ? [.prettyPrinted, .sortedKeys] : [.sortedKeys]),
-           let text = String(data: data, encoding: .utf8)
+            let text = String(data: data, encoding: .utf8)
         {
             print(text)
         }

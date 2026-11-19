@@ -9,8 +9,8 @@ enum OpenCodeProfileUsageCardPresentation {
 struct OpenCodeProfileUsageCardView: View {
     let breakdown: CostUsageProfileBreakdown
     let width: CGFloat
-    var speedLine: String? = nil
-    var speedTooltip: String? = nil
+    var speedLine: String?
+    var speedTooltip: String?
 
     private var title: String {
         self.breakdown.providerKey == "unassigned"

@@ -26,7 +26,7 @@ struct LocalUsageRealtimeRefreshTests {
     }
 
     @Test
-    func `session write bursts debounce to one refresh`() async throws {
+    func `session write bursts debounce to one refresh`() async {
         let recorder = RefreshRecorder()
         let debouncer = LocalUsageRefreshDebouncer(delay: .milliseconds(40)) { sources in
             await recorder.record(sources)
@@ -116,7 +116,7 @@ struct LocalUsageRealtimeRefreshTests {
     }
 
     @Test
-    func `watch plan excludes Headroom cache paths`() throws {
+    func `watch plan excludes Headroom cache paths`() {
         let home = URL(fileURLWithPath: "/tmp/headroom-m5-home", isDirectory: true)
         let cache = home
             .appendingPathComponent("Library/Caches/CodexBar/cost-usage", isDirectory: true)

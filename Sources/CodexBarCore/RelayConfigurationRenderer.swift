@@ -26,6 +26,7 @@ struct RelayConfigurationRenderer {
         return mutations
     }
 
+    // swiftlint:disable:next function_parameter_count
     private func render(
         target: RelayTargetConfiguration,
         profile: RelayProfile,

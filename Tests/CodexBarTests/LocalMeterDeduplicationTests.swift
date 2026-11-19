@@ -40,9 +40,13 @@ struct LocalMeterDeduplicationTests {
         let context = self.context(requestID: "request-reconnect")
 
         await accumulator.record(.begin(context: context, attemptID: "attempt-1", inputTokens: 80))
-        for (unitID, tokens) in [("event-1", 10), ("event-2", 12), ("event-1", 10), ("event-2", 12),
-                                 ("event-3", 8)]
-        {
+        for (unitID, tokens) in [
+            ("event-1", 10),
+            ("event-2", 12),
+            ("event-1", 10),
+            ("event-2", 12),
+            ("event-3", 8),
+        ] {
             await accumulator.record(.output(
                 requestID: context.requestID,
                 attemptID: "attempt-1",
@@ -150,7 +154,7 @@ struct LocalMeterDeduplicationTests {
 
         let record = try #require(await accumulator.records.first)
         let encoded = try JSONEncoder().encode(record)
-        let json = String(decoding: encoded, as: UTF8.self)
+        let json = try #require(String(bytes: encoded, encoding: .utf8))
         #expect(!json.contains(plaintextKey))
         #expect(json.contains(fingerprint.value))
         #expect(fingerprint.value.count == 64)

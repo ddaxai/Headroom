@@ -53,6 +53,7 @@ next_group_attempt() {
 case "${FAKE_SWIFT_MODE:-success}" in
   group_fail_once)
     if [[ "${is_group}" == "1" && "$(next_group_attempt)" == "1" ]]; then
+      printf '%s\n' '✘ Test "alpha keeps its value" recorded an issue at AlphaTests.swift:12:9: Expectation failed: 1 == 2'
       exit 1
     fi
     ;;
@@ -201,6 +202,8 @@ strict_status=$?
 set -e
 [[ "${strict_status}" -eq 1 ]]
 grep -Fq '| First-pass failed groups | `1` |' "${GITHUB_STEP_SUMMARY}"
+grep -Fq '  - `✘ Test "alpha keeps its value" recorded an issue at AlphaTests.swift:12:9:' "${GITHUB_STEP_SUMMARY}"
+grep -Fq '      ✘ Test "alpha keeps its value" recorded an issue at AlphaTests.swift:12:9:' "${TEMP_DIR}/strict.log"
 grep -Fq '| Full-group retries | `0` |' "${GITHUB_STEP_SUMMARY}"
 grep -Fq '| Isolated selection retries | `0` |' "${GITHUB_STEP_SUMMARY}"
 [[ "$(wc -l < "${FAKE_SWIFT_LOG}")" -eq 2 ]]

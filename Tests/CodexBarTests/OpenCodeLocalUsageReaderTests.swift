@@ -102,7 +102,7 @@ struct OpenCodeLocalUsageReaderTests {
             providerID: nil)
         try Self.insertStepFinishPart(
             databaseURL: dbURL,
-            messageID: try Self.insertMessageWithoutUsage(
+            messageID: Self.insertMessageWithoutUsage(
                 databaseURL: dbURL,
                 created: "2026-08-20T14:30:00Z",
                 modelProviderID: "openrouter"),
@@ -231,6 +231,7 @@ struct OpenCodeLocalUsageReaderTests {
         return id
     }
 
+    // swiftlint:disable:next function_parameter_count
     private static func insertStepFinishPart(
         databaseURL: URL,
         messageID: String,

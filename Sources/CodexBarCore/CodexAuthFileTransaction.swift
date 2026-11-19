@@ -108,9 +108,9 @@ public struct CodexAuthFileTransaction: Sendable {
 
     @discardableResult
     public func replace(_ data: Data, at url: URL) throws -> Backup {
-        let backup = Backup(
+        let backup = try Backup(
             url: url,
-            originalData: self.fileSystem.fileExists(at: url) ? try self.fileSystem.readData(at: url) : nil)
+            originalData: self.fileSystem.fileExists(at: url) ? self.fileSystem.readData(at: url) : nil)
         do {
             try self.fileSystem.writeAtomically(data, to: url)
             guard try self.fileSystem.readData(at: url) == data else {

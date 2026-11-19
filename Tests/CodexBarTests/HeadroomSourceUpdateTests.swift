@@ -75,12 +75,10 @@ struct HeadroomSourceUpdateTests {
         #expect(HeadroomSourceUpdateController.arguments(
             for: .check,
             options: .init()) == ["--check-only"])
-        #expect(HeadroomSourceUpdateController.arguments(
+        let updateArguments = HeadroomSourceUpdateController.arguments(
             for: .update,
-            options: .init(ignoreUntracked: true, allowLocalReset: true)) == [
-                "--ignore-untracked",
-                "--allow-local-reset",
-            ])
+            options: .init(ignoreUntracked: true, allowLocalReset: true))
+        #expect(updateArguments == ["--ignore-untracked", "--allow-local-reset"])
     }
 
     @Test

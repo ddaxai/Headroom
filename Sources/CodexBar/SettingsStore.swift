@@ -56,7 +56,9 @@ enum LocalUsageRefreshMode: String, CaseIterable, Identifiable {
     case scheduled
     case manual
 
-    var id: String { self.rawValue }
+    var id: String {
+        self.rawValue
+    }
 
     var label: String {
         switch self {

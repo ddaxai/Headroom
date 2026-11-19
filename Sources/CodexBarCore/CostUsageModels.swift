@@ -61,7 +61,9 @@ public struct CostUsageProfileBreakdown: Sendable, Equatable, Identifiable {
     public let summary: CostUsageDailyReport.Summary?
     public let rolling24Hours: CostUsageRolling24HourSummary?
 
-    public var id: String { self.providerKey }
+    public var id: String {
+        self.providerKey
+    }
 
     public var totalTokens: Int? {
         self.summary?.totalTokens ?? self.daily.compactMap(\.totalTokens).reduce(0, +)

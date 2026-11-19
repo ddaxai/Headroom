@@ -153,8 +153,7 @@ extension StatusItemController {
             settings: self.settings,
             store: self.store,
             now: now).codexRequests
-        let managedHomes: [LocalAgentSpeedScanConfiguration.CodexManagedHome] = codexRequests.compactMap {
-            (req) -> LocalAgentSpeedScanConfiguration.CodexManagedHome? in
+        let managedHomes: [LocalAgentSpeedScanConfiguration.CodexManagedHome] = codexRequests.compactMap { req in
             guard !req.usageIdentity.isSystemUnassigned else { return nil }
             return LocalAgentSpeedScanConfiguration.CodexManagedHome(
                 accountKey: req.usageIdentity.accountKey,
@@ -193,12 +192,15 @@ extension StatusItemController {
             self.localAgentSpeedReport = LocalAgentSpeedReport(
                 updatedAt: now,
                 bySource: mergedBySource,
-                codexOfficialSummary: sources.contains(.codex) ? scanned.codexOfficialSummary : previous.codexOfficialSummary,
+                codexOfficialSummary: sources.contains(.codex) ? scanned.codexOfficialSummary : previous
+                    .codexOfficialSummary,
                 codexByAccountKey: sources.contains(.codex) ? scanned.codexByAccountKey : previous.codexByAccountKey,
                 codexByHomePath: sources.contains(.codex) ? scanned.codexByHomePath : previous.codexByHomePath,
-                codexByRelayProfileID: sources.contains(.codex) ? scanned.codexByRelayProfileID : previous.codexByRelayProfileID,
+                codexByRelayProfileID: sources.contains(.codex) ? scanned.codexByRelayProfileID : previous
+                    .codexByRelayProfileID,
                 codexByProviderKey: sources.contains(.codex) ? scanned.codexByProviderKey : previous.codexByProviderKey,
-                openCodeByProviderKey: sources.contains(.openCode) ? scanned.openCodeByProviderKey : previous.openCodeByProviderKey,
+                openCodeByProviderKey: sources.contains(.openCode) ? scanned.openCodeByProviderKey : previous
+                    .openCodeByProviderKey,
                 piByProviderKey: sources.contains(.pi) ? scanned.piByProviderKey : previous.piByProviderKey,
                 relayCombinedByProviderKey: scanned.relayCombinedByProviderKey.merging(
                     previous.relayCombinedByProviderKey,

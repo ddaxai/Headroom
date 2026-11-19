@@ -1,3 +1,5 @@
+// swiftlint:disable file_length
+
 import AppKit
 import CodexBarCore
 import Testing
@@ -1364,7 +1366,7 @@ extension StatusMenuTests {
     }
 
     @Test
-    func opencodeProfileRowsHostCodexStyleUsageDetail() throws {
+    func `opencode profile rows host codex style usage detail`() throws {
         let settings = self.makeSettings()
         settings.statusChecksEnabled = false
         settings.refreshFrequency = .manual
@@ -1425,7 +1427,7 @@ extension StatusMenuTests {
         })
         let detailItem = try #require(profileItem.submenu?.items.first)
         #expect(detailItem.view != nil)
-        #expect(String(describing: type(of: detailItem.view!)).contains("MenuHostingView"))
+        #expect(try String(describing: type(of: #require(detailItem.view))).contains("MenuHostingView"))
         #expect(detailItem.view?.frame.height == 330)
     }
 

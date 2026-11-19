@@ -57,7 +57,7 @@ extension StatusItemController {
         let current: ProviderSwitcherSelection = if self.settings.mergedMenuLastSelectedWasPiAgent {
             .piAgent
         } else if includesOverview,
-                        self.settings.mergedMenuLastSelectedWasOverview
+                  self.settings.mergedMenuLastSelectedWasOverview
         {
             .overview
         } else {

@@ -111,6 +111,7 @@ enum CodexBarCLI {
         await self.runCookieRefresh(values)
     }
 
+    // swiftlint:disable:next function_body_length
     private static func commandDescriptors() -> [CommandDescriptor] {
         let cardsSignature = CommandSignature.describe(CardsOptions())
         let usageSignature = CommandSignature.describe(UsageOptions())

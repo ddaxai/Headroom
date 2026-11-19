@@ -95,7 +95,8 @@ struct CostUsageFetcherTests {
         let ages: [TimeInterval] = [60 * 60, 6 * 24 * 60 * 60, 20 * 24 * 60 * 60]
         let liveAccountKey = "codex:live:workspace-live"
         let relayProfileID = try #require(UUID(uuidString: "33333333-3333-4333-8333-333333333333"))
-        let boundary = now.addingTimeInterval(-ages.last! - 1)
+        let oldestAge = try #require(ages.last)
+        let boundary = now.addingTimeInterval(-oldestAge - 1)
         var timeline = CodexSessionOwnershipTimeline()
         _ = timeline.recordActivation(
             accountKey: liveAccountKey,
@@ -211,7 +212,8 @@ struct CostUsageFetcherTests {
         let ages: [TimeInterval] = [60 * 60, 6 * 24 * 60 * 60, 20 * 24 * 60 * 60]
         let accountKey = "codex:live:workspace-live"
         let relayProfileID = try #require(UUID(uuidString: "44444444-4444-4444-8444-444444444444"))
-        let boundary = now.addingTimeInterval(-ages.last! - 1)
+        let oldestAge = try #require(ages.last)
+        let boundary = now.addingTimeInterval(-oldestAge - 1)
         var timeline = CodexSessionOwnershipTimeline()
         _ = timeline.recordActivation(
             accountKey: accountKey,
@@ -236,7 +238,7 @@ struct CostUsageFetcherTests {
                     total: cumulative,
                     last: delta)
             }
-            sessionURLs.append(try env.writeCodexSessionFile(
+            try sessionURLs.append(env.writeCodexSessionFile(
                 day: now,
                 filename: sessionID + ".jsonl",
                 contents: env.jsonl([[

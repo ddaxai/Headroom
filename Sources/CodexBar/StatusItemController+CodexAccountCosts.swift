@@ -288,6 +288,7 @@ extension StatusItemController {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     func scheduleCodexMenuCostRefreshIfNeeded(renderedProviders: [UsageProvider]) {
         self.schedulePiAgentUsageRefreshIfNeeded()
         let projection = self.settings.codexVisibleAccountProjectionForMenuDisplay
@@ -641,11 +642,11 @@ struct CodexRelayMenuSnapshots: Sendable, Equatable {
     {
         await withTaskGroup(of: (UUID?, CostUsageTokenSnapshot?).self) { group in
             group.addTask {
-                (nil, await loadAggregate())
+                await (nil, loadAggregate())
             }
             for profileID in profileIDs {
                 group.addTask {
-                    (profileID, await loadProfile(profileID))
+                    await (profileID, loadProfile(profileID))
                 }
             }
 

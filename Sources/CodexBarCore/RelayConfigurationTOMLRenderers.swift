@@ -221,7 +221,7 @@ extension RelayConfigurationRenderer {
             return baseline
         }
 
-        var managedTopKeys: Set<String> = ["model_provider", "model", "service_tier"]
+        var managedTopKeys: Set = ["model_provider", "model", "service_tier"]
         if Self.hasLoopbackTopLevelBaseURL(currentSource) {
             managedTopKeys.insert("base_url")
         }
@@ -300,7 +300,7 @@ extension RelayConfigurationRenderer {
     }
 
     private static func hasLoopbackTopLevelBaseURL(_ source: String) -> Bool {
-        guard let raw = Self.extractTopLevelRawAssignments(source, keys: ["base_url"])["base_url"]?
+        guard let raw = extractTopLevelRawAssignments(source, keys: ["base_url"])["base_url"]?
             .lowercased()
         else {
             return false
@@ -314,7 +314,7 @@ extension RelayConfigurationRenderer {
     private static func stripManagedCodexElements(_ source: String) throws -> String {
         guard !source.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return "" }
         let withoutFastMode = try RelayTOMLEditor.strippingCodexFastMode(source)
-        var removingKeys: Set<String> = ["model_provider", "model", "service_tier", "features.fast_mode"]
+        var removingKeys: Set = ["model_provider", "model", "service_tier", "features.fast_mode"]
         if Self.hasLoopbackTopLevelBaseURL(withoutFastMode) {
             removingKeys.insert("base_url")
         }

@@ -1,3 +1,5 @@
+// swiftlint:disable file_length
+
 import AppKit
 import CodexBarCore
 import Observation
@@ -242,6 +244,7 @@ extension StatusItemController {
         }
     }
 
+    // swiftlint:disable:next function_body_length
     func populateMenuContents(_ menu: NSMenu, provider: UsageProvider?) {
         guard menu.supermenu == nil else {
             assertionFailure("populateMenu called on a child menu; root content would clobber its items")

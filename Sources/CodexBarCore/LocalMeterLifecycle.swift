@@ -20,7 +20,7 @@ public struct LocalMeterActivationState: Codable, Equatable, Sendable {
     }
 
     public static func load(from defaults: UserDefaults) -> Self? {
-        guard let path = defaults.string(forKey: Self.baselineBackupPathKey), !path.isEmpty else {
+        guard let path = defaults.string(forKey: baselineBackupPathKey), !path.isEmpty else {
             return nil
         }
         var activeProfiles: [RelayTargetApp: UUID] = [:]
@@ -387,7 +387,7 @@ public struct LocalMeterLaunchdJob: Equatable, Sendable {
         homeDirectory
             .appendingPathComponent("Library", isDirectory: true)
             .appendingPathComponent("LaunchAgents", isDirectory: true)
-            .appendingPathComponent(Self.fileName, isDirectory: false)
+            .appendingPathComponent(self.fileName, isDirectory: false)
     }
 }
 

@@ -111,7 +111,7 @@ struct PiSessionEntryUsage: Codable, Equatable {
     var dayKey: String
     var modelName: String
     var usage: PiPackedUsage
-    var profileKey: String? = nil
+    var profileKey: String?
 }
 
 struct PiModelContext: Codable, Equatable {
@@ -119,7 +119,7 @@ struct PiModelContext: Codable, Equatable {
     var modelName: String
     /// Stable relay key when the Pi provider is a custom profile rather than an
     /// official OpenAI/Anthropic provider alias. Optional for legacy cache rows.
-    var profileKey: String? = nil
+    var profileKey: String?
 }
 
 struct PiPackedUsage: Codable, Equatable {

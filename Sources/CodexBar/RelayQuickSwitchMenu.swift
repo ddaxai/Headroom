@@ -720,7 +720,7 @@ final class RelayQuickSwitchCoordinator {
     private func restoreOfficialConfiguration(target: RelayTargetApp) -> RelayQuickSwitchOutcome {
         let profiles = (try? self.routesDomain.profiles()) ?? []
         let liveRoute = self.actions.inspectExternalConfiguration(profiles)?.liveRouteByTarget[target]
-        let hasExternalOrImportedLiveRoute: Bool = switch liveRoute {
+        let hasExternalOrImportedLiveRoute = switch liveRoute {
         case .external, .managedProfile: true
         case .official, nil: false
         }

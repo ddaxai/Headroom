@@ -9,7 +9,7 @@ struct LocalMeterLifecycleTests {
         let job = LocalMeterLaunchdJob(helperURL: helperURL)
 
         let object = try PropertyListSerialization.propertyList(
-            from: try job.plistData(),
+            from: job.plistData(),
             options: [],
             format: nil)
         let plist = try #require(object as? [String: Any])
