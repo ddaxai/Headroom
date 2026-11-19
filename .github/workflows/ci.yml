@@ -307,11 +307,12 @@ jobs:
         run: |
           set -euo pipefail
           # SwiftPM's own HTTPS download has crashed inside libcurl/OpenSSL on runners, so fetch the bundle with
-          # curl and install it from disk. SwiftPM still verifies the checksum.
+          # curl and install it from disk. SwiftPM ignores --checksum for local archives, so verify it here.
           sdk_archive="$RUNNER_TEMP/${SWIFT_STATIC_LINUX_SDK}.artifactbundle.tar.gz"
           curl --fail --location --silent --show-error --retry 5 --retry-all-errors \
             --output "$sdk_archive" "$SWIFT_STATIC_LINUX_SDK_URL"
-          swift sdk install "$sdk_archive" --checksum "$SWIFT_STATIC_LINUX_SDK_CHECKSUM"
+          printf '%s  %s\n' "$SWIFT_STATIC_LINUX_SDK_CHECKSUM" "$sdk_archive" | sha256sum --check --strict -
+          swift sdk install "$sdk_archive"
           rm -f "$sdk_archive"
           swift sdk list | grep -Fx "$SWIFT_STATIC_LINUX_SDK"
 
