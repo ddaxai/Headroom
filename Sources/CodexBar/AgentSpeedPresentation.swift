@@ -7,6 +7,8 @@ struct AgentSpeedPresentation: Equatable, Sendable {
     let detailLine: String?
     let inlineCompactLine: String
     let tooltipText: String
+    var requests: [AgentSpeedRequestRow] = []
+    var cacheExpiresAt: Date?
 
     var heightFingerprint: String {
         MenuCardHeightFingerprint.join([
@@ -92,7 +94,9 @@ struct AgentSpeedPresentation: Equatable, Sendable {
             primaryLine: primaryLine,
             detailLine: detailLine,
             inlineCompactLine: inlineCompactLine,
-            tooltipText: L("agent_speed_readonly_tooltip"))
+            tooltipText: L("agent_speed_readonly_tooltip"),
+            requests: AgentSpeedRequestRow.rows(from: summary),
+            cacheExpiresAt: AgentSpeedRequestRow.cacheExpiry(from: summary))
     }
 }
 

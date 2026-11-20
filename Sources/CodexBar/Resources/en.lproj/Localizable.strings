@@ -1674,6 +1674,16 @@
 "agent_speed_ttft_format" = "TTFT %@";
 "agent_speed_includes_ttft_note" = "Includes first-token wait";
 "agent_speed_readonly_tooltip" = "Read-only from local Agent session logs (zero proxy, zero network interception). Exact values exclude first-token wait; ≈ values include first-token wait.";
+"agent_speed_requests_title" = "Recent responses";
+"agent_speed_requests_legend" = "Dimmed rows are replies too short to measure (tool calls, quick judgements). They are left out of the speeds on the card.";
+"agent_speed_requests_column_time" = "Time";
+"agent_speed_requests_column_model" = "Model";
+"agent_speed_requests_column_output" = "Output";
+"agent_speed_requests_column_speed" = "Speed";
+"agent_speed_requests_column_first_token" = "First token";
+"agent_speed_requests_column_cache" = "Cache hit";
+"agent_speed_cache_expires_format" = "Session cache expires at %@";
+"agent_speed_cache_expired_format" = "Session cache expired at %@";
 "relay_external_imported_message" = "Imported local API configuration “%@” without modifying client files.";
 "relay_external_imported_all_message" = "Imported %d local API configurations without modifying client files.";
 "relay_external_rescan_action" = "Rescan local APIs";

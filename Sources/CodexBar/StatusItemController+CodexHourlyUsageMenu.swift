@@ -6,11 +6,14 @@ extension StatusItemController {
         snapshot: CostUsageTokenSnapshot?,
         title: String,
         width: CGFloat,
-        unavailableText: String? = nil) -> NSMenu
+        unavailableText: String? = nil,
+        agentSpeed: AgentSpeedPresentation? = nil) -> NSMenu
     {
         let submenu = NSMenu()
         submenu.autoenablesItems = false
         submenu.minimumWidth = max(300, width)
+        // Recent responses go below the usage details, in either rendering mode.
+        defer { self.appendAgentSpeedRequestItems(to: submenu, presentation: agentSpeed) }
         if !self.menuCardRenderingEnabledForController {
             let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
             item.isEnabled = false

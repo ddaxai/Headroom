@@ -26,6 +26,7 @@ extension StatusItemController {
             submenu.delegate = self
             StatusMenuAppearance.pin(submenu)
             let profileSpeed = self.openCodeProfileSpeedPresentation(providerKey: breakdown.providerKey)
+            self.appendAgentSpeedRequestItems(to: submenu, presentation: profileSpeed)
             menu.addItem(self.makeMenuCardItem(
                 OpenCodeProfileUsageCardView(
                     breakdown: breakdown,
