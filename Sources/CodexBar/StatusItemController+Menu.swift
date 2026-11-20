@@ -763,6 +763,7 @@ extension StatusItemController {
                             ? String(describing: UsageMenuCardView.RefreshPresentation.buttonSize)
                             : nil),
                 ]),
+            submenu: self.makeAgentSpeedRequestsSubmenu(model.agentSpeed),
             containsInteractiveControls: true))
         if self.addStorageMenuCardSection(to: menu, provider: context.currentProvider, width: context.menuWidth) {
             self.addConsoleDivider(to: menu)
