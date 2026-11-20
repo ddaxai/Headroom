@@ -1162,25 +1162,23 @@ struct RelaySettingsPane: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if self.settings.localMeterEnabled {
-                HStack(spacing: 10) {
-                    Toggle(L("local_meter_title"), isOn: self.$settings.localMeterEnabled)
-                        .toggleStyle(.switch)
-                    Text(self.localMeterStatusText)
+            HStack(spacing: 10) {
+                Toggle(L("local_meter_title"), isOn: self.$settings.localMeterEnabled)
+                    .toggleStyle(.switch)
+                Text(self.localMeterStatusText)
+                    .font(.caption)
+                    .foregroundStyle(ConsoleDesign.secondaryText)
+                Spacer(minLength: 8)
+                if self.model.profiles.isEmpty {
+                    Text(L("local_meter_no_profiles"))
                         .font(.caption)
-                        .foregroundStyle(ConsoleDesign.secondaryText)
-                    Spacer(minLength: 8)
-                    if self.model.profiles.isEmpty {
-                        Text(L("local_meter_no_profiles"))
-                            .font(.caption)
-                            .foregroundStyle(ConsoleDesign.tertiaryText)
-                    }
+                        .foregroundStyle(ConsoleDesign.tertiaryText)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-
-                Divider()
             }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+
+            Divider()
 
             HSplitView {
                 RelayProfileList(model: self.model)
