@@ -198,13 +198,6 @@ extension StatusItemController {
                         UsageMenuCardView.Model.heightFingerprintField("workspace", section.title),
                         CardDetailRail.renderingFingerprint,
                     ])
-                let accountDetails = self.makeCodexUsageDetailsSubmenu(
-                    snapshot: tokenSnapshot,
-                    title: L("codex_usage_details_title", accountCardModel.email),
-                    width: 300,
-                    unavailableText: localUsage.unassignedExplanation
-                        ?? L("codex_usage_details_unavailable_official"))
-                self.appendAgentSpeedRequestItems(to: accountDetails, presentation: accountSpeed)
                 menu.addItem(self.makeMenuCardItem(
                     CodexAccountSummaryCardView(
                         model: accountCardModel,
@@ -220,7 +213,13 @@ extension StatusItemController {
                         usageLine: localUsage.line,
                         usageEmptyText: localUsage.unassignedExplanation,
                         speedLine: accountSpeed?.inlineCompactLine),
-                    submenu: accountDetails,
+                    submenu: self.makeCodexUsageDetailsSubmenu(
+                        snapshot: tokenSnapshot,
+                        title: L("codex_usage_details_title", accountCardModel.email),
+                        width: 300,
+                        unavailableText: localUsage.unassignedExplanation
+                            ?? L("codex_usage_details_unavailable_official"),
+                        agentSpeed: accountSpeed),
                     usesCardDetailRail: true,
                     containsInteractiveControls: true))
                 cardIndex += 1
@@ -320,12 +319,6 @@ extension StatusItemController {
                 profileID: option.id,
                 providerKey: option.providerKey)
             let usageLine = localUsage.line
-            let relayDetails = self.makeCodexUsageDetailsSubmenu(
-                snapshot: localUsage.snapshot,
-                title: L("codex_relay_usage_details_title", option.name),
-                width: 300,
-                unavailableText: L("codex_local_usage_empty"))
-            self.appendAgentSpeedRequestItems(to: relayDetails, presentation: relaySpeed)
             menu.addItem(self.makeMenuCardItem(
                 CodexRelaySummaryCardView(
                     model: CodexRelaySummaryCardModel(
@@ -370,7 +363,12 @@ extension StatusItemController {
                     usageTriad.heightFingerprint,
                     CardDetailRail.renderingFingerprint,
                 ].joined(separator: "|"),
-                submenu: relayDetails,
+                submenu: self.makeCodexUsageDetailsSubmenu(
+                    snapshot: localUsage.snapshot,
+                    title: L("codex_relay_usage_details_title", option.name),
+                    width: 300,
+                    unavailableText: L("codex_local_usage_empty"),
+                    agentSpeed: relaySpeed),
                 usesCardDetailRail: true,
                 containsInteractiveControls: true))
         }
