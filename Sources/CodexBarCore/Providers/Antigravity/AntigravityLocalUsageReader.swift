@@ -106,6 +106,9 @@ public struct AntigravityLocalUsageReader: Sendable {
         let days = max(1, min(365, historyDays))
         let since = calendar.date(byAdding: .day, value: -(days - 1), to: now) ?? now
         let start = calendar.startOfDay(for: since)
+        // The rolling day and the hourly chart reach into yesterday even when the history is one day long.
+        let cutoff = now.addingTimeInterval(-24 * 60 * 60)
+        let earliest = min(start, cutoff)
 
         var rows: [Row] = []
         for transcript in AntigravityTranscriptLocator.transcripts(
@@ -115,21 +118,20 @@ public struct AntigravityLocalUsageReader: Sendable {
             let modifiedAt = (try? transcript.url.resourceValues(forKeys: [.contentModificationDateKey]))?
                 .contentModificationDate
             // A transcript last written before the window cannot hold a reply inside it.
-            if let modifiedAt, modifiedAt < start { continue }
+            if let modifiedAt, modifiedAt < earliest { continue }
             rows.append(contentsOf: Self.parseTranscript(at: transcript.url))
         }
-        let inWindow = rows.filter { $0.date >= start && $0.date <= now }
-        guard !inWindow.isEmpty else { throw AntigravityLocalUsageError.historyUnavailable }
-
-        let cutoff = now.addingTimeInterval(-24 * 60 * 60)
-        let recent = inWindow.filter { $0.date >= cutoff }
+        let reachable = rows.filter { $0.date >= earliest && $0.date <= now }
+        guard !reachable.isEmpty else { throw AntigravityLocalUsageError.historyUnavailable }
+        let inWindow = reachable.filter { $0.date >= start }
+        let recent = reachable.filter { $0.date >= cutoff }
         return AntigravityLocalUsageSnapshot(
             report: Self.makeReport(from: inWindow, calendar: calendar),
             rolling24Hours: CostUsageRolling24HourSummary(
                 totalTokens: recent.reduce(0) { $0 + $1.tokens },
                 costUSD: nil,
                 modelProviderBreakdowns: []),
-            hourly24Hours: Self.makeHourly(from: inWindow, now: now, calendar: calendar))
+            hourly24Hours: Self.makeHourly(from: reachable, now: now, calendar: calendar))
     }
 
     static func parseTranscript(at url: URL) -> [Row] {

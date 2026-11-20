@@ -124,6 +124,21 @@ struct AntigravityLocalUsageReaderLinuxTests {
     }
 
     @Test
+    func `a one day history still counts yesterday's replies in the rolling day`() throws {
+        let home = try Self.makeHome(sessions: ["a": [
+            Self.reply(1, at: "2026-03-09T20:10:00.000Z"),
+        ]])
+        defer { try? FileManager.default.removeItem(at: home) }
+
+        let snapshot = try AntigravityLocalUsageReader(homeDirectory: home, environment: [:])
+            .fetch(now: Self.now, historyDays: 1, calendar: Self.utc)
+
+        #expect(snapshot.report.data.isEmpty)
+        #expect(snapshot.rolling24Hours.totalTokens == 1050)
+        #expect(snapshot.hourly24Hours.reduce(0) { $0 + $1.totalTokens } == 1050)
+    }
+
+    @Test
     func `both spellings of a model are counted as one model`() throws {
         let home = try Self.makeHome(sessions: [
             "a": [Self.reply(1, at: "2026-03-10T11:10:00.000Z", model: "Gemini 9 Quartz (High)")],
