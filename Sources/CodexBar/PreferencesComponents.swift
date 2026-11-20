@@ -2,33 +2,10 @@ import AppKit
 import KeyboardShortcuts
 import SwiftUI
 
-/// Colored rounded-square symbol used for app panes in the settings sidebar,
-/// mirroring the System Settings sidebar style.
-struct SettingsIconChip: View {
-    static let side: CGFloat = 20
-
-    let systemImage: String
-    let color: Color
-
-    var body: some View {
-        Image(systemName: self.systemImage)
-            .font(.system(size: 11, weight: .semibold))
-            .foregroundStyle(.white)
-            .frame(width: Self.side, height: Self.side)
-            .background(
-                RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .fill(LinearGradient(
-                        colors: [self.color.opacity(0.85), self.color],
-                        startPoint: .top,
-                        endPoint: .bottom)))
-            .accessibilityHidden(true)
-    }
-}
-
 /// Geometry shared by every settings destination that splits into sub-sections.
 enum SettingsSubsectionMetrics {
     /// One width for every destination so the control does not resize or shift when the
-    /// sidebar selection changes. Fits three localized segments.
+    /// selected tab changes. Fits three localized segments.
     static let width: CGFloat = 320
     static let topPadding: CGFloat = 16
     static let bottomPadding: CGFloat = 8
@@ -37,7 +14,7 @@ enum SettingsSubsectionMetrics {
 /// Second-level navigation for a settings destination (for example Providers / API & Relay).
 ///
 /// Destinations used to size and pad their own segmented pickers (240, 260 or 320 points),
-/// so the control jumped whenever the sidebar selection changed. Every destination now uses
+/// so the control jumped whenever the selected tab changed. Every destination now uses
 /// this view, which keeps the same width, the same vertical position and the same centering.
 struct SettingsSubsectionPicker<Selection: Hashable, Content: View>: View {
     private let title: String

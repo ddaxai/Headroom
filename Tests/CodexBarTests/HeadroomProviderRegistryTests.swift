@@ -23,7 +23,7 @@ struct HeadroomProviderRegistryTests {
         #expect(claude.routeWriter == .relayTargets([.claudeCode]))
 
         let antigravity = try #require(HeadroomProviderRegistry.descriptor(for: .antigravity))
-        #expect(antigravity.capabilities == [.quota])
+        #expect(antigravity.capabilities == [.quota, .localUsage])
         #expect(antigravity.quotaAdapter == .usageSnapshot)
         #expect(antigravity.localUsageAdapter == nil)
         #expect(antigravity.routeWriter == nil)
@@ -52,7 +52,7 @@ struct HeadroomProviderRegistryTests {
 
         let antigravity = try #require(HeadroomProviderCardSectionPolicy(provider: .antigravity))
         #expect(antigravity.showsQuota)
-        #expect(!antigravity.showsLocalUsage)
+        #expect(antigravity.showsLocalUsage)
         #expect(!antigravity.showsCost)
         #expect(!antigravity.reservesMissingSections)
 

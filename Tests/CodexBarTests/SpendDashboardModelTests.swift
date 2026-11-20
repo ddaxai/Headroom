@@ -84,8 +84,9 @@ struct SpendDashboardModelTests {
 
     @Test
     func `dashboard source contract includes only cost capable descriptors`() {
+        // Antigravity logs tokens without a price, so it has token rows but no place in a spend dashboard.
         let providers = Set(ProviderDescriptorRegistry.all
-            .filter(\.tokenCost.supportsTokenCost)
+            .filter { $0.tokenCost.supportsTokenCost && !$0.id.reportsTokensWithoutCost }
             .map(\.id))
         #expect(providers == [.codex, .claude, .vertexai, .openai, .mistral, .bedrock, .cursor, .opencodego, .opencode])
     }

@@ -34,15 +34,15 @@ public enum AntigravityProviderDescriptor {
                     ProviderColor(hex: 0xFBBC04),
                 ]),
             tokenCost: ProviderTokenCostConfig(
-                supportsTokenCost: false,
-                noDataMessage: { "Antigravity cost summary is not supported." }),
+                supportsTokenCost: true,
+                noDataMessage: { "No Antigravity conversations with token counts found on this Mac." }),
             fetchPlan: ProviderFetchPlan(
                 sourceModes: [.auto, .cli, .oauth],
                 pipeline: ProviderFetchPipeline(resolveStrategies: self.resolveStrategies)),
             cli: ProviderCLIConfig(
                 name: "antigravity",
                 versionDetector: nil),
-            capabilities: [.quota],
+            capabilities: [.quota, .localUsage],
             quotaAdapter: .usageSnapshot)
     }
 

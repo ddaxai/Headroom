@@ -41,6 +41,13 @@ public struct AgentSpeedSample: Sendable, Equatable, Codable {
     public let outputTokens: Int
     public let latencyMs: Int64
     public let firstTokenMs: Int64?
+    /// Prompt tokens that were neither read from nor written to the cache. `nil` when the log has no input count.
+    public let newInputTokens: Int?
+    public let cacheReadTokens: Int?
+    /// `nil` when the source does not report cache writes (Codex).
+    public let cacheWriteTokens: Int?
+    /// Lifetime of the prompt cache this request read or wrote, when the log states the tier (Claude only).
+    public let cacheTTLSeconds: Int?
 
     public init(
         source: LocalAgentSpeedSource,
@@ -52,7 +59,11 @@ public struct AgentSpeedSample: Sendable, Equatable, Codable {
         codexHomePath: String? = nil,
         outputTokens: Int,
         latencyMs: Int64,
-        firstTokenMs: Int64? = nil)
+        firstTokenMs: Int64? = nil,
+        newInputTokens: Int? = nil,
+        cacheReadTokens: Int? = nil,
+        cacheWriteTokens: Int? = nil,
+        cacheTTLSeconds: Int? = nil)
     {
         self.source = source
         self.timestamp = timestamp
@@ -64,6 +75,40 @@ public struct AgentSpeedSample: Sendable, Equatable, Codable {
         self.outputTokens = outputTokens
         self.latencyMs = latencyMs
         self.firstTokenMs = firstTokenMs
+        self.newInputTokens = newInputTokens
+        self.cacheReadTokens = cacheReadTokens
+        self.cacheWriteTokens = cacheWriteTokens
+        self.cacheTTLSeconds = cacheTTLSeconds
+    }
+
+    /// Cache reads ÷ (new input + cache writes + cache reads), the CC Switch request-log formula.
+    /// `nil` when the log carries no prompt accounting, so the row shows a dash instead of 0%.
+    public var cacheHitRate: Double? {
+        guard self.newInputTokens != nil || self.cacheReadTokens != nil || self.cacheWriteTokens != nil else {
+            return nil
+        }
+        let read = max(0, self.cacheReadTokens ?? 0)
+        let cacheable = max(0, self.newInputTokens ?? 0) + max(0, self.cacheWriteTokens ?? 0) + read
+        guard cacheable > 0 else { return nil }
+        return Double(read) / Double(cacheable)
+    }
+
+    /// A cache read or write restarts the cache lifetime, so the entry lapses one TTL after this request.
+    public var cacheExpiresAt: Date? {
+        guard let ttl = self.cacheTTLSeconds, ttl > 0,
+              (self.cacheReadTokens ?? 0) > 0 || (self.cacheWriteTokens ?? 0) > 0
+        else { return nil }
+        return self.timestamp.addingTimeInterval(TimeInterval(ttl))
+    }
+
+    /// Output ÷ streaming time when the first-token wait is known (see `streamingGenerationMs`), else ÷ whole
+    /// request duration, with no thresholds. Short tool-call replies make this unrealistically high, which is
+    /// why summaries use `effectiveSpeed`; the request list shows it dimmed for those rows.
+    public var unfilteredTokensPerSecond: Double? {
+        guard self.outputTokens > 0, self.latencyMs > 0 else { return nil }
+        let durationMs = self.streamingGenerationMs ?? self.latencyMs
+        let tps = Double(self.outputTokens) / (Double(durationMs) / 1000.0)
+        return tps.isFinite && tps > 0 ? tps : nil
     }
 
     public var streamingGenerationMs: Int64? {
@@ -110,6 +155,10 @@ public struct AgentSpeedSummary: Sendable, Equatable, Codable {
     public let rolling24hKind: AgentSpeedMeasurementKind?
     public let rolling24hMedianFirstTokenMs: Int64?
     public let rolling24hSampleCount: Int
+    /// Newest first, including replies too short to count toward the speeds above.
+    public var recentSamples: [AgentSpeedSample] = []
+
+    public static let recentSampleLimit = 10
 
     public var hasData: Bool {
         self.latestTokensPerSecond != nil || self.rolling24hTokensPerSecond != nil
@@ -189,7 +238,15 @@ public struct AgentSpeedSummary: Sendable, Equatable, Codable {
             rolling24hTokensPerSecond: rolling24hTokensPerSecond,
             rolling24hKind: rolling24hKind,
             rolling24hMedianFirstTokenMs: medianTTFT,
-            rolling24hSampleCount: recent.count)
+            rolling24hSampleCount: recent.count,
+            recentSamples: Array(samples.sorted { $0.timestamp > $1.timestamp }.prefix(Self.recentSampleLimit)))
+    }
+
+    /// "87.3%"; only a full hit prints "100%", so 99.96% stays "99.9%".
+    public static func formatCacheHitRate(_ rate: Double) -> String {
+        let percent = max(0, min(100, rate * 100))
+        if percent >= 100 { return "100%" }
+        return String(format: "%.1f%%", (percent * 10 + 1e-9).rounded(.down) / 10)
     }
 
     public static func formatTokensPerSecond(_ value: Double, kind: AgentSpeedMeasurementKind) -> String {
@@ -491,68 +548,32 @@ extension LocalAgentSpeedScanner {
         configuration: LocalAgentSpeedScanConfiguration,
         cutoff: Date) -> [AgentSpeedSample]
     {
-        let fm = FileManager.default
-        let geminiBase = configuration.homeDirectory.appendingPathComponent(".gemini", isDirectory: true)
-        var roots: [URL] = [
-            geminiBase.appendingPathComponent("antigravity", isDirectory: true),
-            geminiBase.appendingPathComponent("antigravity-cli", isDirectory: true),
-        ]
-        if let customAgy = Self.nonEmpty(configuration.environment["AGY_DIR"]) {
-            roots.append(URL(fileURLWithPath: customAgy, isDirectory: true))
-        }
-
-        var seenSessionIDs: Set<String> = []
         var samples: [AgentSpeedSample] = []
-
-        for root in roots {
-            let brainDir = root.appendingPathComponent("brain", isDirectory: true)
-            guard let entries = try? fm.contentsOfDirectory(
-                at: brainDir,
-                includingPropertiesForKeys: [.isDirectoryKey],
-                options: [.skipsHiddenFiles])
+        for transcript in AntigravityTranscriptLocator.transcripts(
+            homeDirectory: configuration.homeDirectory,
+            environment: configuration.environment)
+        {
+            guard let meta = Self.fileStamp(for: transcript.url),
+                  meta.modifiedAt >= cutoff
             else { continue }
 
-            for sessionDir in entries {
-                let sessionID = sessionDir.lastPathComponent
-                let logsDir = sessionDir
-                    .appendingPathComponent(".system_generated", isDirectory: true)
-                    .appendingPathComponent("logs", isDirectory: true)
-                let fullURL = logsDir.appendingPathComponent("transcript_full.jsonl", isDirectory: false)
-                let compactURL = logsDir.appendingPathComponent("transcript.jsonl", isDirectory: false)
-                let transcriptURL: URL
-                if fm.fileExists(atPath: fullURL.path) {
-                    transcriptURL = fullURL
-                } else if fm.fileExists(atPath: compactURL.path) {
-                    transcriptURL = compactURL
-                } else {
-                    continue
-                }
+            let dbCandidate = transcript.root
+                .appendingPathComponent("conversations", isDirectory: true)
+                .appendingPathComponent("\(transcript.sessionID).db", isDirectory: false)
+            let dbStamp = Self.sqliteCompositeStamp(for: dbCandidate)
+            let combinedStamp = "\(meta.stamp)|db:\(dbStamp)"
 
-                guard let meta = Self.fileStamp(for: transcriptURL),
-                      meta.modifiedAt >= cutoff
-                else { continue }
-                guard seenSessionIDs.insert("\(root.standardizedFileURL.path):\(sessionID)").inserted else {
-                    continue
-                }
-
-                let dbCandidate = root
-                    .appendingPathComponent("conversations", isDirectory: true)
-                    .appendingPathComponent("\(sessionID).db", isDirectory: false)
-                let dbStamp = Self.sqliteCompositeStamp(for: dbCandidate)
-                let combinedStamp = "\(meta.stamp)|db:\(dbStamp)"
-
-                let fileSamples = self.cachedSamples(
-                    tag: "agy",
-                    path: transcriptURL.standardizedFileURL.path,
-                    stamp: combinedStamp)
-                {
-                    Self.parseAntigravityTranscript(
-                        transcriptURL: transcriptURL,
-                        antigravityRoot: root,
-                        sessionID: sessionID)
-                }
-                samples.append(contentsOf: fileSamples)
+            let fileSamples = self.cachedSamples(
+                tag: "agy",
+                path: transcript.url.standardizedFileURL.path,
+                stamp: combinedStamp)
+            {
+                Self.parseAntigravityTranscript(
+                    transcriptURL: transcript.url,
+                    antigravityRoot: transcript.root,
+                    sessionID: transcript.sessionID)
             }
+            samples.append(contentsOf: fileSamples)
         }
         return samples
     }
@@ -627,10 +648,20 @@ extension LocalAgentSpeedScanner {
             let endMs = stepTimeMs ?? 0
             guard endMs > 0 else { continue }
 
+            let usageObject = row["usage"] as? [String: Any]
+            func promptTokens(_ key: String) -> Int? {
+                Self.intValue(row[key]) ?? Self.intValue(usageObject?[key])
+            }
+            // Antigravity reports input exclusive of cache reads and writes.
+            let newInput = promptTokens("input_tokens")
+            let cacheRead = promptTokens("cache_read_tokens")
+            let cacheWrite = promptTokens("cache_write_tokens")
+
             let native = nativeGenerations[step]
-            let resolvedModel = native?.model
-                ?? (row["model"] as? String)
-                ?? selectedModelByStep[step].map(Self.normalizeAntigravityModelID)
+            // The generation record names the model as the picker shows it ("Gemini 9 Quartz (High)"), the
+            // transcript as an ID. Store one form so a model is not listed twice.
+            let resolvedModel = (native?.model ?? (row["model"] as? String) ?? selectedModelByStep[step])
+                .map(Self.normalizeAntigravityModelID)
 
             if let nativeTiming = native?.timing {
                 results.append(AgentSpeedSample(
@@ -639,7 +670,10 @@ extension LocalAgentSpeedScanner {
                     model: resolvedModel,
                     outputTokens: outputTokens,
                     latencyMs: nativeTiming.latencyMs,
-                    firstTokenMs: nativeTiming.firstTokenMs))
+                    firstTokenMs: nativeTiming.firstTokenMs,
+                    newInputTokens: newInput,
+                    cacheReadTokens: cacheRead,
+                    cacheWriteTokens: cacheWrite))
             } else if let prevMs = previousStepTimestampMs,
                       let estimatedLatency = Self.plausibleLatencyMs(startMs: prevMs, endMs: endMs)
             {
@@ -649,13 +683,16 @@ extension LocalAgentSpeedScanner {
                     model: resolvedModel,
                     outputTokens: outputTokens,
                     latencyMs: estimatedLatency,
-                    firstTokenMs: nil))
+                    firstTokenMs: nil,
+                    newInputTokens: newInput,
+                    cacheReadTokens: cacheRead,
+                    cacheWriteTokens: cacheWrite))
             }
         }
         return results
     }
 
-    private static func antigravityModelFromSettingsChange(_ content: String) -> String? {
+    static func antigravityModelFromSettingsChange(_ content: String) -> String? {
         guard let marker = content.range(of: "Model Selection") else { return nil }
         let rest = content[marker.lowerBound...]
         guard let toRange = rest.range(of: " to ") else { return nil }
@@ -1123,6 +1160,7 @@ extension LocalAgentSpeedScanner {
         var currentModel: String?
         var currentModelProvider: String?
         var previousCumulativeOutput = 0
+        var promptTracker = CodexPromptTokenTracker()
         var results: [AgentSpeedSample] = []
 
         text.enumerateLines { line, _ in
@@ -1202,6 +1240,7 @@ extension LocalAgentSpeedScanner {
                     let lastUsage = info?["last_token_usage"] as? [String: Any]
                     let totalOut = Self.intValue(totalUsage?["output_tokens"])
                     let lastOut = Self.intValue(lastUsage?["output_tokens"])
+                    let prompt = promptTracker.observe(total: totalUsage, last: lastUsage)
 
                     let deltaOut: Int
                     if let totalOut {
@@ -1250,7 +1289,9 @@ extension LocalAgentSpeedScanner {
                         codexHomePath: canonicalHomePath,
                         outputTokens: deltaOut,
                         latencyMs: finished.latencyMs,
-                        firstTokenMs: finished.firstTokenMs))
+                        firstTokenMs: finished.firstTokenMs,
+                        newInputTokens: prompt?.newInput,
+                        cacheReadTokens: prompt?.cacheRead))
                 default:
                     break
                 }
@@ -1298,6 +1339,36 @@ extension LocalAgentSpeedScanner {
         let isAttachment: Bool
     }
 
+    /// Codex `input_tokens` already contains `cached_input_tokens`, so new input is the difference.
+    struct CodexPromptTokenTracker {
+        private var previousInput = 0
+        private var previousCached = 0
+
+        mutating func observe(
+            total: [String: Any]?,
+            last: [String: Any]?) -> (newInput: Int, cacheRead: Int)?
+        {
+            func cached(_ usage: [String: Any]?) -> Int? {
+                LocalAgentSpeedScanner.intValue(usage?["cached_input_tokens"])
+                    ?? LocalAgentSpeedScanner.intValue(usage?["cache_read_input_tokens"])
+            }
+            var delta: (input: Int, cached: Int)?
+            if let totalInput = LocalAgentSpeedScanner.intValue(total?["input_tokens"]) {
+                let totalCached = cached(total) ?? 0
+                if totalInput >= self.previousInput, totalCached >= self.previousCached {
+                    delta = (totalInput - self.previousInput, totalCached - self.previousCached)
+                }
+                self.previousInput = max(self.previousInput, totalInput)
+                self.previousCached = max(self.previousCached, totalCached)
+            }
+            let lastInput = LocalAgentSpeedScanner.intValue(last?["input_tokens"])
+            let request: (input: Int, cached: Int)? = lastInput.map { ($0, cached(last) ?? 0) } ?? delta
+            guard let request, request.input > 0 else { return nil }
+            let read = min(max(0, request.cached), request.input)
+            return (request.input - read, read)
+        }
+    }
+
     private struct ClaudeMessageAccumulator {
         let firstParentUUID: String?
         let startsAtFirstBlock: Bool
@@ -1305,6 +1376,33 @@ extension LocalAgentSpeedScanner {
         var endMs: Int64?
         var outputTokens: Int = 0
         var model: String?
+        var prompt = ClaudePromptTokens()
+    }
+
+    struct ClaudePromptTokens: Equatable {
+        var newInput: Int?
+        var cacheRead: Int?
+        var cacheWrite: Int?
+        /// 3600 when the request wrote to the one-hour cache, 300 for the default five-minute cache.
+        var writeTTLSeconds: Int?
+
+        init() {}
+
+        init(usage: [String: Any]?) {
+            self.newInput = LocalAgentSpeedScanner.intValue(usage?["input_tokens"])
+            self.cacheRead = LocalAgentSpeedScanner.intValue(usage?["cache_read_input_tokens"])
+            self.cacheWrite = LocalAgentSpeedScanner.intValue(usage?["cache_creation_input_tokens"])
+            let tiers = usage?["cache_creation"] as? [String: Any]
+            if (LocalAgentSpeedScanner.intValue(tiers?["ephemeral_1h_input_tokens"]) ?? 0) > 0 {
+                self.writeTTLSeconds = 3600
+            } else if (self.cacheWrite ?? 0) > 0 {
+                self.writeTTLSeconds = 300
+            }
+        }
+
+        var hasAccounting: Bool {
+            self.newInput != nil || self.cacheRead != nil || self.cacheWrite != nil
+        }
     }
 
     private static func parseClaudeSession(fileURL: URL) -> [AgentSpeedSample] {
@@ -1338,6 +1436,7 @@ extension LocalAgentSpeedScanner {
             let usage = message["usage"] as? [String: Any]
             let outTokens = Self.intValue(usage?["output_tokens"]) ?? 0
             let model = message["model"] as? String
+            let prompt = ClaudePromptTokens(usage: usage)
 
             if var existing = messages[messageID] {
                 if let timestampMs {
@@ -1348,6 +1447,9 @@ extension LocalAgentSpeedScanner {
                 }
                 if let model, !model.isEmpty {
                     existing.model = model
+                }
+                if prompt.hasAccounting {
+                    existing.prompt = prompt
                 }
                 messages[messageID] = existing
             } else {
@@ -1371,12 +1473,18 @@ extension LocalAgentSpeedScanner {
                     firstOutputMs: firstOutputMs,
                     endMs: timestampMs,
                     outputTokens: outTokens,
-                    model: model)
+                    model: model,
+                    prompt: prompt)
             }
         }
 
         var results: [AgentSpeedSample] = []
+        // A cache read keeps the tier of the write that created the entry, so carry the last seen tier forward.
+        var sessionCacheTTLSeconds: Int?
         for messageID in messageOrder {
+            if let ttl = messages[messageID]?.prompt.writeTTLSeconds {
+                sessionCacheTTLSeconds = ttl
+            }
             guard let acc = messages[messageID],
                   acc.startsAtFirstBlock,
                   acc.outputTokens > 0,
@@ -1399,7 +1507,11 @@ extension LocalAgentSpeedScanner {
                 model: acc.model,
                 outputTokens: acc.outputTokens,
                 latencyMs: latencyMs,
-                firstTokenMs: ttft))
+                firstTokenMs: ttft,
+                newInputTokens: acc.prompt.newInput,
+                cacheReadTokens: acc.prompt.cacheRead,
+                cacheWriteTokens: acc.prompt.cacheWrite,
+                cacheTTLSeconds: sessionCacheTTLSeconds))
         }
         return results
     }
@@ -1517,6 +1629,7 @@ extension LocalAgentSpeedScanner {
 
             let model = Self.openCodeModel(from: obj)
             let providerKey = Self.openCodeProviderKey(from: obj)
+            let cache = tokens["cache"] as? [String: Any]
             results.append(AgentSpeedSample(
                 source: .openCode,
                 timestamp: Date(timeIntervalSince1970: Double(endMs) / 1000.0),
@@ -1524,7 +1637,11 @@ extension LocalAgentSpeedScanner {
                 providerKey: providerKey,
                 outputTokens: output,
                 latencyMs: latencyMs,
-                firstTokenMs: nil))
+                firstTokenMs: nil,
+                // OpenCode follows Anthropic accounting: input excludes cache reads and writes.
+                newInputTokens: Self.intValue(tokens["input"]),
+                cacheReadTokens: Self.intValue(cache?["read"]),
+                cacheWriteTokens: Self.intValue(cache?["write"])))
         }
         return results
     }
@@ -1643,7 +1760,10 @@ extension LocalAgentSpeedScanner {
                 providerKey: providerKey,
                 outputTokens: output,
                 latencyMs: latencyMs,
-                firstTokenMs: nil))
+                firstTokenMs: nil,
+                newInputTokens: Self.intValue(usage["input"]) ?? Self.intValue(usage["inputTokens"]),
+                cacheReadTokens: Self.intValue(usage["cacheRead"]),
+                cacheWriteTokens: Self.intValue(usage["cacheWrite"])))
         }
         return results
     }

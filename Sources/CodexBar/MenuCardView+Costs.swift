@@ -197,8 +197,12 @@ extension UsageMenuCardView.Model {
         }
         guard enabled else { return nil }
         guard let snapshot else { return nil }
+        if provider.reportsTokensWithoutCost {
+            return self.tokensOnlyUsageSection(snapshot: snapshot, error: error)
+        }
 
-        let usesRolling24Hours = (provider == .codex || provider == .opencode) && snapshot.rolling24Hours != nil
+        let usesRolling24Hours = (provider == .codex || provider.hasIndependentLocalTokenUsage) &&
+            snapshot.rolling24Hours != nil
         let sessionCostValue = usesRolling24Hours
             ? snapshot.rolling24Hours?.costUSD
             : snapshot.sessionCostUSD
@@ -274,7 +278,7 @@ extension UsageMenuCardView.Model {
             sessionLine: sessionLine,
             monthLine: monthLine,
             meteredLine: meteredLine,
-            comparisonLines: comparisonPeriodsEnabled || provider == .opencode
+            comparisonLines: comparisonPeriodsEnabled || provider.hasIndependentLocalTokenUsage
                 ? snapshot.comparisonSummaries().map {
                     Self.costWindowLine(
                         summary: $0,
@@ -330,8 +334,31 @@ extension UsageMenuCardView.Model {
         return lines.isEmpty ? nil : lines.joined(separator: "\n")
     }
 
-    static func tokenUsageHeader(provider _: UsageProvider) -> String {
-        L("Cost")
+    static func tokenUsageHeader(provider: UsageProvider) -> String {
+        provider.reportsTokensWithoutCost ? L("token_usage_header_tokens") : L("Cost")
+    }
+
+    /// A subscription client logs tokens but no price, so its section is one line of totals: no cost column to
+    /// fill with dashes, and the same three windows as the detail view's 24H / 7D / 30D switch.
+    static func tokensOnlyUsageSection(snapshot: CostUsageTokenSnapshot, error: String?) -> TokenUsageSection {
+        var parts: [String] = []
+        if let rolling = snapshot.rolling24Hours {
+            parts.append("24h \(UsageFormatter.tokenCountString(rolling.totalTokens))")
+        }
+        for days in [7, 30] where days <= snapshot.historyDays {
+            if let tokens = snapshot.summary(forLastDays: days).totalTokens {
+                parts.append("\(days)d \(UsageFormatter.tokenCountString(tokens))")
+            }
+        }
+        let err = (error?.isEmpty ?? true) ? nil : error
+        return TokenUsageSection(
+            sessionLine: parts.joined(separator: " · "),
+            monthLine: "",
+            meteredLine: nil,
+            comparisonLines: [],
+            hintLine: nil,
+            errorLine: err,
+            errorCopyText: err)
     }
 
     static func tokenUsageHintLines(provider: UsageProvider) -> [String] {
@@ -625,5 +652,18 @@ extension UsageMenuCardView.Model {
 
     static func clamped(_ value: Double) -> Double {
         min(100, max(0, value))
+    }
+}
+
+extension UsageProvider {
+    /// The client keeps its own token ledger on this Mac, so its token rows show whether or not the optional
+    /// cost summary is switched on, and whether or not the account quota could be fetched.
+    var hasIndependentLocalTokenUsage: Bool {
+        self == .opencode || self == .antigravity
+    }
+
+    /// The client's logs count tokens but state no price.
+    var reportsTokensWithoutCost: Bool {
+        self == .antigravity
     }
 }

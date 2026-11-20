@@ -7,6 +7,13 @@ struct AgentSpeedPresentation: Equatable, Sendable {
     let detailLine: String?
     let inlineCompactLine: String
     let tooltipText: String
+    var requests: [AgentSpeedRequestRow] = []
+    var cacheExpiresAt: Date?
+
+    /// The newest few replies, listed on the card itself.
+    var inlineRequests: ArraySlice<AgentSpeedRequestRow> {
+        self.requests.prefix(AgentSpeedRequestRow.inlineLimit)
+    }
 
     var heightFingerprint: String {
         MenuCardHeightFingerprint.join([
@@ -14,6 +21,7 @@ struct AgentSpeedPresentation: Equatable, Sendable {
             MenuCardHeightFingerprint.field("primary", self.primaryLine),
             MenuCardHeightFingerprint.field("detail", self.detailLine),
             MenuCardHeightFingerprint.field("inline", self.inlineCompactLine),
+            MenuCardHeightFingerprint.field("requests", String(self.inlineRequests.count)),
         ])
     }
 
@@ -92,7 +100,9 @@ struct AgentSpeedPresentation: Equatable, Sendable {
             primaryLine: primaryLine,
             detailLine: detailLine,
             inlineCompactLine: inlineCompactLine,
-            tooltipText: L("agent_speed_readonly_tooltip"))
+            tooltipText: L("agent_speed_readonly_tooltip"),
+            requests: AgentSpeedRequestRow.rows(from: summary),
+            cacheExpiresAt: AgentSpeedRequestRow.cacheExpiry(from: summary))
     }
 }
 
@@ -117,17 +127,70 @@ struct AgentSpeedSectionContent: View {
                 .monospacedDigit()
                 .foregroundStyle(MenuHighlightStyle.primary(self.isHighlighted))
                 .lineLimit(1)
-            if let detailLine = self.presentation.detailLine {
-                Text(detailLine)
-                    .font(ConsoleDesign.mono(10))
-                    .monospacedDigit()
-                    .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
-                    .lineLimit(1)
-                    .truncationMode(.middle)
+            if self.presentation.inlineRequests.isEmpty {
+                if let detailLine = self.presentation.detailLine {
+                    Text(detailLine)
+                        .font(ConsoleDesign.mono(10))
+                        .monospacedDigit()
+                        .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+            } else {
+                AgentSpeedInlineRequestList(rows: Array(self.presentation.inlineRequests))
+                    .padding(.top, 1)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .help(self.presentation.tooltipText)
+    }
+}
+
+/// The newest replies as a small table: age, model, speed, first token, cache hit rate.
+private struct AgentSpeedInlineRequestList: View {
+    let rows: [AgentSpeedRequestRow]
+    @Environment(\.menuItemHighlighted) private var isHighlighted
+
+    var body: some View {
+        let now = Date()
+        Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 3) {
+            GridRow {
+                ForEach(Array(AgentSpeedRequestRow.columnTitles.enumerated()), id: \.offset) { index, title in
+                    Text(title)
+                        .font(ConsoleDesign.text(9))
+                        .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted).opacity(0.75))
+                        .gridColumnAlignment(index >= AgentSpeedRequestRow.speedColumnIndex ? .trailing : .leading)
+                }
+            }
+            ForEach(Array(self.rows.enumerated()), id: \.offset) { _, row in
+                GridRow {
+                    ForEach(Array(row.columns(now: now).enumerated()), id: \.offset) { index, value in
+                        Text(value)
+                            .font(ConsoleDesign.mono(
+                                10,
+                                weight: self.emphasizes(row, column: index) ? .semibold : .regular))
+                            .monospacedDigit()
+                            .foregroundStyle(self.color(row, column: index))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func emphasizes(_ row: AgentSpeedRequestRow, column: Int) -> Bool {
+        row.countsAsRealUsage && column == AgentSpeedRequestRow.speedColumnIndex
+    }
+
+    private func color(_ row: AgentSpeedRequestRow, column: Int) -> Color {
+        guard row.countsAsRealUsage else {
+            return MenuHighlightStyle.secondary(self.isHighlighted).opacity(0.6)
+        }
+        return self.emphasizes(row, column: column)
+            ? MenuHighlightStyle.primary(self.isHighlighted)
+            : MenuHighlightStyle.secondary(self.isHighlighted)
     }
 }
 

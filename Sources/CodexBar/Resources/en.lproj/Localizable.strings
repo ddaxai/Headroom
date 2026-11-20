@@ -104,7 +104,7 @@
 "Cost" = "Cost";
 "Could not add Codex account" = "Could not add Codex account";
 "Could not open Terminal for Gemini" = "Could not open Terminal for Gemini";
-"Could not start claude /login" = "Could not start claude /login";
+"Could not start Claude Code login" = "Could not start Claude Code login";
 "Could not start codex login" = "Could not start codex login";
 "Could not switch system account" = "Could not switch system account";
 "Credits" = "Credits";
@@ -813,6 +813,7 @@
 "Quit" = "Quit";
 "Last %d day" = "Last %d day";
 "Last %d days" = "Last %d days";
+"%@ cache hit" = "%@ cache hit";
 "%@ tokens" = "%@ tokens";
 "Latest billing day" = "Latest billing day";
 "Latest billing day (%@)" = "Latest billing day (%@)";
@@ -1213,7 +1214,7 @@
 "Windsurf session JSON bundle" = "Windsurf session JSON bundle";
 "Workspace ID" = "Workspace ID";
 "Your StepFun platform password. Used to login and obtain a session token." = "Your StepFun platform password. Used to login and obtain a session token.";
-"claude /login exited with status %d." = "claude /login exited with status %d.";
+"claude auth login exited with status %d." = "claude auth login exited with status %d.";
 "codex login exited with status %d." = "codex login exited with status %d.";
 "Cookie: …\n\nor paste a cURL capture from the Abacus AI dashboard" = "Cookie: …\n\nor paste a cURL capture from the Abacus AI dashboard";
 "Cookie: …\n\nor paste the __Secure-next-auth.session-token value" = "Cookie: …\n\nor paste the __Secure-next-auth.session-token value";
@@ -1673,6 +1674,20 @@
 "agent_speed_ttft_format" = "TTFT %@";
 "agent_speed_includes_ttft_note" = "Includes first-token wait";
 "agent_speed_readonly_tooltip" = "Read-only from local Agent session logs (zero proxy, zero network interception). Exact values exclude first-token wait; ≈ values include first-token wait.";
+"agent_speed_requests_title" = "Recent responses";
+"agent_speed_requests_legend" = "Dimmed rows are replies too short to measure (tool calls, quick judgements). They are left out of the speeds on the card.";
+"agent_speed_requests_column_time" = "Time";
+"agent_speed_requests_column_model" = "Model";
+"agent_speed_requests_column_speed" = "Speed";
+"agent_speed_requests_column_first_token" = "First token";
+"agent_speed_requests_column_cache" = "Cache";
+"token_usage_header_tokens" = "Token usage";
+"agent_speed_age_now" = "now";
+"agent_speed_age_minutes_format" = "%dm ago";
+"agent_speed_age_hours_format" = "%dh ago";
+"agent_speed_age_days_format" = "%dd ago";
+"agent_speed_cache_expires_format" = "Session cache expires at %@";
+"agent_speed_cache_expired_format" = "Session cache expired at %@";
 "relay_external_imported_message" = "Imported local API configuration “%@” without modifying client files.";
 "relay_external_imported_all_message" = "Imported %d local API configurations without modifying client files.";
 "relay_external_rescan_action" = "Rescan local APIs";
@@ -1785,7 +1800,7 @@
 "relay_menu_switch_failed" = "Switch failed (%@)";
 
 /* Previously missing keys */
-"Toggle Sidebar" = "Toggle Sidebar";
+"settings_navigation_accessibility" = "Settings sections";
 "Requesting login…" = "Requesting login…";
 "Waiting in browser…" = "Waiting in browser…";
 

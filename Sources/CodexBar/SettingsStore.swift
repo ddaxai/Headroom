@@ -573,11 +573,6 @@ extension SettingsStore {
             ?? AgentSessionLabelStyle.project.rawValue
         let agentSessionsManualHosts = userDefaults.string(forKey: "agentSessionsManualHosts") ?? ""
         let preferredCurrencyCode = userDefaults.string(forKey: "preferredCurrencyCode") ?? "USD"
-        let sidebarWidth = SettingsWindowLayout.loadWidth(
-            from: userDefaults,
-            key: SettingsWindowLayout.sidebarWidthKey,
-            ideal: SettingsWindowLayout.sidebarIdealWidth,
-            range: SettingsWindowLayout.sidebarWidthRange)
         let relayListWidth = SettingsWindowLayout.loadWidth(
             from: userDefaults,
             key: SettingsWindowLayout.relayListWidthKey,
@@ -666,7 +661,6 @@ extension SettingsStore {
             agentSessionLabelStyleRaw: agentSessionLabelStyleRaw,
             agentSessionsManualHosts: agentSessionsManualHosts,
             preferredCurrencyCode: preferredCurrencyCode,
-            sidebarWidth: sidebarWidth,
             relayListWidth: relayListWidth,
             windowAlwaysOnTop: windowAlwaysOnTop)
     }

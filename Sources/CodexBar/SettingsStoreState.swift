@@ -1,18 +1,11 @@
 import Foundation
 
 enum SettingsWindowLayout {
-    static let sidebarWidthKey = "settings.sidebarWidth"
     static let relayListWidthKey = "settings.relayListWidth"
     static let windowAlwaysOnTopKey = "settings.windowAlwaysOnTop"
 
-    static let sidebarWidthRange: ClosedRange<CGFloat> = 168...320
-    static let sidebarIdealWidth: CGFloat = 200
     static let relayListWidthRange: ClosedRange<CGFloat> = 150...300
     static let relayListIdealWidth: CGFloat = 190
-
-    static func clampedSidebarWidth(_ value: CGFloat) -> CGFloat {
-        self.clamp(value, fallback: self.sidebarIdealWidth, to: self.sidebarWidthRange)
-    }
 
     static func clampedRelayListWidth(_ value: CGFloat) -> CGFloat {
         self.clamp(value, fallback: self.relayListIdealWidth, to: self.relayListWidthRange)
@@ -123,7 +116,6 @@ struct SettingsDefaultsState {
     var agentSessionLabelStyleRaw: String
     var agentSessionsManualHosts: String
     var preferredCurrencyCode: String
-    var sidebarWidth: CGFloat
     var relayListWidth: CGFloat
     var windowAlwaysOnTop: Bool
 }

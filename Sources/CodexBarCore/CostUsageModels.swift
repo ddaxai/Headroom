@@ -124,6 +124,45 @@ public struct CostUsageHourlyEntry: Sendable, Equatable, Identifiable {
     }
 }
 
+/// Share of prompt tokens served from cache: `cacheRead / (newInput + cacheCreation + cacheRead)`.
+public enum CacheHitRate {
+    public static func fraction(newInputTokens: Int, cacheCreationTokens: Int, cacheReadTokens: Int) -> Double? {
+        let read = max(0, cacheReadTokens)
+        let prompt = max(0, newInputTokens) + max(0, cacheCreationTokens) + read
+        guard prompt > 0 else { return nil }
+        return Double(read) / Double(prompt)
+    }
+
+    /// For sources such as Codex logs, whose input count already includes cache reads and which report no cache
+    /// writes.
+    public static func fraction(inputTokensIncludingCacheRead input: Int, cacheReadTokens: Int) -> Double? {
+        let read = min(max(0, cacheReadTokens), max(0, input))
+        return self.fraction(newInputTokens: input - read, cacheCreationTokens: 0, cacheReadTokens: read)
+    }
+}
+
+extension CostUsageDailyReport.Entry {
+    /// Prompt tokens are taken as `totalTokens - outputTokens`. Sources disagree on whether `inputTokens` contains
+    /// cache reads (Codex does, Claude and Pi do not) and a Codex day can merge both kinds, but the total always
+    /// counts each prompt token once.
+    public var cacheHitRate: Double? {
+        guard let total = self.totalTokens, let output = self.outputTokens else { return nil }
+        let prompt = total - max(0, output)
+        guard prompt > 0 else { return nil }
+        let read = min(max(0, self.cacheReadTokens ?? 0), prompt)
+        return Double(read) / Double(prompt)
+    }
+}
+
+extension CostUsageSessionBreakdown {
+    public var cacheHitRate: Double? {
+        guard let input = self.inputTokens else { return nil }
+        return CacheHitRate.fraction(
+            inputTokensIncludingCacheRead: input,
+            cacheReadTokens: self.cachedInputTokens ?? 0)
+    }
+}
+
 /// An estimated local Codex conversation total derived from one session log.
 /// This is intentionally distinct from account-level billing or quota data.
 public struct CostUsageSessionBreakdown: Sendable, Equatable, Identifiable {

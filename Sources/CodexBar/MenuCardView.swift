@@ -560,9 +560,11 @@ private struct TokenUsageSectionContent: View {
             Text(self.tokenUsage.sessionLine)
                 .font(self.lineFont)
                 .lineLimit(1)
-            Text(self.tokenUsage.monthLine)
-                .font(self.lineFont)
-                .lineLimit(1)
+            if !self.tokenUsage.monthLine.isEmpty {
+                Text(self.tokenUsage.monthLine)
+                    .font(self.lineFont)
+                    .lineLimit(1)
+            }
             if let metered = self.tokenUsage.meteredLine, !metered.isEmpty {
                 Text(metered)
                     .font(self.lineFont)
@@ -594,88 +596,6 @@ private struct TokenUsageSectionContent: View {
                     }
             }
         }
-    }
-}
-
-private struct MetricRow: View {
-    let metric: UsageMenuCardView.Model.Metric
-    let title: String
-    let progressColor: Color
-    @Environment(\.menuItemHighlighted) private var isHighlighted
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(self.title)
-                .font(.body)
-                .fontWeight(.medium)
-            if let statusText = self.metric.statusText {
-                Text(statusText)
-                    .font(.footnote)
-                    .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
-                    .lineLimit(1)
-            } else {
-                ConsoleSegmentedMeter(
-                    percent: self.metric.percent,
-                    percentMode: self.metric.percentStyle == .used ? .used : .remaining)
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(self.metric.percentLabel)
-                            .font(.footnote)
-                            .lineLimit(1)
-                        Spacer()
-                        if let rightLabel = self.metric.resetText {
-                            Text(rightLabel)
-                                .font(.footnote)
-                                .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
-                                .lineLimit(1)
-                        }
-                    }
-                    if self.metric.detailLeftText != nil || self.metric.detailRightText != nil {
-                        HStack(alignment: .firstTextBaseline) {
-                            if let detailLeft = self.metric.detailLeftText {
-                                Text(detailLeft)
-                                    .font(.footnote)
-                                    .foregroundStyle(MenuHighlightStyle.primary(self.isHighlighted))
-                                    .lineLimit(1)
-                            }
-                            Spacer()
-                            if let detailRight = self.metric.detailRightText {
-                                Text(detailRight)
-                                    .font(.footnote)
-                                    .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
-                                    .lineLimit(1)
-                            }
-                        }
-                    }
-                    if let sessionEquivalentDetail = self.metric.sessionEquivalentDetail {
-                        HStack(alignment: .firstTextBaseline) {
-                            Text(sessionEquivalentDetail.leftText)
-                                .font(.footnote)
-                                .foregroundStyle(MenuHighlightStyle.primary(self.isHighlighted))
-                                .lineLimit(1)
-                            Spacer()
-                            Text(sessionEquivalentDetail.rightText)
-                                .font(.footnote)
-                                .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
-                                .lineLimit(1)
-                        }
-                        .accessibilityElement(children: .ignore)
-                        .accessibilityLabel(sessionEquivalentDetail.accessibilityLabel)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                if let detail = self.metric.detailText {
-                    Text(detail)
-                        .font(.footnote)
-                        .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
-                        .lineLimit(1)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(self.metric.cardStyle ? 10 : 0)
-        .background(self.metric.cardStyle ? Color.secondary.opacity(self.isHighlighted ? 0.2 : 0.08) : Color.clear)
-        .clipShape(RoundedRectangle(cornerRadius: self.metric.cardStyle ? 10 : 0))
     }
 }
 
@@ -751,20 +671,25 @@ private struct UsageMenuCardUsageContentView: View {
         Text(L(title))
             .font(.caption.weight(.semibold))
             .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
-            .textCase(.uppercase)
     }
 
     private func metricRows(_ metrics: [UsageMenuCardView.Model.Metric]) -> some View {
         ForEach(metrics, id: \.id) { metric in
-            MetricRow(
-                metric: metric,
-                title: UsageMenuCardView.popupMetricTitle(provider: self.model.provider, metric: metric),
-                progressColor: self.model.progressColor)
+            let title = UsageMenuCardView.popupMetricTitle(provider: self.model.provider, metric: metric)
+            if self.usesCompactMetricRows, metric.statusText == nil, !metric.cardStyle {
+                CompactMetricRow(metric: metric, title: title)
+            } else {
+                MetricRow(metric: metric, title: title, progressColor: self.model.progressColor)
+            }
         }
     }
 
+    private var usesCompactMetricRows: Bool {
+        UsageMenuCardView.usesCompactMetricRows(provider: self.model.provider)
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: self.usesCompactMetricRows ? 9 : 12) {
             if let split = self.doubaoSplitMetrics {
                 if !split.coding.isEmpty {
                     self.groupHeader("Coding Plan")
@@ -1063,7 +988,7 @@ extension UsageMenuCardView.Model {
                 // OpenCode's local session ledger is a first-class usage lane even when the
                 // optional cost-summary setting is disabled. Its web quota is independent and
                 // may be unavailable for API-only users.
-                enabled: input.tokenCostMenuSectionEnabled || input.provider == .opencode,
+                enabled: input.tokenCostMenuSectionEnabled || input.provider.hasIndependentLocalTokenUsage,
                 comparisonPeriodsEnabled: input.costComparisonPeriodsEnabled,
                 snapshot: tokenUsageSnapshot,
                 error: input.tokenError,

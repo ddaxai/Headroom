@@ -122,7 +122,7 @@
 "Cost" = "费用";
 "Could not add Codex account" = "无法添加 Codex 账户";
 "Could not open Terminal for Gemini" = "无法为 Gemini 打开终端";
-"Could not start claude /login" = "无法启动 claude /login";
+"Could not start Claude Code login" = "无法启动 Claude Code 登录";
 "Could not start codex login" = "无法启动 codex login";
 "Could not switch system account" = "无法切换系统账户";
 "Credits" = "额度";
@@ -779,6 +779,7 @@
 "Quit" = "退出";
 "Last %d day" = "近 %d 天";
 "Last %d days" = "近 %d 天";
+"%@ cache hit" = "缓存命中 %@";
 "%@ tokens" = "%@ token 用量";
 "Latest billing day" = "最近结算日";
 "Latest billing day (%@)" = "最近结算日（%@）";
@@ -1167,7 +1168,7 @@
 "Windsurf session JSON bundle" = "Windsurf 会话 JSON 包";
 "Workspace ID" = "工作区 ID";
 "Your StepFun platform password. Used to login and obtain a session token." = "你的 StepFun 平台密码。用于登录并获取会话 token。";
-"claude /login exited with status %d." = "claude /login 以状态 %d 结束。";
+"claude auth login exited with status %d." = "claude auth login 以状态 %d 结束。";
 "codex login exited with status %d." = "codex login 以状态 %d 结束。";
 "Cookie: …\n\nor paste a cURL capture from the Abacus AI dashboard" = "Cookie: …\n\n或粘贴 Abacus AI 仪表盘的 cURL 捕获内容";
 "Cookie: …\n\nor paste the __Secure-next-auth.session-token value" = "Cookie: …\n\n或粘贴 __Secure-next-auth.session-token 值";
@@ -1644,6 +1645,20 @@
 "agent_speed_ttft_format" = "首字 %@";
 "agent_speed_includes_ttft_note" = "估算耗时（含首字等待）";
 "agent_speed_readonly_tooltip" = "纯只读提取自本地 Agent 会话日志（不经任何反代，零网络劫持）。精确值已扣除首字等待；带 ≈ 的数值含首字等待时间。";
+"agent_speed_requests_title" = "最近的响应";
+"agent_speed_requests_legend" = "灰色行是输出太短、测不准的响应（工具调用、简单判断），不计入卡片上的速度。";
+"agent_speed_requests_column_time" = "时间";
+"agent_speed_requests_column_model" = "模型";
+"agent_speed_requests_column_speed" = "速度";
+"agent_speed_requests_column_first_token" = "首字";
+"agent_speed_requests_column_cache" = "缓存";
+"token_usage_header_tokens" = "Token 用量";
+"agent_speed_age_now" = "刚刚";
+"agent_speed_age_minutes_format" = "%d分钟前";
+"agent_speed_age_hours_format" = "%d小时前";
+"agent_speed_age_days_format" = "%d天前";
+"agent_speed_cache_expires_format" = "会话缓存 %@ 过期";
+"agent_speed_cache_expired_format" = "会话缓存已于 %@ 过期";
 "relay_external_imported_message" = "已导入本地 API 配置“%@”，未改动原客户端文件。";
 "relay_external_imported_all_message" = "已导入 %d 项本地 API 配置，未改动原客户端文件。";
 "relay_external_rescan_action" = "重新检测本地 API";
@@ -1756,7 +1771,7 @@
 "relay_menu_switch_failed" = "切换失败（%@）";
 
 /* Previously missing keys */
-"Toggle Sidebar" = "显示或隐藏侧边栏";
+"settings_navigation_accessibility" = "设置分区";
 "Requesting login…" = "正在请求登录…";
 "Waiting in browser…" = "正在浏览器中等待…";
 

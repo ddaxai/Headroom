@@ -1162,25 +1162,23 @@ struct RelaySettingsPane: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if self.settings.localMeterEnabled {
-                HStack(spacing: 10) {
-                    Toggle(L("local_meter_title"), isOn: self.$settings.localMeterEnabled)
-                        .toggleStyle(.switch)
-                    Text(self.localMeterStatusText)
+            HStack(spacing: 10) {
+                Toggle(L("local_meter_title"), isOn: self.$settings.localMeterEnabled)
+                    .toggleStyle(.switch)
+                Text(self.localMeterStatusText)
+                    .font(.caption)
+                    .foregroundStyle(ConsoleDesign.secondaryText)
+                Spacer(minLength: 8)
+                if self.model.profiles.isEmpty {
+                    Text(L("local_meter_no_profiles"))
                         .font(.caption)
-                        .foregroundStyle(ConsoleDesign.secondaryText)
-                    Spacer(minLength: 8)
-                    if self.model.profiles.isEmpty {
-                        Text(L("local_meter_no_profiles"))
-                            .font(.caption)
-                            .foregroundStyle(ConsoleDesign.tertiaryText)
-                    }
+                        .foregroundStyle(ConsoleDesign.tertiaryText)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-
-                Divider()
             }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+
+            Divider()
 
             HSplitView {
                 RelayProfileList(model: self.model)
@@ -1202,8 +1200,7 @@ struct RelaySettingsPane: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .onPreferenceChange(RelayListWidthPreferenceKey.self) { width in
-            guard width > 0, abs(width - self.settings.relayListWidth) >= 0.5 else { return }
+        .persistingSettledWidth(RelayListWidthPreferenceKey.self, current: self.settings.relayListWidth) { width in
             self.settings.relayListWidth = width
         }
         .onAppear { self.model.loadIfNeeded() }
@@ -1283,6 +1280,8 @@ private struct RelayProfileList: View {
                     .tag(profile.id)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(ConsoleDesign.surface)
             .overlay {
                 if self.model.profiles.isEmpty {
                     ContentUnavailableView(

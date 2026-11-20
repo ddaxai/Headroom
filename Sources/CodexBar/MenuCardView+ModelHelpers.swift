@@ -623,7 +623,7 @@ extension UsageMenuCardView.Model {
     }
 
     private static func hasLocalTokenUsage(_ input: Input) -> Bool {
-        (input.tokenCostUsageEnabled || input.provider == .opencode) &&
+        (input.tokenCostUsageEnabled || input.provider.hasIndependentLocalTokenUsage) &&
             self.tokenUsageSnapshot(input: input) != nil
     }
 

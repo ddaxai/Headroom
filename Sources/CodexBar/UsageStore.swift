@@ -1379,7 +1379,7 @@ extension UsageStore {
             return
         }
 
-        let hasIndependentLocalUsage = provider == .opencode
+        let hasIndependentLocalUsage = provider.hasIndependentLocalTokenUsage
         guard self.settings.isCostUsageEffectivelyEnabled(for: provider) || hasIndependentLocalUsage else {
             self.resetTokenUsageState(for: provider)
             return

@@ -9,15 +9,6 @@ extension SettingsStore {
         self.backgroundWorkSettingsRevision &+= 1
     }
 
-    var sidebarWidth: CGFloat {
-        get { self.defaultsState.sidebarWidth }
-        set {
-            let width = SettingsWindowLayout.clampedSidebarWidth(newValue)
-            self.defaultsState.sidebarWidth = width
-            self.userDefaults.set(Double(width), forKey: SettingsWindowLayout.sidebarWidthKey)
-        }
-    }
-
     var relayListWidth: CGFloat {
         get { self.defaultsState.relayListWidth }
         set {

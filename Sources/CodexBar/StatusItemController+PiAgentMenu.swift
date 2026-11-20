@@ -103,7 +103,8 @@ extension StatusItemController {
                     snapshot: detailSnapshot,
                     title: detailTitle,
                     width: width,
-                    unavailableText: L("pi_agent_status_unavailable"))
+                    unavailableText: L("pi_agent_status_unavailable"),
+                    agentSpeed: profileSpeed)
                 expanded.delegate = self
                 StatusMenuAppearance.pin(expanded)
                 menu.addItem(self.makeMenuCardItem(

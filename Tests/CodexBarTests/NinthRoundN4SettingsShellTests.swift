@@ -24,7 +24,6 @@ struct NinthRoundN4SettingsShellTests {
         let controls = try #require(
             window.titlebarAccessoryViewControllers.first as? SettingsTitlebarControlsController)
         #expect(controls.layoutAttribute == .left)
-        #expect(controls.sidebarButton.image?.accessibilityDescription == "Show Sidebar")
         #expect(controls.pinButton.image?.accessibilityDescription == "Pinned")
 
         bridge.invalidate()
@@ -41,20 +40,15 @@ struct NinthRoundN4SettingsShellTests {
     }
 
     @Test
-    func `settings titlebar buttons dispatch sidebar and current pin callbacks`() {
-        var sidebarToggleCount = 0
+    func `settings titlebar pin button dispatches the current pin callback`() {
         var firstPinToggleCount = 0
         var replacementPinToggleCount = 0
-        let controls = SettingsTitlebarControlsController(
-            onToggleSidebar: { sidebarToggleCount += 1 },
-            onTogglePin: { firstPinToggleCount += 1 })
+        let controls = SettingsTitlebarControlsController(onTogglePin: { firstPinToggleCount += 1 })
 
-        controls.sidebarButton.performClick(nil)
         controls.pinButton.performClick(nil)
         controls.update(isPinned: true, onTogglePin: { replacementPinToggleCount += 1 })
         controls.pinButton.performClick(nil)
 
-        #expect(sidebarToggleCount == 1)
         #expect(firstPinToggleCount == 1)
         #expect(replacementPinToggleCount == 1)
         #expect(controls.pinButton.image?.accessibilityDescription == "Pinned")
@@ -62,9 +56,7 @@ struct NinthRoundN4SettingsShellTests {
 
     @Test
     func `settings titlebar accessory exposes the full pin button frame`() throws {
-        let initialControls = SettingsTitlebarControlsController(
-            onToggleSidebar: {},
-            onTogglePin: {})
+        let initialControls = SettingsTitlebarControlsController(onTogglePin: {})
         #expect(initialControls.view.bounds.size == SettingsTitlebarControlsController.contentSize)
         #expect(initialControls.preferredContentSize == SettingsTitlebarControlsController.contentSize)
 
@@ -82,7 +74,6 @@ struct NinthRoundN4SettingsShellTests {
         controls.view.layoutSubtreeIfNeeded()
 
         let targets = [
-            HeadroomGeometryAssertions.Target(name: "sidebar", view: controls.sidebarButton),
             HeadroomGeometryAssertions.Target(name: "pin", view: controls.pinButton),
         ]
         let failures = HeadroomGeometryAssertions.failures(
@@ -103,8 +94,6 @@ struct NinthRoundN4SettingsShellTests {
         #expect(controls.layoutAttribute == .left)
         #expect(controls.view.bounds.width == SettingsTitlebarControlsController.contentSize.width)
         #expect(controls.preferredContentSize == SettingsTitlebarControlsController.contentSize)
-        #expect(Self.hasRequiredDimension(controls.sidebarButton, attribute: .width, constant: 24))
-        #expect(Self.hasRequiredDimension(controls.sidebarButton, attribute: .height, constant: 22))
         #expect(Self.hasRequiredDimension(controls.pinButton, attribute: .width, constant: 24))
         #expect(Self.hasRequiredDimension(controls.pinButton, attribute: .height, constant: 22))
     }
@@ -130,7 +119,7 @@ struct NinthRoundN4SettingsShellTests {
     }
 
     @Test
-    nonisolated func `settings shell uses responder chain sidebar toggle and no SwiftUI toolbar`() throws {
+    nonisolated func `settings shell pins from the titlebar and has no sidebar or SwiftUI toolbar`() throws {
         let root = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
@@ -139,7 +128,7 @@ struct NinthRoundN4SettingsShellTests {
             contentsOf: root.appendingPathComponent("Sources/CodexBar/PreferencesView.swift"),
             encoding: .utf8)
 
-        #expect(source.contains("#selector(NSSplitViewController.toggleSidebar(_:))"))
+        #expect(!source.contains("toggleSidebar"))
         #expect(source.contains("NSTitlebarAccessoryViewController"))
         #expect(source.contains("layoutAttribute = .left"))
         #expect(!source.contains(".toolbar {"))

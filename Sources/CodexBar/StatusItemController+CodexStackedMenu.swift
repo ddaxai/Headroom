@@ -91,6 +91,7 @@ extension StatusItemController {
             width: context.menuWidth,
             heightCacheScope: account.id,
             heightCacheFingerprint: model.heightFingerprint(section: "card"),
+            submenu: self.makeAgentSpeedRequestsSubmenu(model.agentSpeed),
             containsInteractiveControls: true))
 
         self.addConsoleDivider(to: menu)
@@ -217,7 +218,8 @@ extension StatusItemController {
                         title: L("codex_usage_details_title", accountCardModel.email),
                         width: 300,
                         unavailableText: localUsage.unassignedExplanation
-                            ?? L("codex_usage_details_unavailable_official")),
+                            ?? L("codex_usage_details_unavailable_official"),
+                        agentSpeed: accountSpeed),
                     usesCardDetailRail: true,
                     containsInteractiveControls: true))
                 cardIndex += 1
@@ -365,7 +367,8 @@ extension StatusItemController {
                     snapshot: localUsage.snapshot,
                     title: L("codex_relay_usage_details_title", option.name),
                     width: 300,
-                    unavailableText: L("codex_local_usage_empty")),
+                    unavailableText: L("codex_local_usage_empty"),
+                    agentSpeed: relaySpeed),
                 usesCardDetailRail: true,
                 containsInteractiveControls: true))
         }

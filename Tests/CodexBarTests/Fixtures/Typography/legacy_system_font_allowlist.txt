@@ -1,7 +1,6 @@
 Sources/CodexBar/CodexAccountSummaryCardView.swift|.font(.system(size: 14, weight: .bold, design: .rounded))
 Sources/CodexBar/CodexAccountSummaryCardView.swift|.font(.system(size: 8, weight: .medium))
 Sources/CodexBar/CodexCardGroupStatusView.swift|.font(.system(size: 11, weight: .semibold))
-Sources/CodexBar/PreferencesComponents.swift|.font(.system(size: 11, weight: .semibold))
 Sources/CodexBar/PreferencesDebugPane.swift|.font(.system(.footnote, design: .monospaced))
 Sources/CodexBar/PreferencesDebugPane.swift|.font(.system(.footnote, design: .monospaced))
 Sources/CodexBar/PreferencesHooksPane.swift|.font(.system(.caption, design: .monospaced))

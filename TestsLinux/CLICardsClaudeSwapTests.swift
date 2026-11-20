@@ -63,6 +63,19 @@ struct CLICardsClaudeSwapTests {
             sevenDay: nil)
     }
 
+    /// Writes the script through a child process. A write descriptor opened in this process can be inherited by a
+    /// child that a parallel test spawns at the same moment, and exec then fails with ETXTBSY until that child execs.
+    private static func installExecutable(_ script: String, at executable: URL) throws {
+        let source = executable.appendingPathExtension("source")
+        try Data(script.utf8).write(to: source)
+        let install = Process()
+        install.executableURL = URL(fileURLWithPath: "/usr/bin/env")
+        install.arguments = ["install", "-m", "755", source.path, executable.path]
+        try install.run()
+        install.waitUntilExit()
+        #expect(install.terminationStatus == 0)
+    }
+
     @Test
     func `configured executable path strips surrounding quotes`() {
         for rawPath in ["  \"/tmp/cswap\"  ", "  '/tmp/cswap'  "] {
@@ -371,8 +384,7 @@ struct CLICardsClaudeSwapTests {
         ]}
         JSON
         """
-        try script.write(to: executable, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: executable.path)
+        try Self.installExecutable(script, at: executable)
 
         let output = await CLIClaudeSwapCards.fetch(
             eligible: true,
