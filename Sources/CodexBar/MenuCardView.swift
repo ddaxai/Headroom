@@ -751,7 +751,6 @@ private struct UsageMenuCardUsageContentView: View {
         Text(L(title))
             .font(.caption.weight(.semibold))
             .foregroundStyle(MenuHighlightStyle.secondary(self.isHighlighted))
-            .textCase(.uppercase)
     }
 
     private func metricRows(_ metrics: [UsageMenuCardView.Model.Metric]) -> some View {

@@ -853,13 +853,14 @@ extension HeadroomPopupMenuStackView {
 #endif
 
 @MainActor
-final class HeadroomPopupPresentationModel: ObservableObject {
-    @Published private(set) var state: HeadroomPopupPresentationState = .closed
-    var onTogglePin: (() -> Void)?
-    var onSubmenuDidDismiss: (() -> Void)?
+@Observable
+final class HeadroomPopupPresentationModel {
+    private(set) var state: HeadroomPopupPresentationState = .closed
+    @ObservationIgnored var onTogglePin: (() -> Void)?
+    @ObservationIgnored var onSubmenuDidDismiss: (() -> Void)?
     /// The hosted toolbar follows the state directly. SwiftUI refreshes its representable only on
     /// the next update pass, which left the pin icon, tooltip and VoiceOver label one state behind.
-    weak var toolbar: HeadroomPopupToolbarView?
+    @ObservationIgnored weak var toolbar: HeadroomPopupToolbarView?
 
     func update(state: HeadroomPopupPresentationState) {
         self.state = state
@@ -974,7 +975,7 @@ struct HeadroomPopupCardStack: View {
     let contentSize: NSSize
     let viewportSize: NSSize
     let revision: Int
-    @ObservedObject var presentation: HeadroomPopupPresentationModel
+    let presentation: HeadroomPopupPresentationModel
 
     var body: some View {
         VStack(spacing: 0) {

@@ -137,8 +137,7 @@ struct PreferencesView: View {
             self.showsOptionDiagnostics = NSEvent.modifierFlags.contains(.option)
             self.ensureValidSelection()
         }
-        .onPreferenceChange(SettingsSidebarWidthPreferenceKey.self) { width in
-            guard width > 0, abs(width - self.settings.sidebarWidth) >= 0.5 else { return }
+        .persistingSettledWidth(SettingsSidebarWidthPreferenceKey.self, current: self.settings.sidebarWidth) { width in
             self.settings.sidebarWidth = width
         }
         .onChange(of: self.settings.debugMenuEnabled) { _, _ in
@@ -287,6 +286,44 @@ private struct SettingsSidebarWidthPreferenceKey: PreferenceKey {
         if next > 0 {
             value = next
         }
+    }
+}
+
+/// Persists a split width once it stops changing. The preference fires on every layout pass of a divider drag,
+/// and each write went straight to `UserDefaults`.
+private struct SettledWidthPersistence<Key: PreferenceKey>: ViewModifier where Key.Value == CGFloat {
+    let current: CGFloat
+    let persist: (CGFloat) -> Void
+    @State private var pendingWidth: CGFloat?
+
+    func body(content: Content) -> some View {
+        content
+            .onPreferenceChange(Key.self) { width in
+                let changed = width > 0 && abs(width - self.current) >= 0.5
+                self.pendingWidth = changed ? width : nil
+            }
+            .task(id: self.pendingWidth) {
+                guard let width = self.pendingWidth else { return }
+                try? await Task.sleep(for: .milliseconds(250))
+                guard !Task.isCancelled else { return }
+                self.persist(width)
+                self.pendingWidth = nil
+            }
+            .onDisappear {
+                guard let width = self.pendingWidth else { return }
+                self.persist(width)
+                self.pendingWidth = nil
+            }
+    }
+}
+
+extension View {
+    func persistingSettledWidth<Key: PreferenceKey>(
+        _: Key.Type,
+        current: CGFloat,
+        persist: @escaping (CGFloat) -> Void) -> some View where Key.Value == CGFloat
+    {
+        self.modifier(SettledWidthPersistence<Key>(current: current, persist: persist))
     }
 }
 
