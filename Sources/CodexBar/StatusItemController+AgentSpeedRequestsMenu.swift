@@ -48,7 +48,6 @@ extension StatusItemController {
         guard let presentation, !presentation.requests.isEmpty else { return nil }
         let submenu = NSMenu()
         submenu.autoenablesItems = false
-        submenu.delegate = self
         StatusMenuAppearance.pin(submenu)
         self.appendAgentSpeedRequestItems(to: submenu, presentation: presentation)
         return submenu
