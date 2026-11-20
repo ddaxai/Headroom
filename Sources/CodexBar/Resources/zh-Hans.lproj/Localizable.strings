@@ -1644,6 +1644,16 @@
 "agent_speed_ttft_format" = "首字 %@";
 "agent_speed_includes_ttft_note" = "估算耗时（含首字等待）";
 "agent_speed_readonly_tooltip" = "纯只读提取自本地 Agent 会话日志（不经任何反代，零网络劫持）。精确值已扣除首字等待；带 ≈ 的数值含首字等待时间。";
+"agent_speed_requests_title" = "最近的响应";
+"agent_speed_requests_legend" = "灰色行是输出太短、测不准的响应（工具调用、简单判断），不计入卡片上的速度。";
+"agent_speed_requests_column_time" = "时间";
+"agent_speed_requests_column_model" = "模型";
+"agent_speed_requests_column_output" = "输出";
+"agent_speed_requests_column_speed" = "速度";
+"agent_speed_requests_column_first_token" = "首字";
+"agent_speed_requests_column_cache" = "缓存命中";
+"agent_speed_cache_expires_format" = "会话缓存 %@ 过期";
+"agent_speed_cache_expired_format" = "会话缓存已于 %@ 过期";
 "relay_external_imported_message" = "已导入本地 API 配置“%@”，未改动原客户端文件。";
 "relay_external_imported_all_message" = "已导入 %d 项本地 API 配置，未改动原客户端文件。";
 "relay_external_rescan_action" = "重新检测本地 API";
