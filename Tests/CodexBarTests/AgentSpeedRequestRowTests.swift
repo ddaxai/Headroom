@@ -117,4 +117,22 @@ struct AgentSpeedRequestRowTests {
         #expect(presentation.requests[1].countsAsRealUsage)
         #expect(presentation.cacheExpiresAt == Self.base.addingTimeInterval(360))
     }
+
+    @Test
+    func `a reply that missed the cache keeps the earlier cache deadline`() throws {
+        let samples = [
+            Self.sample(
+                offset: 0,
+                outputTokens: 500,
+                latencyMs: 11000,
+                firstTokenMs: 1000,
+                newInput: 10,
+                cacheRead: 90,
+                cacheTTL: 300),
+            Self.sample(offset: 60, outputTokens: 500, latencyMs: 11000, firstTokenMs: 1000, newInput: 100),
+        ]
+        let summary = try #require(AgentSpeedSummary.summarize(samples, now: Self.base.addingTimeInterval(120)))
+
+        #expect(AgentSpeedRequestRow.cacheExpiry(from: summary) == Self.base.addingTimeInterval(300))
+    }
 }

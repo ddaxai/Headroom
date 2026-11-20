@@ -38,8 +38,9 @@ struct AgentSpeedRequestRow: Equatable, Sendable {
         summary.recentSamples.map(Self.init(sample:))
     }
 
-    /// When the newest request's prompt cache lapses. Only Claude logs state the cache tier.
+    /// Deadline set by the newest request that read or wrote the prompt cache. A later request that missed the
+    /// cache neither extends nor ends it. Only Claude logs state the cache tier.
     static func cacheExpiry(from summary: AgentSpeedSummary) -> Date? {
-        summary.recentSamples.first?.cacheExpiresAt
+        summary.recentSamples.lazy.compactMap(\.cacheExpiresAt).first
     }
 }
