@@ -103,10 +103,10 @@ extension StatusItemController {
                     snapshot: detailSnapshot,
                     title: detailTitle,
                     width: width,
-                    unavailableText: L("pi_agent_status_unavailable"))
+                    unavailableText: L("pi_agent_status_unavailable"),
+                    agentSpeed: profileSpeed)
                 expanded.delegate = self
                 StatusMenuAppearance.pin(expanded)
-                self.appendAgentSpeedRequestItems(to: expanded, presentation: profileSpeed)
                 menu.addItem(self.makeMenuCardItem(
                     PiAgentProfileCardView(
                         section: section,

@@ -58,17 +58,18 @@ struct RelaySprayAnimationTests {
 
     @MainActor
     @Test
-    func `menu bar spray frames are cached and non-template`() throws {
+    func `menu bar spray frames are cached templates that follow the menu bar colour`() throws {
         let first = try #require(RelayVisualIdentity.menuBarImage(sprayFrame: 2))
         let repeated = try #require(RelayVisualIdentity.menuBarImage(sprayFrame: 2))
         #expect(first === repeated)
         #expect(first.size == NSSize(width: 18, height: 18))
-        #expect(!first.isTemplate)
+        #expect(first.isTemplate)
+        #expect(try #require(RelayVisualIdentity.menuBarImage()).isTemplate)
     }
 
     @MainActor
     @Test
-    func `menu bar sprinkler renders all visible layers in white`() throws {
+    func `menu bar sprinkler renders all visible layers in one colour`() throws {
         let image = try #require(RelayVisualIdentity.menuBarImage())
         let representation = try #require(image.tiffRepresentation.flatMap(NSBitmapImageRep.init(data:)))
         var whitePixels = 0

@@ -6,16 +6,23 @@ import Testing
 @MainActor
 struct SettingsWindowAppearanceTests {
     @Test
-    func `settings sidebar width has a draggable clamped range`() {
-        #expect(SettingsPane.sidebarMinWidth == 168)
-        #expect(SettingsPane.sidebarIdealWidth == 200)
-        #expect(SettingsPane.sidebarMaxWidth == 320)
-        #expect(SettingsPane.windowMinWidth > SettingsPane.sidebarIdealWidth)
-        #expect(SettingsPane.detailMaxWidth > SettingsPane.windowMinWidth - SettingsPane.sidebarIdealWidth)
+    func `settings panes get the full window width up to their maximum`() {
+        #expect(SettingsPane.detailMaxWidth >= SettingsPane.windowMinWidth)
+        #expect(SettingsPane.detailMaxWidth <= SettingsPane.windowWidth)
     }
 
     @Test
-    nonisolated func `settings and relay sidebars use split views with persisted geometry feedback`() throws {
+    func `every settings destination has a navigation tab icon and opens a regular pane`() {
+        for destination in SettingsDestination.allCases {
+            #expect(!destination.systemImage.isEmpty)
+            #expect(NSImage(systemSymbolName: destination.systemImage, accessibilityDescription: nil) != nil)
+            #expect(destination.defaultPane.destination == destination)
+            #expect(destination.defaultPane.isRegularlyReachable)
+        }
+    }
+
+    @Test
+    nonisolated func `settings use top navigation and the relay list keeps its persisted split`() throws {
         let root = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
@@ -27,9 +34,8 @@ struct SettingsWindowAppearanceTests {
             contentsOf: root.appendingPathComponent("Sources/CodexBar/PreferencesRelayPane.swift"),
             encoding: .utf8)
 
-        #expect(preferences.contains("NavigationSplitView"))
-        #expect(preferences.contains("ideal: self.settings.sidebarWidth"))
-        #expect(preferences.contains("self.settings.sidebarWidth = width"))
+        #expect(preferences.contains("SettingsNavigationBar("))
+        #expect(!preferences.contains("NavigationSplitView"))
         #expect(relay.contains("HSplitView"))
         #expect(relay.contains("idealWidth: self.settings.relayListWidth"))
         #expect(relay.contains("self.settings.relayListWidth = width"))
@@ -43,18 +49,13 @@ struct SettingsWindowAppearanceTests {
         defer { defaults.removePersistentDomain(forName: suite) }
 
         let initial = SettingsStore(userDefaults: defaults, performInitialProviderDetection: false)
-        #expect(initial.sidebarWidth == 200)
         #expect(initial.relayListWidth == 190)
 
-        initial.sidebarWidth = 900
         initial.relayListWidth = 20
-        #expect(initial.sidebarWidth == 320)
         #expect(initial.relayListWidth == 150)
 
         let reloaded = SettingsStore(userDefaults: defaults, performInitialProviderDetection: false)
-        #expect(reloaded.sidebarWidth == 320)
         #expect(reloaded.relayListWidth == 150)
-        #expect(defaults.double(forKey: SettingsWindowLayout.sidebarWidthKey) == 320)
         #expect(defaults.double(forKey: SettingsWindowLayout.relayListWidthKey) == 150)
     }
 
@@ -64,14 +65,11 @@ struct SettingsWindowAppearanceTests {
         let defaults = try #require(UserDefaults(suiteName: suite))
         defaults.removePersistentDomain(forName: suite)
         defer { defaults.removePersistentDomain(forName: suite) }
-        defaults.set(-40, forKey: SettingsWindowLayout.sidebarWidthKey)
         defaults.set(800, forKey: SettingsWindowLayout.relayListWidthKey)
 
         let settings = SettingsStore(userDefaults: defaults, performInitialProviderDetection: false)
 
-        #expect(settings.sidebarWidth == 168)
         #expect(settings.relayListWidth == 300)
-        #expect(defaults.double(forKey: SettingsWindowLayout.sidebarWidthKey) == 168)
         #expect(defaults.double(forKey: SettingsWindowLayout.relayListWidthKey) == 300)
     }
 

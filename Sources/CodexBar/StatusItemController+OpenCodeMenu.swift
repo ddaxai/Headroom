@@ -18,15 +18,15 @@ extension StatusItemController {
             let detailSnapshot = breakdown.tokenSnapshot(
                 now: snapshot.updatedAt,
                 historyDays: snapshot.historyDays)
+            let profileSpeed = self.openCodeProfileSpeedPresentation(providerKey: breakdown.providerKey)
             let submenu = self.makeCodexUsageDetailsSubmenu(
                 snapshot: detailSnapshot,
                 title: detailTitle,
                 width: width,
-                unavailableText: L("opencode_profile_usage_unavailable"))
+                unavailableText: L("opencode_profile_usage_unavailable"),
+                agentSpeed: profileSpeed)
             submenu.delegate = self
             StatusMenuAppearance.pin(submenu)
-            let profileSpeed = self.openCodeProfileSpeedPresentation(providerKey: breakdown.providerKey)
-            self.appendAgentSpeedRequestItems(to: submenu, presentation: profileSpeed)
             menu.addItem(self.makeMenuCardItem(
                 OpenCodeProfileUsageCardView(
                     breakdown: breakdown,

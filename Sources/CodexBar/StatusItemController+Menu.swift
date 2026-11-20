@@ -527,7 +527,7 @@ extension StatusItemController {
         // OpenCode local usage is a first-class inline card lane. Its optional hosted chart
         // would replace the 24h/7d/30d lines with an arrow, which is especially confusing for
         // API-only and free-model users who have no web quota to show beside it.
-        let hasCostHistory = currentProvider != .opencode &&
+        let hasCostHistory = !currentProvider.hasIndependentLocalTokenUsage &&
             self.settings.costSummaryShowsSubmenu(for: currentProvider) &&
             (self.store.tokenSnapshot(for: currentProvider)?.daily.isEmpty == false)
         let canShowBuyCredits = ForkFeaturePolicy.showsBuyCredits(for: currentProvider) &&
@@ -763,7 +763,7 @@ extension StatusItemController {
                             ? String(describing: UsageMenuCardView.RefreshPresentation.buttonSize)
                             : nil),
                 ]),
-            submenu: self.makeAgentSpeedRequestsSubmenu(model.agentSpeed),
+            submenu: self.menuCardDetailSubmenu(for: model, width: context.menuWidth),
             containsInteractiveControls: true))
         if self.addStorageMenuCardSection(to: menu, provider: context.currentProvider, width: context.menuWidth) {
             self.addConsoleDivider(to: menu)
@@ -773,6 +773,24 @@ extension StatusItemController {
         }
         self.addConsoleDivider(to: menu)
         return false
+    }
+
+    /// Antigravity's card opens the same 24H/7D/30D breakdown a Codex card does, with recent replies below it.
+    private func menuCardDetailSubmenu(for model: UsageMenuCardView.Model, width: CGFloat) -> NSMenu? {
+        guard model.provider == .antigravity,
+              let snapshot = self.store.tokenSnapshot(for: model.provider),
+              !snapshot.daily.isEmpty
+        else {
+            return self.makeAgentSpeedRequestsSubmenu(model.agentSpeed)
+        }
+        let submenu = self.makeCodexUsageDetailsSubmenu(
+            snapshot: snapshot,
+            title: ProviderDescriptorRegistry.descriptor(for: model.provider).metadata.displayName,
+            width: width,
+            agentSpeed: model.agentSpeed)
+        submenu.delegate = self
+        StatusMenuAppearance.pin(submenu)
+        return submenu
     }
 
     private func menuCardRefreshAction(
@@ -1013,7 +1031,7 @@ extension StatusItemController {
         }
     }
 
-    private func makeWrappedSecondaryTextItem(text: String, width: CGFloat) -> NSMenuItem {
+    func makeWrappedSecondaryTextItem(text: String, width: CGFloat) -> NSMenuItem {
         let item = NSMenuItem(title: "", action: nil, keyEquivalent: "")
         let view = self.makeWrappedSecondaryTextView(text: text)
         let height = self.menuTextItemHeight(for: view, width: width)
@@ -1686,7 +1704,9 @@ extension StatusItemController {
     }
 
     func makeCostHistorySubmenu(provider: UsageProvider, width: CGFloat? = nil) -> NSMenu? {
-        guard ProviderDescriptorRegistry.descriptor(for: provider).tokenCost.supportsTokenCost else { return nil }
+        guard ProviderDescriptorRegistry.descriptor(for: provider).tokenCost.supportsTokenCost,
+              !provider.reportsTokensWithoutCost
+        else { return nil }
         guard self.tokenSnapshotForCostHistorySubmenu(provider: provider)?.daily.isEmpty == false else { return nil }
         if let width {
             return self.makeHostedSubviewPlaceholderMenu(

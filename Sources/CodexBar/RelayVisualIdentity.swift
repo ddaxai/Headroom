@@ -67,7 +67,7 @@ enum RelayVisualIdentity {
             let fallbackPalette = NSImage.SymbolConfiguration(paletteColors: [.white, .white])
             let fallback = base.withSymbolConfiguration(size.applying(fallbackPalette)) ?? base
             fallback.size = self.menuBarCanvasSize
-            fallback.isTemplate = false
+            fallback.isTemplate = true
             return fallback
         }
 
@@ -89,7 +89,8 @@ enum RelayVisualIdentity {
             height: waterSize.height)
         water.draw(in: waterRect, from: .zero, operation: .sourceOver, fraction: frame.opacity)
         image.unlockFocus()
-        image.isTemplate = false
+        // Drawn in white, used as a mask: the menu bar picks black or white to suit the wallpaper behind it.
+        image.isTemplate = true
         return image
     }
 

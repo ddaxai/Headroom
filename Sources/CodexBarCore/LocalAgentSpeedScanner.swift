@@ -157,7 +157,7 @@ public struct AgentSpeedSummary: Sendable, Equatable, Codable {
     /// Newest first, including replies too short to count toward the speeds above.
     public var recentSamples: [AgentSpeedSample] = []
 
-    public static let recentSampleLimit = 30
+    public static let recentSampleLimit = 10
 
     public var hasData: Bool {
         self.latestTokensPerSecond != nil || self.rolling24hTokensPerSecond != nil
@@ -547,68 +547,32 @@ extension LocalAgentSpeedScanner {
         configuration: LocalAgentSpeedScanConfiguration,
         cutoff: Date) -> [AgentSpeedSample]
     {
-        let fm = FileManager.default
-        let geminiBase = configuration.homeDirectory.appendingPathComponent(".gemini", isDirectory: true)
-        var roots: [URL] = [
-            geminiBase.appendingPathComponent("antigravity", isDirectory: true),
-            geminiBase.appendingPathComponent("antigravity-cli", isDirectory: true),
-        ]
-        if let customAgy = Self.nonEmpty(configuration.environment["AGY_DIR"]) {
-            roots.append(URL(fileURLWithPath: customAgy, isDirectory: true))
-        }
-
-        var seenSessionIDs: Set<String> = []
         var samples: [AgentSpeedSample] = []
-
-        for root in roots {
-            let brainDir = root.appendingPathComponent("brain", isDirectory: true)
-            guard let entries = try? fm.contentsOfDirectory(
-                at: brainDir,
-                includingPropertiesForKeys: [.isDirectoryKey],
-                options: [.skipsHiddenFiles])
+        for transcript in AntigravityTranscriptLocator.transcripts(
+            homeDirectory: configuration.homeDirectory,
+            environment: configuration.environment)
+        {
+            guard let meta = Self.fileStamp(for: transcript.url),
+                  meta.modifiedAt >= cutoff
             else { continue }
 
-            for sessionDir in entries {
-                let sessionID = sessionDir.lastPathComponent
-                let logsDir = sessionDir
-                    .appendingPathComponent(".system_generated", isDirectory: true)
-                    .appendingPathComponent("logs", isDirectory: true)
-                let fullURL = logsDir.appendingPathComponent("transcript_full.jsonl", isDirectory: false)
-                let compactURL = logsDir.appendingPathComponent("transcript.jsonl", isDirectory: false)
-                let transcriptURL: URL
-                if fm.fileExists(atPath: fullURL.path) {
-                    transcriptURL = fullURL
-                } else if fm.fileExists(atPath: compactURL.path) {
-                    transcriptURL = compactURL
-                } else {
-                    continue
-                }
+            let dbCandidate = transcript.root
+                .appendingPathComponent("conversations", isDirectory: true)
+                .appendingPathComponent("\(transcript.sessionID).db", isDirectory: false)
+            let dbStamp = Self.sqliteCompositeStamp(for: dbCandidate)
+            let combinedStamp = "\(meta.stamp)|db:\(dbStamp)"
 
-                guard let meta = Self.fileStamp(for: transcriptURL),
-                      meta.modifiedAt >= cutoff
-                else { continue }
-                guard seenSessionIDs.insert("\(root.standardizedFileURL.path):\(sessionID)").inserted else {
-                    continue
-                }
-
-                let dbCandidate = root
-                    .appendingPathComponent("conversations", isDirectory: true)
-                    .appendingPathComponent("\(sessionID).db", isDirectory: false)
-                let dbStamp = Self.sqliteCompositeStamp(for: dbCandidate)
-                let combinedStamp = "\(meta.stamp)|db:\(dbStamp)"
-
-                let fileSamples = self.cachedSamples(
-                    tag: "agy",
-                    path: transcriptURL.standardizedFileURL.path,
-                    stamp: combinedStamp)
-                {
-                    Self.parseAntigravityTranscript(
-                        transcriptURL: transcriptURL,
-                        antigravityRoot: root,
-                        sessionID: sessionID)
-                }
-                samples.append(contentsOf: fileSamples)
+            let fileSamples = self.cachedSamples(
+                tag: "agy",
+                path: transcript.url.standardizedFileURL.path,
+                stamp: combinedStamp)
+            {
+                Self.parseAntigravityTranscript(
+                    transcriptURL: transcript.url,
+                    antigravityRoot: transcript.root,
+                    sessionID: transcript.sessionID)
             }
+            samples.append(contentsOf: fileSamples)
         }
         return samples
     }
@@ -693,9 +657,10 @@ extension LocalAgentSpeedScanner {
             let cacheWrite = promptTokens("cache_write_tokens")
 
             let native = nativeGenerations[step]
-            let resolvedModel = native?.model
-                ?? (row["model"] as? String)
-                ?? selectedModelByStep[step].map(Self.normalizeAntigravityModelID)
+            // The generation record names the model as the picker shows it ("Gemini 9 Quartz (High)"), the
+            // transcript as an ID. Store one form so a model is not listed twice.
+            let resolvedModel = (native?.model ?? (row["model"] as? String) ?? selectedModelByStep[step])
+                .map(Self.normalizeAntigravityModelID)
 
             if let nativeTiming = native?.timing {
                 results.append(AgentSpeedSample(
@@ -726,7 +691,7 @@ extension LocalAgentSpeedScanner {
         return results
     }
 
-    private static func antigravityModelFromSettingsChange(_ content: String) -> String? {
+    static func antigravityModelFromSettingsChange(_ content: String) -> String? {
         guard let marker = content.range(of: "Model Selection") else { return nil }
         let rest = content[marker.lowerBound...]
         guard let toRange = rest.range(of: " to ") else { return nil }

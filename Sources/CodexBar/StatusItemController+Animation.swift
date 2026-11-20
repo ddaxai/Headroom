@@ -778,15 +778,23 @@ extension StatusItemController {
     }
 
     static func quotaWarningFlashImage(base: NSImage) -> NSImage {
-        let image = NSImage(size: base.size)
-        image.lockFocus()
-        let rect = NSRect(origin: .zero, size: base.size)
-        NSColor.systemRed.withAlphaComponent(0.22).setFill()
-        NSBezierPath(roundedRect: rect.insetBy(dx: 1, dy: 1), xRadius: 4, yRadius: 4).fill()
-        base.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1)
-        NSColor.systemRed.withAlphaComponent(0.28).setFill()
-        NSBezierPath(rect: rect).fill()
-        image.unlockFocus()
+        // Drawn when displayed, so a template base takes the menu bar's current foreground colour.
+        let image = NSImage(size: base.size, flipped: false) { rect in
+            NSColor.systemRed.withAlphaComponent(0.22).setFill()
+            NSBezierPath(roundedRect: rect.insetBy(dx: 1, dy: 1), xRadius: 4, yRadius: 4).fill()
+            // The layer keeps the tint on the glyph instead of the red already painted under it.
+            let context = NSGraphicsContext.current?.cgContext
+            context?.beginTransparencyLayer(auxiliaryInfo: nil)
+            base.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1)
+            if base.isTemplate {
+                NSColor.labelColor.setFill()
+                rect.fill(using: .sourceAtop)
+            }
+            context?.endTransparencyLayer()
+            NSColor.systemRed.withAlphaComponent(0.28).setFill()
+            NSBezierPath(rect: rect).fill()
+            return true
+        }
         image.isTemplate = false
         return image
     }

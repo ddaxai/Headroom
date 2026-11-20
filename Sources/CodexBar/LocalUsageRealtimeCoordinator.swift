@@ -97,6 +97,9 @@ extension StatusItemController {
                 if sources.contains(.openCode) {
                     await self.store.refreshTokenUsageNow(for: .opencode, force: true)
                 }
+                if sources.contains(.antigravity) {
+                    await self.store.refreshTokenUsageNow(for: .antigravity, force: true)
+                }
                 if sources.contains(.pi) {
                     await self.refreshPiAgentUsageCardAfterExplicitRefresh()
                 }

@@ -1280,6 +1280,8 @@ private struct RelayProfileList: View {
                     .tag(profile.id)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(ConsoleDesign.surface)
             .overlay {
                 if self.model.profiles.isEmpty {
                     ContentUnavailableView(

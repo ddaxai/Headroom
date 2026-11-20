@@ -428,6 +428,14 @@ public struct CostUsageFetcher: Sendable {
             }
         }
 
+        if provider == .antigravity {
+            return try await CostUsageScanExecutor.run { _ in
+                try AntigravityLocalUsageReader()
+                    .fetch(now: now, historyDays: clampedHistoryDays)
+                    .toTokenSnapshot(now: now, historyDays: clampedHistoryDays)
+            }
+        }
+
         if let remoteSnapshot = try await self.loadRemoteTokenSnapshot(
             provider: provider,
             environment: environment,
@@ -900,7 +908,7 @@ public struct CostUsageFetcher: Sendable {
     /// macOS-only because it reuses the macOS Cursor session resolution.
     static func supportsTokenSnapshot(_ provider: UsageProvider) -> Bool {
         switch provider {
-        case .codex, .claude, .vertexai, .bedrock, .opencode:
+        case .codex, .claude, .vertexai, .bedrock, .opencode, .antigravity:
             return true
         case .cursor:
             #if os(macOS)

@@ -68,21 +68,53 @@ struct AgentSpeedRequestRowTests {
             outputTokens: 15,
             latencyMs: 100,
             firstTokenMs: nil))
-        let columns = row.columns(calendar: Self.utc, now: Self.base.addingTimeInterval(60))
+        let columns = row.columns(now: Self.base.addingTimeInterval(30))
 
         #expect(columns.count == AgentSpeedRequestRow.columnTitles.count)
-        #expect(columns[0] == "08:00:00")
+        #expect(columns[0] == L("agent_speed_age_now"))
         #expect(columns[1] == AgentSpeedRequestRow.placeholder)
+        #expect(columns[AgentSpeedRequestRow.speedColumnIndex] == "≈ 150 tok/s")
+        #expect(columns[3] == AgentSpeedRequestRow.placeholder)
         #expect(columns[4] == AgentSpeedRequestRow.placeholder)
-        #expect(columns[5] == AgentSpeedRequestRow.placeholder)
     }
 
     @Test
-    func `a reply from another day shows its date`() {
+    func `age is minutes then hours then days ago`() {
         let row = AgentSpeedRequestRow(sample: Self.sample(outputTokens: 500, latencyMs: 11000, firstTokenMs: 1000))
-        let columns = row.columns(calendar: Self.utc, now: Self.base.addingTimeInterval(2 * 86400))
 
-        #expect(columns[0] == "01-15 08:00")
+        #expect(row.ageText(now: Self.base.addingTimeInterval(5 * 60 + 40)) == L("agent_speed_age_minutes_format", 5))
+        #expect(row.ageText(now: Self.base.addingTimeInterval(3 * 3600 + 59)) == L("agent_speed_age_hours_format", 3))
+        #expect(row.ageText(now: Self.base.addingTimeInterval(2 * 86400)) == L("agent_speed_age_days_format", 2))
+    }
+
+    @Test
+    func `antigravity rows show the model codename once for both spellings`() {
+        func row(_ model: String) -> AgentSpeedRequestRow {
+            AgentSpeedRequestRow(sample: AgentSpeedSample(
+                source: .antigravity,
+                timestamp: Self.base,
+                model: model,
+                outputTokens: 500,
+                latencyMs: 11000,
+                firstTokenMs: 1000))
+        }
+
+        #expect(row("Gemini 9 Quartz (High)").model == "quartz-high")
+        #expect(row("gemini-9-quartz-high").model == "quartz-high")
+        #expect(row("gemini-9-basalt-tiered-agy").model == "basalt")
+    }
+
+    @Test
+    func `the card lists fewer rows than the submenu`() throws {
+        let samples = (0..<20).map {
+            Self.sample(offset: TimeInterval($0), outputTokens: 500, latencyMs: 11000, firstTokenMs: 1000)
+        }
+        let summary = try #require(AgentSpeedSummary.summarize(samples, now: Self.base.addingTimeInterval(120)))
+        let presentation = try #require(AgentSpeedPresentation.from(summary))
+
+        #expect(presentation.requests.count == 10)
+        #expect(presentation.inlineRequests.count == AgentSpeedRequestRow.inlineLimit)
+        #expect(presentation.inlineRequests.first?.timestamp == Self.base.addingTimeInterval(19))
     }
 
     @Test

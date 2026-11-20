@@ -11,7 +11,9 @@ extension StatusItemController {
     {
         let submenu = NSMenu()
         submenu.autoenablesItems = false
-        submenu.minimumWidth = max(300, width)
+        // The request list below sets the menu's width; a narrower hosted view would leave bare menu beside it.
+        let width = max(300, width, self.agentSpeedRequestListWidth(agentSpeed) ?? 0)
+        submenu.minimumWidth = width
         // Recent responses go below the usage details, in either rendering mode.
         defer { self.appendAgentSpeedRequestItems(to: submenu, presentation: agentSpeed) }
         if !self.menuCardRenderingEnabledForController {
@@ -23,12 +25,12 @@ extension StatusItemController {
         let view = UsageDetail(
             title: title,
             snapshot: snapshot,
-            width: max(300, width),
+            width: width,
             unavailableText: unavailableText)
         let hosting = MenuHostingView(rootView: view)
         hosting.frame = NSRect(
             origin: .zero,
-            size: NSSize(width: max(300, width), height: 330))
+            size: NSSize(width: width, height: 330))
         let item = NSMenuItem()
         item.view = hosting
         item.isEnabled = true

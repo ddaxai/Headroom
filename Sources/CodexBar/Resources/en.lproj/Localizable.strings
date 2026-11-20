@@ -1678,10 +1678,14 @@
 "agent_speed_requests_legend" = "Dimmed rows are replies too short to measure (tool calls, quick judgements). They are left out of the speeds on the card.";
 "agent_speed_requests_column_time" = "Time";
 "agent_speed_requests_column_model" = "Model";
-"agent_speed_requests_column_output" = "Output";
 "agent_speed_requests_column_speed" = "Speed";
 "agent_speed_requests_column_first_token" = "First token";
-"agent_speed_requests_column_cache" = "Cache hit";
+"agent_speed_requests_column_cache" = "Cache";
+"token_usage_header_tokens" = "Token usage";
+"agent_speed_age_now" = "now";
+"agent_speed_age_minutes_format" = "%dm ago";
+"agent_speed_age_hours_format" = "%dh ago";
+"agent_speed_age_days_format" = "%dd ago";
 "agent_speed_cache_expires_format" = "Session cache expires at %@";
 "agent_speed_cache_expired_format" = "Session cache expired at %@";
 "relay_external_imported_message" = "Imported local API configuration “%@” without modifying client files.";
@@ -1796,7 +1800,7 @@
 "relay_menu_switch_failed" = "Switch failed (%@)";
 
 /* Previously missing keys */
-"Toggle Sidebar" = "Toggle Sidebar";
+"settings_navigation_accessibility" = "Settings sections";
 "Requesting login…" = "Requesting login…";
 "Waiting in browser…" = "Waiting in browser…";
 

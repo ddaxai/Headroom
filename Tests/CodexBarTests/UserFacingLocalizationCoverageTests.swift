@@ -86,10 +86,6 @@ struct UserFacingLocalizationCoverageTests {
                 "Text(\"No organizations loaded. Click Refresh after setting your API key.\")",
                 "Button(\"Refresh organizations\")",
             ],
-            "Sources/CodexBar/PreferencesSidebar.swift": [
-                "\"Disabled —",
-                ".accessibilityLabel(\"Sort",
-            ],
             "Sources/CodexBar/StatusItemController+CostMenuCard.swift": [
                 "static let costMenuTitle",
             ],

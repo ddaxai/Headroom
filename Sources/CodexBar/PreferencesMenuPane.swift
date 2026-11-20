@@ -154,7 +154,9 @@ struct CostSummarySettingsSection: View {
     private func costStatusLine(provider: UsageProvider) -> Text {
         let name = ProviderDescriptorRegistry.descriptor(for: provider).metadata.displayName
 
-        guard ProviderDescriptorRegistry.descriptor(for: provider).tokenCost.supportsTokenCost else {
+        guard ProviderDescriptorRegistry.descriptor(for: provider).tokenCost.supportsTokenCost,
+              !provider.reportsTokensWithoutCost
+        else {
             return Text(String(format: L("cost_status_unsupported"), name))
         }
 

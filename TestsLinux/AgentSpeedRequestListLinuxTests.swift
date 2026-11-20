@@ -81,6 +81,52 @@ struct AgentSpeedRequestListLinuxTests {
     }
 
     @Test
+    func `the request list keeps the ten newest replies`() {
+        #expect(AgentSpeedSummary.recentSampleLimit == 10)
+    }
+
+    @Test
+    func `antigravity model labels keep the codename and effort`() {
+        func short(_ model: String?) -> String? {
+            AgentSpeedModelLabel.short(model, source: .antigravity)
+        }
+        #expect(short("gemini-9-quartz-high") == "quartz-high")
+        #expect(short("Gemini 9 Quartz (High)") == "quartz-high")
+        #expect(short("gemini-9-quartz") == "quartz")
+        #expect(short("gemini-9-basalt-tiered-agy") == "basalt")
+        // No codename: the version is the only thing telling two of these apart.
+        #expect(short("gemini-2.5-pro") == "2.5-pro")
+        #expect(short("claude-sonnet-4-5") == "sonnet-4-5")
+        #expect(short("gpt-5.1") == "gpt-5.1")
+        #expect(short("  ") == nil)
+        #expect(short(nil) == nil)
+    }
+
+    @Test
+    func `other sources keep the model ID from their log`() {
+        #expect(AgentSpeedModelLabel.short("gemini-2.5-pro", source: .openCode) == "gemini-2.5-pro")
+        #expect(AgentSpeedModelLabel.short(" claude-opus-4-7 ", source: .claude) == "claude-opus-4-7")
+    }
+
+    @Test
+    func `relative age rounds down to whole minutes hours and days`() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        func age(_ secondsAgo: TimeInterval) -> AgentSpeedRelativeAge {
+            AgentSpeedRelativeAge(from: now.addingTimeInterval(-secondsAgo), now: now)
+        }
+        #expect(age(0) == .justNow)
+        #expect(age(59) == .justNow)
+        // A clock a few seconds ahead of the log must not read as a negative age.
+        #expect(age(-30) == .justNow)
+        #expect(age(60) == .minutes(1))
+        #expect(age(59 * 60 + 59) == .minutes(59))
+        #expect(age(3600) == .hours(1))
+        #expect(age(23 * 3600 + 3599) == .hours(23))
+        #expect(age(86400) == .days(1))
+        #expect(age(3 * 86400 + 5) == .days(3))
+    }
+
+    @Test
     func `cache hit rate text floors to one decimal and reserves 100 percent for a full hit`() {
         #expect(AgentSpeedSummary.formatCacheHitRate(0.873) == "87.3%")
         #expect(AgentSpeedSummary.formatCacheHitRate(0.9996) == "99.9%")

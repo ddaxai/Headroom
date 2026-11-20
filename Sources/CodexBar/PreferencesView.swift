@@ -2,7 +2,7 @@ import AppKit
 import CodexBarCore
 import SwiftUI
 
-/// Sidebar destinations of the settings window: fixed app panes plus one entry per provider.
+/// Leaf routes of the settings window: fixed app panes plus one entry per provider.
 enum SettingsPane: Hashable {
     case general
     case usageSpend
@@ -22,10 +22,7 @@ enum SettingsPane: Hashable {
     static let windowHeight: CGFloat = 620
     static let windowMinWidth: CGFloat = 800
     static let windowMinHeight: CGFloat = 540
-    static let sidebarMinWidth = SettingsWindowLayout.sidebarWidthRange.lowerBound
-    static let sidebarIdealWidth = SettingsWindowLayout.sidebarIdealWidth
-    static let sidebarMaxWidth = SettingsWindowLayout.sidebarWidthRange.upperBound
-    static let detailMaxWidth: CGFloat = 780
+    static let detailMaxWidth: CGFloat = 860
 
     var title: String {
         switch self {
@@ -82,39 +79,17 @@ struct PreferencesView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
-            // Golden Gate-style sidebar: edge-to-edge material with a hairline separator,
-            // no floating card chrome.
-            SettingsSidebarView(
-                settings: self.settings,
-                store: self.store,
+        VStack(spacing: 0) {
+            SettingsNavigationBar(
                 selection: self.$selection.pane,
                 showsDiagnostics: self.showsOptionDiagnostics)
-                .navigationSplitViewColumnWidth(
-                    min: SettingsPane.sidebarMinWidth,
-                    ideal: self.settings.sidebarWidth,
-                    max: SettingsPane.sidebarMaxWidth)
-                // The titlebar accessory already owns the sidebar toggle beside the pin. Without
-                // this, NavigationSplitView adds a second toggle that moves between the sidebar
-                // edge and the traffic lights as the sidebar collapses.
-                .toolbar(removing: .sidebarToggle)
-                .background {
-                    GeometryReader { proxy in
-                        Color.clear.preference(
-                            key: SettingsSidebarWidthPreferenceKey.self,
-                            value: proxy.size.width)
-                    }
-                }
-                .background(ConsoleDesign.background.ignoresSafeArea())
-        } detail: {
             self.detailView
                 .frame(
                     maxWidth: SettingsPane.detailMaxWidth,
                     maxHeight: .infinity,
-                    alignment: .topLeading)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    alignment: .top)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .navigationSplitViewStyle(.balanced)
         .frame(
             minWidth: SettingsPane.windowMinWidth,
             idealWidth: SettingsPane.windowWidth,
@@ -136,9 +111,6 @@ struct PreferencesView: View {
         .onAppear {
             self.showsOptionDiagnostics = NSEvent.modifierFlags.contains(.option)
             self.ensureValidSelection()
-        }
-        .persistingSettledWidth(SettingsSidebarWidthPreferenceKey.self, current: self.settings.sidebarWidth) { width in
-            self.settings.sidebarWidth = width
         }
         .onChange(of: self.settings.debugMenuEnabled) { _, _ in
             self.ensureValidSelection()
@@ -278,17 +250,6 @@ struct AccountsAndAPIsPane: View {
     }
 }
 
-private struct SettingsSidebarWidthPreferenceKey: PreferenceKey {
-    static let defaultValue: CGFloat = 0
-
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        let next = nextValue()
-        if next > 0 {
-            value = next
-        }
-    }
-}
-
 /// Persists a split width once it stops changing. The preference fires on every layout pass of a divider drag,
 /// and each write went straight to `UserDefaults`.
 private struct SettledWidthPersistence<Key: PreferenceKey>: ViewModifier where Key.Value == CGFloat {
@@ -420,25 +381,13 @@ struct SettingsWindowAppearanceBridge: NSViewRepresentable {
 @MainActor
 final class SettingsTitlebarControlsController: NSTitlebarAccessoryViewController {
     typealias Action = @MainActor () -> Void
-    static let contentSize = NSSize(width: 56, height: 22)
+    static let contentSize = NSSize(width: 28, height: 22)
 
-    let sidebarButton: NSButton
     let pinButton: NSButton
-    private var onToggleSidebar: Action
     private var onTogglePin: Action
 
-    init(
-        onToggleSidebar: @escaping Action,
-        onTogglePin: @escaping Action)
-    {
-        self.onToggleSidebar = onToggleSidebar
+    init(onTogglePin: @escaping Action) {
         self.onTogglePin = onTogglePin
-        self.sidebarButton = NSButton(
-            image: NSImage(
-                systemSymbolName: "sidebar.left",
-                accessibilityDescription: "Show Sidebar")!,
-            target: nil,
-            action: nil)
         self.pinButton = NSButton(
             image: NSImage(
                 systemSymbolName: "pin",
@@ -448,38 +397,23 @@ final class SettingsTitlebarControlsController: NSTitlebarAccessoryViewControlle
         super.init(nibName: nil, bundle: nil)
 
         self.layoutAttribute = .left
-        self.sidebarButton.target = self
-        self.sidebarButton.action = #selector(self.toggleSidebar(_:))
         self.pinButton.target = self
         self.pinButton.action = #selector(self.togglePin(_:))
-        for button in [self.sidebarButton, self.pinButton] {
-            button.bezelStyle = .accessoryBar
-            button.isBordered = false
-            button.imagePosition = .imageOnly
-            button.controlSize = .small
-            button.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                button.widthAnchor.constraint(equalToConstant: 24),
-                button.heightAnchor.constraint(equalToConstant: 22),
-            ])
-        }
-        self.sidebarButton.toolTip = L("Toggle Sidebar")
+        self.pinButton.bezelStyle = .accessoryBar
+        self.pinButton.isBordered = false
+        self.pinButton.imagePosition = .imageOnly
+        self.pinButton.controlSize = .small
+        self.pinButton.translatesAutoresizingMaskIntoConstraints = false
         self.pinButton.toolTip = L("settings_window_always_on_top_help")
-
-        let stack = NSStackView(views: [self.sidebarButton, self.pinButton])
-        stack.orientation = .horizontal
-        stack.alignment = .centerY
-        stack.spacing = 2
-        stack.translatesAutoresizingMaskIntoConstraints = false
 
         let container = NSView(
             frame: NSRect(origin: .zero, size: Self.contentSize))
-        container.addSubview(stack)
+        container.addSubview(self.pinButton)
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 2),
-            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -2),
-            stack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            stack.heightAnchor.constraint(equalToConstant: 22),
+            self.pinButton.widthAnchor.constraint(equalToConstant: 24),
+            self.pinButton.heightAnchor.constraint(equalToConstant: 22),
+            self.pinButton.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            self.pinButton.centerYAnchor.constraint(equalTo: container.centerYAnchor),
         ])
         self.preferredContentSize = Self.contentSize
         self.view = container
@@ -500,10 +434,6 @@ final class SettingsTitlebarControlsController: NSTitlebarAccessoryViewControlle
             systemSymbolName: imageName,
             accessibilityDescription: accessibilityDescription)
         self.pinButton.contentTintColor = isPinned ? ConsoleDesign.tokens.accent.nsColor : .secondaryLabelColor
-    }
-
-    @objc private func toggleSidebar(_ sender: NSButton) {
-        self.onToggleSidebar()
     }
 
     @objc private func togglePin(_ sender: NSButton) {
@@ -642,9 +572,8 @@ final class SettingsWindowAppearanceView: NSView {
         if window.titlebarSeparatorStyle != .none {
             window.titlebarSeparatorStyle = .none
         }
-        // Full-size content lets the sidebar material extend behind the titlebar so the
-        // edge-to-edge sidebar reaches the top of the window; content stays below the
-        // titlebar via the safe area.
+        // Full-size content carries the console background up behind the transparent titlebar;
+        // content stays below the titlebar via the safe area.
         if !window.styleMask.contains(.fullSizeContentView) {
             window.styleMask.insert(.fullSizeContentView)
         }
@@ -661,14 +590,7 @@ final class SettingsWindowAppearanceView: NSView {
         }
         let controls = window.titlebarAccessoryViewControllers
             .compactMap { $0 as? SettingsTitlebarControlsController }
-            .first ?? SettingsTitlebarControlsController(
-                onToggleSidebar: {
-                    NSApp.sendAction(
-                        #selector(NSSplitViewController.toggleSidebar(_:)),
-                        to: nil,
-                        from: nil)
-                },
-                onTogglePin: self.onToggleAlwaysOnTop)
+            .first ?? SettingsTitlebarControlsController(onTogglePin: self.onToggleAlwaysOnTop)
         if !window.titlebarAccessoryViewControllers.contains(where: { $0 === controls }) {
             window.addTitlebarAccessoryViewController(controls)
         }
