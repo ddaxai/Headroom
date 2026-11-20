@@ -59,6 +59,11 @@ struct AgentSpeedRequestRowTests {
         #expect(row.speedText == "≈ 150 tok/s")
         #expect(row.firstTokenText == nil)
         #expect(row.cacheHitText == nil)
+
+        // With a known first-token wait the figure is streaming-only, so it carries no "≈".
+        let streamed = AgentSpeedRequestRow(sample: Self.sample(outputTokens: 30, latencyMs: 1500, firstTokenMs: 1000))
+        #expect(!streamed.countsAsRealUsage)
+        #expect(streamed.speedText == "60 tok/s")
     }
 
     @Test

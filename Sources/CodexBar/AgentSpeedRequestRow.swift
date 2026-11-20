@@ -24,8 +24,12 @@ struct AgentSpeedRequestRow: Equatable, Sendable {
             self.speedText = AgentSpeedSummary.formatTokensPerSecond(speed.tokensPerSecond, kind: speed.kind)
             self.countsAsRealUsage = true
         } else {
+            // Mark the figure by the duration it was divided by, so "≈" only appears when the wait is included.
+            let kind: AgentSpeedMeasurementKind = sample.streamingGenerationMs == nil
+                ? .endToEndEstimated
+                : .streamingExact
             self.speedText = sample.unfilteredTokensPerSecond.map {
-                AgentSpeedSummary.formatTokensPerSecond($0, kind: .endToEndEstimated)
+                AgentSpeedSummary.formatTokensPerSecond($0, kind: kind)
             }
             self.countsAsRealUsage = false
         }

@@ -101,8 +101,9 @@ public struct AgentSpeedSample: Sendable, Equatable, Codable {
         return self.timestamp.addingTimeInterval(TimeInterval(ttl))
     }
 
-    /// Output ÷ whole request duration with no thresholds. Short tool-call replies make this unrealistically
-    /// high, which is why summaries use `effectiveSpeed`; the request list shows it dimmed for those rows.
+    /// Output ÷ streaming time when the first-token wait is known (see `streamingGenerationMs`), else ÷ whole
+    /// request duration, with no thresholds. Short tool-call replies make this unrealistically high, which is
+    /// why summaries use `effectiveSpeed`; the request list shows it dimmed for those rows.
     public var unfilteredTokensPerSecond: Double? {
         guard self.outputTokens > 0, self.latencyMs > 0 else { return nil }
         let durationMs = self.streamingGenerationMs ?? self.latencyMs
