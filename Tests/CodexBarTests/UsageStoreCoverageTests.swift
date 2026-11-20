@@ -177,6 +177,29 @@ struct UsageStoreCoverageTests {
     }
 
     @Test
+    func `antigravity token scans publish while cost summaries are off`() throws {
+        let settings = Self.makeSettingsStore(suite: "UsageStoreCoverageTests-antigravity-cost-off")
+        settings.costUsageEnabled = false
+        let metadata = try #require(ProviderRegistry.shared.metadata[.antigravity])
+        settings.setProviderEnabled(provider: .antigravity, metadata: metadata, enabled: true)
+        let codexMetadata = try #require(ProviderRegistry.shared.metadata[.codex])
+        settings.setProviderEnabled(provider: .codex, metadata: codexMetadata, enabled: true)
+        let store = Self.makeUsageStore(settings: settings)
+
+        func isCurrent(_ provider: UsageProvider) -> Bool {
+            store.tokenRefreshPublicationIsCurrent(
+                provider: provider,
+                publicationRevision: store.providerPublicationRevision(for: provider),
+                providerConfigRevision: settings.providerConfigRevision(for: provider),
+                historyDays: settings.costUsageHistoryDays,
+                costScopeSignature: store.tokenSnapshotScopeSignature(for: provider))
+        }
+
+        #expect(isCurrent(.antigravity))
+        #expect(!isCurrent(.codex))
+    }
+
+    @Test
     func `source label adds open AI web`() {
         let settings = Self.makeSettingsStore(suite: "UsageStoreCoverageTests-source")
         settings.debugDisableKeychainAccess = false
